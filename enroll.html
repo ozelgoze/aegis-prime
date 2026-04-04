@@ -6,320 +6,655 @@
 <title>Aegis Prime — Cadet Enrollment System</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-:root{--union-blue:#0a1628;--union-mid:#0d2044;--union-light:#1a3a6e;--cyan:#4fc3f7;--cyan-glow:#00b4e6;--white:#e8f0fe;--white-dim:#8aaad4;--gold:#f5c842;--gold-dim:#b8922a;--red:#ff4757;--green:#2ecc71;--orange:#ff9f43;--border:rgba(79,195,247,0.25);--border-bright:rgba(79,195,247,0.7);--font-d:'Orbitron',monospace;--font-b:'Rajdhani',sans-serif;--font-m:'Share Tech Mono',monospace}
+:root{--ub:#0a1628;--um:#0d2044;--ul:#1a3a6e;--cy:#4fc3f7;--cg:#00b4e6;--wh:#e8f0fe;--wd:#8aaad4;--go:#f5c842;--gd:#b8922a;--re:#ff4757;--gr:#2ecc71;--or:#ff9f43;--bo:rgba(79,195,247,0.25);--bb:rgba(79,195,247,0.7);--fd:'Orbitron',monospace;--fb:'Rajdhani',sans-serif;--fm:'Share Tech Mono',monospace}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--union-blue);color:var(--white);font-family:var(--font-b);min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(79,195,247,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(79,195,247,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
-body::after{content:'';position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--cyan),var(--gold),var(--cyan),transparent);z-index:100}
-/* HEADER */
-.hdr{position:relative;z-index:10;padding:18px 28px 12px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(10,22,40,.98),rgba(10,22,40,.7));display:flex;align-items:center;gap:16px}
-.hdr-emb{width:46px;height:46px;border:2px solid var(--cyan);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:12px;font-weight:700;color:var(--cyan);background:rgba(79,195,247,.08);box-shadow:0 0 20px rgba(79,195,247,.3);flex-shrink:0;animation:pulse 3s ease-in-out infinite}
+body{background:var(--ub);color:var(--wh);font-family:var(--fb);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(79,195,247,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(79,195,247,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--cy),var(--go),var(--cy),transparent);z-index:100}
+.hdr{position:relative;z-index:10;padding:16px 28px 12px;border-bottom:1px solid var(--bo);background:linear-gradient(180deg,rgba(10,22,40,.98),rgba(10,22,40,.7));display:flex;align-items:center;gap:16px}
+.hdr-emb{width:44px;height:44px;border:2px solid var(--cy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:11px;font-weight:700;color:var(--cy);background:rgba(79,195,247,.08);box-shadow:0 0 20px rgba(79,195,247,.3);flex-shrink:0;animation:pulse 3s ease-in-out infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(79,195,247,.3)}50%{box-shadow:0 0 35px rgba(79,195,247,.5)}}
-.hdr-title{font-family:var(--font-d);font-size:19px;font-weight:900;letter-spacing:4px;color:var(--white);text-transform:uppercase}
-.hdr-sub{font-family:var(--font-m);font-size:9px;color:var(--cyan);letter-spacing:3px;margin-top:2px;opacity:.8}
-.hdr-status{font-family:var(--font-m);font-size:9px;color:var(--white-dim);text-align:right;line-height:1.8;margin-left:auto}
-.sdot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:4px;animation:blink 2s ease-in-out infinite}
+.hdr-title{font-family:var(--fd);font-size:18px;font-weight:900;letter-spacing:4px;color:var(--wh);text-transform:uppercase}
+.hdr-sub{font-family:var(--fm);font-size:9px;color:var(--cy);letter-spacing:3px;margin-top:2px;opacity:.8}
+.hdr-status{font-family:var(--fm);font-size:9px;color:var(--wd);text-align:right;line-height:1.8;margin-left:auto}
+.hdr-back{font-family:var(--fd);font-size:8px;letter-spacing:2px;color:var(--wd);border:1px solid var(--bo);padding:6px 12px;text-decoration:none;transition:all .2s;margin-right:8px}
+.hdr-back:hover{border-color:var(--cy);color:var(--cy)}
+.sdot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gr);margin-right:4px;animation:blink 2s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-/* NAV */
-.nav{position:relative;z-index:10;display:flex;padding:10px 28px;border-bottom:1px solid var(--border);background:rgba(10,22,40,.5);overflow-x:auto;gap:2px}
+.nav{position:relative;z-index:10;display:flex;padding:10px 28px;border-bottom:1px solid var(--bo);background:rgba(10,22,40,.5);overflow-x:auto;gap:2px}
 .si{display:flex;align-items:center;gap:7px;padding:6px 12px;cursor:pointer;transition:all .2s;white-space:nowrap;position:relative}
-.si:not(:last-child)::after{content:'›';position:absolute;right:-5px;color:var(--white-dim);font-size:14px}
-.sn{width:20px;height:20px;border-radius:50%;border:1px solid var(--border-bright);display:flex;align-items:center;justify-content:center;font-family:var(--font-m);font-size:9px;color:var(--white-dim);transition:all .2s;flex-shrink:0}
-.sl{font-family:var(--font-d);font-size:7.5px;letter-spacing:1.5px;color:var(--white-dim);text-transform:uppercase;transition:all .2s}
-.si.active .sn{background:var(--cyan);border-color:var(--cyan);color:var(--union-blue);box-shadow:0 0 10px rgba(79,195,247,.6)}
-.si.active .sl{color:var(--cyan)}
-.si.done .sn{background:rgba(46,204,113,.2);border-color:var(--green);color:var(--green)}
-.si.done .sl{color:var(--green)}
-/* LAYOUT */
+.si:not(:last-child)::after{content:'›';position:absolute;right:-5px;color:var(--wd);font-size:14px}
+.sn{width:20px;height:20px;border-radius:50%;border:1px solid var(--bb);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:9px;color:var(--wd);transition:all .2s;flex-shrink:0}
+.sl{font-family:var(--fd);font-size:7.5px;letter-spacing:1.5px;color:var(--wd);text-transform:uppercase;transition:all .2s}
+.si.active .sn{background:var(--cy);border-color:var(--cy);color:var(--ub);box-shadow:0 0 10px rgba(79,195,247,.6)}
+.si.active .sl{color:var(--cy)}
+.si.done .sn{background:rgba(46,204,113,.2);border-color:var(--gr);color:var(--gr)}
+.si.done .sl{color:var(--gr)}
 .main{position:relative;z-index:10;display:grid;grid-template-columns:1fr 310px;min-height:calc(100vh - 115px)}
-.ca{padding:26px 32px;border-right:1px solid var(--border);overflow-y:auto;max-height:calc(100vh - 115px)}
+.ca{padding:26px 32px;border-right:1px solid var(--bo);overflow-y:auto;max-height:calc(100vh - 115px)}
 .sb{padding:18px;background:rgba(10,22,40,.4);overflow-y:auto;max-height:calc(100vh - 115px)}
-/* SECTIONS */
-.sec{display:none}
-.sec.active{display:block;animation:fi .3s ease}
+.sec{display:none}.sec.active{display:block;animation:fi .3s ease}
 @keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.sh{margin-bottom:22px;padding-bottom:12px;border-bottom:1px solid var(--border)}
-.st{font-family:var(--font-d);font-size:12px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;margin-bottom:3px}
-.sd{font-size:13px;color:var(--white-dim);font-weight:300}
-/* FORM */
+.sh{margin-bottom:22px;padding-bottom:12px;border-bottom:1px solid var(--bo)}
+.st{font-family:var(--fd);font-size:12px;letter-spacing:3px;color:var(--cy);text-transform:uppercase;margin-bottom:3px}
+.sd{font-size:13px;color:var(--wd);font-weight:300}
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
-.fg.full{grid-column:1/-1}
 .grp{display:flex;flex-direction:column;gap:5px}
-.lbl{font-family:var(--font-m);font-size:9px;letter-spacing:2px;color:var(--cyan);text-transform:uppercase}
-.inp,.sel{background:rgba(13,32,68,.8);border:1px solid var(--border);color:var(--white);padding:8px 11px;font-family:var(--font-b);font-size:13px;font-weight:500;outline:none;transition:border-color .2s,box-shadow .2s;width:100%}
-.inp:focus,.sel:focus{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(79,195,247,.15)}
-.sel option{background:var(--union-mid)}
-/* PORTRAIT */
+.lbl{font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--cy);text-transform:uppercase}
+.inp,.sel{background:rgba(13,32,68,.8);border:1px solid var(--bo);color:var(--wh);padding:8px 11px;font-family:var(--fb);font-size:13px;font-weight:500;outline:none;transition:border-color .2s,box-shadow .2s;width:100%}
+.inp:focus,.sel:focus{border-color:var(--cy);box-shadow:0 0 0 2px rgba(79,195,247,.15)}
+.sel option{background:var(--um)}
 .port-section{display:flex;gap:18px;margin-bottom:18px}
-.port-zone{border:2px dashed var(--border);background:rgba(13,32,68,.4);width:140px;height:190px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-.port-zone:hover{border-color:var(--cyan);background:rgba(79,195,247,.05)}
+.port-zone{border:2px dashed var(--bo);background:rgba(13,32,68,.4);width:140px;height:190px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.port-zone:hover{border-color:var(--cy);background:rgba(79,195,247,.05)}
 .port-zone img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.port-chg{position:absolute;bottom:0;left:0;right:0;background:rgba(10,22,40,.9);text-align:center;padding:5px;font-family:var(--font-m);font-size:8px;color:var(--cyan);letter-spacing:1px;opacity:0;transition:opacity .2s}
+.port-chg{position:absolute;bottom:0;left:0;right:0;background:rgba(10,22,40,.9);text-align:center;padding:5px;font-family:var(--fm);font-size:8px;color:var(--cy);letter-spacing:1px;opacity:0;transition:opacity .2s}
 .port-zone:hover .port-chg{opacity:1}
-.port-ph{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--white-dim)}
+.port-ph{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--wd)}
 .port-ico{font-size:26px;opacity:.4}
-.port-hint{font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-align:center;line-height:1.6}
-.port-info{font-family:var(--font-m);font-size:8px;color:var(--white-dim);margin-top:6px;line-height:1.8;opacity:.6}
-/* CLASS */
+.port-hint{font-family:var(--fm);font-size:9px;letter-spacing:1px;text-align:center;line-height:1.6}
+.port-info{font-family:var(--fm);font-size:8px;color:var(--wd);margin-top:6px;line-height:1.8;opacity:.6}
 .cls-sel{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
-.cc{border:1px solid var(--border);padding:12px 8px;cursor:pointer;text-align:center;transition:all .2s;background:rgba(13,32,68,.4);position:relative;overflow:hidden}
-.cc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--border-bright);transition:all .2s}
-.cc:hover{border-color:var(--cyan-glow)}
-.cc.sel-s{border-color:var(--gold);background:rgba(245,200,66,.08)}.cc.sel-s::before{background:var(--gold);box-shadow:0 0 10px rgba(245,200,66,.5)}
-.cc.sel-a{border-color:var(--cyan);background:rgba(79,195,247,.08)}.cc.sel-a::before{background:var(--cyan)}
-.cc.sel-b{border-color:var(--white-dim);background:rgba(138,170,212,.08)}.cc.sel-b::before{background:var(--white-dim)}
-.cr{font-family:var(--font-d);font-size:24px;font-weight:900;margin-bottom:3px}
-.cs{color:var(--gold);text-shadow:0 0 20px rgba(245,200,66,.5)}.ca2{color:var(--cyan)}.cb{color:var(--white-dim)}
-.cd{font-family:var(--font-m);font-size:7.5px;letter-spacing:1px;color:var(--white-dim);line-height:1.5}
-/* ROLL TABLES */
+.cc{border:1px solid var(--bo);padding:12px 8px;cursor:pointer;text-align:center;transition:all .2s;background:rgba(13,32,68,.4);position:relative;overflow:hidden}
+.cc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--bb);transition:all .2s}
+.cc:hover{border-color:var(--cg)}
+.cc.sel-s{border-color:var(--go);background:rgba(245,200,66,.08)}.cc.sel-s::before{background:var(--go);box-shadow:0 0 10px rgba(245,200,66,.5)}
+.cc.sel-a{border-color:var(--cy);background:rgba(79,195,247,.08)}.cc.sel-a::before{background:var(--cy)}
+.cc.sel-b{border-color:var(--wd);background:rgba(138,170,212,.08)}.cc.sel-b::before{background:var(--wd)}
+.cr{font-family:var(--fd);font-size:24px;font-weight:900;margin-bottom:3px}
+.cs{color:var(--go);text-shadow:0 0 20px rgba(245,200,66,.5)}.ca2{color:var(--cy)}.cb{color:var(--wd)}
+.cd{font-family:var(--fm);font-size:7.5px;letter-spacing:1px;color:var(--wd);line-height:1.5}
 .tc{margin-bottom:26px}
-.th{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
-.die{width:32px;height:32px;background:linear-gradient(135deg,var(--union-light),var(--union-mid));border:1px solid var(--border-bright);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:8px;color:var(--cyan);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);flex-shrink:0}
-.tn{font-family:var(--font-d);font-size:10px;letter-spacing:3px;color:var(--white);text-transform:uppercase}
-.ts{font-family:var(--font-m);font-size:9px;color:var(--white-dim);margin-top:2px}
-.tbadge{margin-left:auto;font-family:var(--font-m);font-size:8px;padding:3px 9px;border:1px solid var(--green);color:var(--green);background:rgba(46,204,113,.1);white-space:nowrap}
-.tbadge.e{border-color:var(--border-bright);color:var(--white-dim);background:transparent}
+.th{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--bo)}
+.die{width:32px;height:32px;background:linear-gradient(135deg,var(--ul),var(--um));border:1px solid var(--bb);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:8px;color:var(--cy);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);flex-shrink:0}
+.tn{font-family:var(--fd);font-size:10px;letter-spacing:3px;color:var(--wh);text-transform:uppercase}
+.ts{font-family:var(--fm);font-size:9px;color:var(--wd);margin-top:2px}
+.tbadge{margin-left:auto;font-family:var(--fm);font-size:8px;padding:3px 9px;border:1px solid var(--gr);color:var(--gr);background:rgba(46,204,113,.1);white-space:nowrap}
+.tbadge.e{border-color:var(--bb);color:var(--wd);background:transparent}
 .rt{display:grid;grid-template-columns:repeat(2,1fr);gap:4px}
-.re{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border:1px solid var(--border);background:rgba(13,32,68,.3);cursor:pointer;transition:all .15s}
+.re{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border:1px solid var(--bo);background:rgba(13,32,68,.3);cursor:pointer;transition:all .15s}
 .re:hover{border-color:rgba(79,195,247,.5);background:rgba(79,195,247,.04)}
-.re.sel{border-color:var(--cyan);background:rgba(79,195,247,.12)}
-.rn{font-family:var(--font-m);font-size:9px;color:var(--cyan);min-width:22px;padding-top:1px;opacity:.7}
+.re.sel{border-color:var(--cy);background:rgba(79,195,247,.12)}
+.rn{font-family:var(--fm);font-size:9px;color:var(--cy);min-width:22px;padding-top:1px;opacity:.7}
 .rc{flex:1;min-width:0}
-.rname{font-family:var(--font-b);font-weight:600;font-size:12px;color:var(--white);margin-bottom:2px}
-.rb{font-size:9px;color:var(--green);font-family:var(--font-m);line-height:1.3;margin-bottom:1px}
-.rneg{font-size:9px;color:var(--red);font-family:var(--font-m);line-height:1.3;opacity:.85}
-/* TRIGGERS */
-.trg-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.rname{font-family:var(--fb);font-weight:600;font-size:12px;color:var(--wh);margin-bottom:2px}
+.rb{font-size:9px;color:var(--gr);font-family:var(--fm);line-height:1.3;margin-bottom:1px}
+.rneg{font-size:9px;color:var(--re);font-family:var(--fm);line-height:1.3;opacity:.85}
+.trg-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--bo)}
 .pips{display:flex;gap:4px}
-.pip{width:13px;height:13px;border:1px solid var(--border-bright);border-radius:2px;transition:all .2s}
-.pip.on{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 6px rgba(79,195,247,.5)}
-.pct{font-family:var(--font-d);font-size:13px;font-weight:700;color:var(--cyan)}
+.pip{width:13px;height:13px;border:1px solid var(--bb);border-radius:2px;transition:all .2s}
+.pip.on{background:var(--cy);border-color:var(--cy);box-shadow:0 0 6px rgba(79,195,247,.5)}
+.pct{font-family:var(--fd);font-size:13px;font-weight:700;color:var(--cy)}
 .tl{display:grid;gap:6px}
-.ti{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--border);background:rgba(13,32,68,.4);transition:all .2s}
+.ti{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--bo);background:rgba(13,32,68,.4);transition:all .2s}
 .ti:hover{border-color:rgba(79,195,247,.4)}
-.tiname{font-family:var(--font-b);font-weight:700;font-size:13px;color:var(--white);margin-bottom:1px}
-.tistat{font-family:var(--font-m);font-size:8px;color:var(--cyan);letter-spacing:1px}
-.tidesc{font-size:10px;color:var(--white-dim);margin-top:2px;line-height:1.4}
+.tiname{font-family:var(--fb);font-weight:700;font-size:13px;color:var(--wh);margin-bottom:1px}
+.tistat{font-family:var(--fm);font-size:8px;color:var(--cy);letter-spacing:1px}
+.tidesc{font-size:10px;color:var(--wd);margin-top:2px;line-height:1.4}
 .tc2{display:flex;align-items:center;gap:7px;flex-shrink:0}
-.tb{width:24px;height:24px;border:1px solid var(--border-bright);background:transparent;color:var(--white);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:var(--font-m)}
-.tb:hover:not(:disabled){border-color:var(--cyan);color:var(--cyan)}
+.tb{width:24px;height:24px;border:1px solid var(--bb);background:transparent;color:var(--wh);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:var(--fm)}
+.tb:hover:not(:disabled){border-color:var(--cy);color:var(--cy)}
 .tb:disabled{opacity:.3;cursor:not-allowed}
-.tv{font-family:var(--font-d);font-size:15px;font-weight:700;color:var(--white);min-width:20px;text-align:center}
-.tv.on{color:var(--cyan)}
-/* TALENTS */
-.tsearch{background:rgba(13,32,68,.8);border:1px solid var(--border);color:var(--white);padding:8px 12px;font-family:var(--font-b);font-size:13px;outline:none;width:100%;margin-bottom:12px;transition:border-color .2s}
-.tsearch:focus{border-color:var(--cyan)}
-.tsearch::placeholder{color:var(--white-dim);opacity:.6}
-.tctr{font-family:var(--font-m);font-size:9px;margin-bottom:12px;color:var(--white-dim)}
+.tv{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--wh);min-width:20px;text-align:center}
+.tv.on{color:var(--cy)}
+.tsearch{background:rgba(13,32,68,.8);border:1px solid var(--bo);color:var(--wh);padding:8px 12px;font-family:var(--fb);font-size:13px;outline:none;width:100%;margin-bottom:12px;transition:border-color .2s}
+.tsearch:focus{border-color:var(--cy)}
+.tsearch::placeholder{color:var(--wd);opacity:.6}
+.tctr{font-family:var(--fm);font-size:9px;margin-bottom:12px;color:var(--wd)}
 .tgrid{display:grid;gap:5px;max-height:500px;overflow-y:auto;padding-right:4px}
-.tcard{border:1px solid var(--border);background:rgba(13,32,68,.3);transition:all .2s;overflow:hidden}
+.tcard{border:1px solid var(--bo);background:rgba(13,32,68,.3);transition:all .2s;overflow:hidden}
 .tcard:hover{border-color:rgba(79,195,247,.4)}
-.tcard.tsel{border-color:var(--cyan);background:rgba(79,195,247,.1)}
+.tcard.tsel{border-color:var(--cy);background:rgba(79,195,247,.1)}
 .tcard.tdis{opacity:.4;pointer-events:none}
 .thead2{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer}
-.tib{width:30px;height:30px;border:1px solid var(--border-bright);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.tib{width:30px;height:30px;border:1px solid var(--bb);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
 .tht{flex:1}
-.tname2{font-family:var(--font-b);font-weight:700;font-size:13px;color:var(--white)}
-.ttog{font-size:9px;color:var(--white-dim);font-family:var(--font-m)}
-.tsm{width:17px;height:17px;border-radius:50%;background:var(--cyan);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--union-blue);font-weight:700;flex-shrink:0}
-.tranks{padding:0 12px 10px;border-top:1px solid var(--border)}
+.tname2{font-family:var(--fb);font-weight:700;font-size:13px;color:var(--wh)}
+.ttog{font-size:9px;color:var(--wd);font-family:var(--fm)}
+.tsm{width:17px;height:17px;border-radius:50%;background:var(--cy);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--ub);font-weight:700;flex-shrink:0}
+.tranks{padding:0 12px 10px;border-top:1px solid var(--bo)}
 .tri{padding:8px 0;border-bottom:1px solid rgba(79,195,247,.08)}
 .tri:last-child{border-bottom:none}
-.trl{font-family:var(--font-m);font-size:8px;color:var(--gold);letter-spacing:2px;margin-bottom:3px;display:flex;align-items:center;gap:5px}
-.trl span{color:var(--white-dim)}
-.trname{font-family:var(--font-b);font-weight:600;font-size:12px;color:var(--white);margin-bottom:2px}
-.trdesc{font-size:10px;color:var(--white-dim);line-height:1.5}
-/* STATS */
+.trl{font-family:var(--fm);font-size:8px;color:var(--go);letter-spacing:2px;margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.trl span{color:var(--wd)}
+.trname{font-family:var(--fb);font-weight:600;font-size:12px;color:var(--wh);margin-bottom:2px}
+.trdesc{font-size:10px;color:var(--wd);line-height:1.5}
 .stg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
-.stb{background:rgba(13,32,68,.6);border:1px solid var(--border);padding:12px 8px;text-align:center;position:relative;overflow:hidden}
-.stb::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.5}
-.stn{font-family:var(--font-d);font-size:7.5px;letter-spacing:2px;color:var(--cyan);margin-bottom:8px;display:block}
-.sti{background:transparent;border:none;border-bottom:1px solid var(--border-bright);color:var(--white);font-family:var(--font-d);font-size:20px;font-weight:700;text-align:center;width:55px;outline:none;padding:3px}
-.sti:focus{border-bottom-color:var(--cyan)}
-.stmax{font-family:var(--font-m);font-size:8px;color:var(--white-dim);margin-top:5px;display:block}
-.stnt{font-family:var(--font-m);font-size:8px;color:var(--white-dim);margin-top:10px;padding:7px;border:1px solid var(--border);background:rgba(13,32,68,.4);line-height:1.6}
+.stb{background:rgba(13,32,68,.6);border:1px solid var(--bo);padding:12px 8px;text-align:center;position:relative;overflow:hidden}
+.stb::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cy),transparent);opacity:.5}
+.stn{font-family:var(--fd);font-size:7.5px;letter-spacing:2px;color:var(--cy);margin-bottom:8px;display:block}
+.sti{background:transparent;border:none;border-bottom:1px solid var(--bb);color:var(--wh);font-family:var(--fd);font-size:20px;font-weight:700;text-align:center;width:55px;outline:none;padding:3px}
+.sti:focus{border-bottom-color:var(--cy)}
+.stmax{font-family:var(--fm);font-size:8px;color:var(--wd);margin-top:5px;display:block}
+.stnt{font-family:var(--fm);font-size:8px;color:var(--wd);margin-top:10px;padding:7px;border:1px solid var(--bo);background:rgba(13,32,68,.4);line-height:1.6}
 .sec-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
-.ss{background:rgba(13,32,68,.4);border:1px solid var(--border);padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px}
-.ssl{font-family:var(--font-m);font-size:7.5px;letter-spacing:2px;color:var(--white-dim);text-transform:uppercase}
-.ssv{font-family:var(--font-d);font-size:17px;font-weight:700;color:var(--white)}
-/* SPEC */
+.ss{background:rgba(13,32,68,.4);border:1px solid var(--bo);padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.ssl{font-family:var(--fm);font-size:7.5px;letter-spacing:2px;color:var(--wd);text-transform:uppercase}
+.ssv{font-family:var(--fd);font-size:17px;font-weight:700;color:var(--wh)}
 .spg{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.spc{border:1px solid var(--border);padding:11px 9px;cursor:pointer;transition:all .2s;background:rgba(13,32,68,.3)}
+.spc{border:1px solid var(--bo);padding:11px 9px;cursor:pointer;transition:all .2s;background:rgba(13,32,68,.3)}
 .spc:hover{border-color:rgba(79,195,247,.5)}
-.spc.on{border-color:var(--cyan);background:rgba(79,195,247,.1)}
+.spc.on{border-color:var(--cy);background:rgba(79,195,247,.1)}
 .spico{font-size:16px;margin-bottom:4px}
-.spn{font-family:var(--font-d);font-size:7.5px;letter-spacing:1px;color:var(--cyan);text-transform:uppercase;margin-bottom:2px;line-height:1.4}
-.spd{font-size:9px;color:var(--white-dim);line-height:1.4}
-/* PREVIEW */
-.pvs{background:rgba(13,32,68,.6);border:1px solid var(--border);padding:14px}
-.pvt{font-family:var(--font-d);font-size:8px;letter-spacing:3px;color:var(--cyan);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border);text-transform:uppercase}
-.pvp{width:100%;aspect-ratio:3/4;background:rgba(10,22,40,.8);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-family:var(--font-m);font-size:9px;color:var(--white-dim);overflow:hidden;position:relative}
+.spn{font-family:var(--fd);font-size:7.5px;letter-spacing:1px;color:var(--cy);text-transform:uppercase;margin-bottom:2px;line-height:1.4}
+.spd{font-size:9px;color:var(--wd);line-height:1.4}
+.pvs{background:rgba(13,32,68,.6);border:1px solid var(--bo);padding:14px}
+.pvt{font-family:var(--fd);font-size:8px;letter-spacing:3px;color:var(--cy);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--bo);text-transform:uppercase}
+.pvp{width:100%;aspect-ratio:3/4;background:rgba(10,22,40,.8);border:1px solid var(--bo);display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-family:var(--fm);font-size:9px;color:var(--wd);overflow:hidden;position:relative}
 .pvp img{width:100%;height:100%;object-fit:cover;position:absolute}
-.pvname{font-family:var(--font-d);font-size:12px;font-weight:700;color:var(--white);text-transform:uppercase;letter-spacing:2px;margin-bottom:2px}
-.pvclass{font-family:var(--font-m);font-size:8px;letter-spacing:2px;margin-bottom:8px}
+.pvname{font-family:var(--fd);font-size:12px;font-weight:700;color:var(--wh);text-transform:uppercase;letter-spacing:2px;margin-bottom:2px}
+.pvclass{font-family:var(--fm);font-size:8px;letter-spacing:2px;margin-bottom:8px}
 .pvrow{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(79,195,247,.08)}
-.pvk{color:var(--white-dim);font-family:var(--font-m);font-size:7.5px;letter-spacing:1px}
-.pvv{color:var(--white);font-weight:600;font-size:10px;text-align:right;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pvsh{font-family:var(--font-m);font-size:7.5px;letter-spacing:2px;color:var(--cyan);margin:8px 0 4px;text-transform:uppercase}
-.pvtag{display:inline-block;padding:1px 6px;border:1px solid var(--border);font-family:var(--font-m);font-size:7.5px;color:var(--white-dim);margin:1px}
+.pvk{color:var(--wd);font-family:var(--fm);font-size:7.5px;letter-spacing:1px}
+.pvv{color:var(--wh);font-weight:600;font-size:10px;text-align:right;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pvsh{font-family:var(--fm);font-size:7.5px;letter-spacing:2px;color:var(--cy);margin:8px 0 4px;text-transform:uppercase}
+.pvtag{display:inline-block;padding:1px 6px;border:1px solid var(--bo);font-family:var(--fm);font-size:7.5px;color:var(--wd);margin:1px}
 .pvsr{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin:4px 0}
-.pvsb{background:rgba(10,22,40,.6);border:1px solid var(--border);padding:4px 2px;text-align:center}
-.pvsn{font-family:var(--font-m);font-size:6.5px;color:var(--cyan);display:block}
-.pvsv{font-family:var(--font-d);font-size:12px;font-weight:700;color:var(--white)}
-/* BTNS */
-.btn{font-family:var(--font-d);font-size:8.5px;letter-spacing:2px;text-transform:uppercase;padding:10px 20px;border:1px solid;cursor:pointer;transition:all .2s;background:transparent}
-.btn-p{border-color:var(--cyan);color:var(--cyan)}.btn-p:hover{background:var(--cyan);color:var(--union-blue);box-shadow:0 0 20px rgba(79,195,247,.4)}
-.btn-g{border-color:var(--gold);color:var(--gold)}.btn-g:hover{background:var(--gold);color:var(--union-blue);box-shadow:0 0 20px rgba(245,200,66,.4)}
-.btn-gh{border-color:var(--border-bright);color:var(--white-dim)}.btn-gh:hover{border-color:var(--white);color:var(--white)}
-.br{display:flex;gap:8px;margin-top:22px;padding-top:16px;border-top:1px solid var(--border);flex-wrap:wrap}
-/* REVIEW */
+.pvsb{background:rgba(10,22,40,.6);border:1px solid var(--bo);padding:4px 2px;text-align:center}
+.pvsn{font-family:var(--fm);font-size:6.5px;color:var(--cy);display:block}
+.pvsv{font-family:var(--fd);font-size:12px;font-weight:700;color:var(--wh)}
+.btn{font-family:var(--fd);font-size:8.5px;letter-spacing:2px;text-transform:uppercase;padding:10px 20px;border:1px solid;cursor:pointer;transition:all .2s;background:transparent}
+.btn-p{border-color:var(--cy);color:var(--cy)}.btn-p:hover{background:var(--cy);color:var(--ub);box-shadow:0 0 20px rgba(79,195,247,.4)}
+.btn-g{border-color:var(--go);color:var(--go)}.btn-g:hover{background:var(--go);color:var(--ub);box-shadow:0 0 20px rgba(245,200,66,.4)}
+.btn-gh{border-color:var(--bb);color:var(--wd)}.btn-gh:hover{border-color:var(--wh);color:var(--wh)}
+.br{display:flex;gap:8px;margin-top:22px;padding-top:16px;border-top:1px solid var(--bo);flex-wrap:wrap}
 .rvg{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
-.rvp{background:rgba(13,32,68,.4);border:1px solid var(--border);padding:14px}
-.rvpt{font-family:var(--font-m);font-size:8px;color:var(--cyan);letter-spacing:2px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);text-transform:uppercase}
-/* SCROLL */
-::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--union-light)}
+.rvp{background:rgba(13,32,68,.4);border:1px solid var(--bo);padding:14px}
+.rvpt{font-family:var(--fm);font-size:8px;color:var(--cy);letter-spacing:2px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--bo);text-transform:uppercase}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--ul)}
 
-/* ===== PRINT ===== */
+/* ══════════════════════════════════════════════
+   EXPORT MODAL
+══════════════════════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;background:rgba(4,9,15,.85);backdrop-filter:blur(8px);z-index:500;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex;animation:fi .25s ease}
+.modal-box{background:var(--um);border:1px solid var(--bo);padding:32px;max-width:520px;width:90%;position:relative}
+.modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cy),var(--go),var(--cy),transparent)}
+.modal-title{font-family:var(--fd);font-size:13px;letter-spacing:3px;color:var(--cy);text-transform:uppercase;margin-bottom:6px}
+.modal-sub{font-family:var(--fm);font-size:10px;color:var(--wd);margin-bottom:24px;letter-spacing:1px}
+.export-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.export-card{border:1px solid var(--bo);padding:20px 16px;cursor:pointer;transition:all .2s;background:rgba(10,22,40,.6);text-align:center;position:relative;overflow:hidden}
+.export-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--bo);transition:all .2s}
+.export-card:hover{border-color:var(--cy)}
+.export-card:hover::before{background:var(--cy);box-shadow:0 0 8px rgba(79,195,247,.5)}
+.export-card.active-export{border-color:var(--cy);background:rgba(79,195,247,.1)}
+.export-card.active-export::before{background:var(--cy);box-shadow:0 0 10px rgba(79,195,247,.6)}
+.ec-icon{font-size:28px;margin-bottom:10px;display:block}
+.ec-title{font-family:var(--fd);font-size:9px;letter-spacing:2px;color:var(--wh);text-transform:uppercase;margin-bottom:5px}
+.ec-desc{font-size:11px;color:var(--wd);line-height:1.5}
+.ec-dim{font-family:var(--fm);font-size:8px;color:var(--cy);margin-top:6px;opacity:.7}
+.modal-close{position:absolute;top:12px;right:14px;background:transparent;border:none;color:var(--wd);font-size:18px;cursor:pointer;font-family:var(--fm);transition:color .2s}
+.modal-close:hover{color:var(--wh)}
+
+/* ══════════════════════════════════════════════
+   PRINT — SHARED
+══════════════════════════════════════════════ */
 #ps{display:none}
 @media print{
   body>*:not(#ps){display:none!important}
   #ps{display:block!important}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
-.pp{width:210mm;min-height:297mm;background:white;color:#0a1628;padding:9mm 11mm;font-family:'Rajdhani',sans-serif;position:relative;font-size:8pt}
-.pp.sc{border-top:4mm solid #f5c842}.pp.ac{border-top:4mm solid #0d84b3}.pp.bc{border-top:4mm solid #6b8cae}
-.ph{display:flex;align-items:center;gap:5mm;margin-bottom:5mm;padding-bottom:3mm;border-bottom:.5mm solid #0a1628}
-.plogo{width:15mm;height:15mm;border:.5mm solid #0a1628;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:6.5pt;font-weight:700;color:#0a1628;text-align:center;line-height:1.3;flex-shrink:0}
-.ptitle{font-family:'Orbitron',monospace;font-size:12pt;font-weight:900;letter-spacing:3px;text-transform:uppercase}
-.psub{font-family:'Share Tech Mono',monospace;font-size:6.5pt;color:#1a3a6e;letter-spacing:2px}
-.pcbadge{margin-left:auto;font-family:'Orbitron',monospace;font-size:20pt;font-weight:900;padding:1.5mm 4mm;border:.5mm solid}
-.pcbadge.s{color:#b8820a;border-color:#b8820a}.pcbadge.a{color:#0d84b3;border-color:#0d84b3}.pcbadge.b{color:#6b8cae;border-color:#6b8cae}
-.pbody{display:grid;grid-template-columns:44mm 1fr;gap:4mm;margin-bottom:4mm}
-.pport{width:44mm;height:58mm;background:#e8f0fe;border:.5mm solid #1a3a6e;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:6.5pt;color:#6b8cae;position:relative}
-.pport img{width:100%;height:100%;object-fit:cover}
-.pig{display:grid;grid-template-columns:1fr 1fr;gap:1mm 3mm}
-.pf{border-bottom:.3mm solid #1a3a6e;padding-bottom:.8mm;margin-bottom:1.2mm}
-.pfl{font-family:'Share Tech Mono',monospace;font-size:5pt;color:#1a3a6e;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:.8mm}
-.pfv{font-family:'Orbitron',monospace;font-size:7.5pt;font-weight:600;color:#0a1628}
-.psec{margin-top:3.5mm;padding-top:2mm;border-top:.3mm solid #1a3a6e}
-.psectit{font-family:'Orbitron',monospace;font-size:6pt;letter-spacing:2px;color:#1a3a6e;text-transform:uppercase;margin-bottom:2mm;display:flex;align-items:center;gap:1.5mm}
-.psectit::after{content:'';flex:1;height:.3mm;background:#1a3a6e;opacity:.4}
-.psr{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5mm;margin-bottom:2.5mm}
-.pst{border:.3mm solid #1a3a6e;padding:1.2mm;text-align:center}
-.pstn{font-family:'Share Tech Mono',monospace;font-size:4.5pt;color:#1a3a6e;display:block}
-.pstv{font-family:'Orbitron',monospace;font-size:13pt;font-weight:700}
-.pss{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5mm;margin-bottom:2.5mm}
-.pssl{font-family:'Share Tech Mono',monospace;font-size:4.5pt;color:#1a3a6e;display:block}
-.pssv{font-family:'Orbitron',monospace;font-size:11pt;font-weight:700}
-.pssc{border:.3mm solid #1a3a6e;padding:1.2mm;text-align:center}
-.pbox{background:#f0f5ff;border:.3mm solid #1a3a6e;padding:2mm;margin-bottom:1.5mm}
-.pboxt{font-family:'Share Tech Mono',monospace;font-size:5.5pt;color:#1a3a6e;letter-spacing:1px;text-transform:uppercase;margin-bottom:.8mm}
-.pboxn{font-family:'Orbitron',monospace;font-size:7.5pt;font-weight:600}
-.pboxb{font-size:6.5pt;color:#1a6e3a;margin-top:.5mm}
-.pboxneg{font-size:6.5pt;color:#6e1a1a}
-.p2col{display:grid;grid-template-columns:1fr 1fr;gap:3.5mm}
-.ptrow{display:flex;justify-content:space-between;align-items:center;padding:1.2mm 0;border-bottom:.2mm solid #e0e8f5}
-.ptrn{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:7.5pt}
-.ptrs{font-family:'Share Tech Mono',monospace;font-size:5.5pt;color:#1a3a6e}
-.ptrv{font-family:'Orbitron',monospace;font-size:8.5pt;font-weight:700}
-.ptalb{background:#f0f5ff;border:.3mm solid #1a3a6e;padding:1.8mm;margin-bottom:1.5mm}
-.ptalr{font-family:'Share Tech Mono',monospace;font-size:5.5pt;color:#b8820a;margin-bottom:.4mm}
-.ptaln{font-family:'Orbitron',monospace;font-size:7pt;font-weight:600}
-.ptald{font-size:6pt;color:#2a3a5e;line-height:1.4;margin-top:.4mm}
-.pnotes{border:.3mm solid #1a3a6e;min-height:16mm;padding:1.8mm;background:#f8faff}
-.pfoot{position:absolute;bottom:5mm;left:11mm;right:11mm;display:flex;justify-content:space-between;border-top:.3mm solid #1a3a6e;padding-top:1.5mm}
-.pfootxt{font-family:'Share Tech Mono',monospace;font-size:5pt;color:#6b8cae;letter-spacing:1px}
 
-@media(max-width:900px){.main{grid-template-columns:1fr}.sb{border-top:1px solid var(--border)}.rt{grid-template-columns:1fr}.fg{grid-template-columns:1fr}.stg{grid-template-columns:repeat(2,1fr)}.spg{grid-template-columns:repeat(2,1fr)}}
+/* ══════════════════════════════════════════════
+   ID CARD  (85.6mm × 53.98mm — CR80 standard)
+══════════════════════════════════════════════ */
+.id-card{
+  width:85.6mm;height:53.98mm;
+  background:white;
+  font-family:'Rajdhani',sans-serif;
+  position:relative;overflow:hidden;
+  border-radius:3mm;
+  box-shadow:0 2mm 8mm rgba(0,0,0,.2);
+  display:flex;flex-direction:column;
+  page-break-after:always;
+}
+/* HEADER BAND */
+.id-header{
+  background:linear-gradient(135deg,#0a1628 0%,#1a3a6e 100%);
+  padding:2.5mm 3mm 2mm;
+  display:flex;align-items:center;gap:2mm;
+  flex-shrink:0;
+}
+.id-logo-ring{
+  width:7mm;height:7mm;border:0.4mm solid #4fc3f7;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',monospace;font-size:4pt;font-weight:700;color:#4fc3f7;
+  flex-shrink:0;
+}
+.id-org{color:white;flex:1}
+.id-org-main{font-family:'Orbitron',monospace;font-size:5.5pt;font-weight:700;letter-spacing:1.5px;display:block;line-height:1.2}
+.id-org-sub{font-family:'Share Tech Mono',monospace;font-size:4pt;color:#4fc3f7;letter-spacing:1px;display:block;margin-top:0.5mm}
+.id-class-badge{
+  font-family:'Orbitron',monospace;font-size:11pt;font-weight:900;
+  width:9mm;height:9mm;border:0.5mm solid;border-radius:1mm;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.id-class-badge.s{color:#f5c842;border-color:#f5c842;background:rgba(245,200,66,.15)}
+.id-class-badge.a{color:#4fc3f7;border-color:#4fc3f7;background:rgba(79,195,247,.15)}
+.id-class-badge.b{color:#8aaad4;border-color:#8aaad4;background:rgba(138,170,212,.15)}
+/* BODY */
+.id-body{
+  flex:1;display:flex;gap:0;
+  padding:0;overflow:hidden;
+}
+/* PHOTO COLUMN */
+.id-photo-col{
+  width:20mm;flex-shrink:0;
+  background:#e8f0fe;
+  border-right:0.3mm solid #ccd8f0;
+  overflow:hidden;position:relative;
+}
+.id-photo-col img{width:100%;height:100%;object-fit:cover}
+.id-photo-placeholder{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  font-family:'Share Tech Mono',monospace;font-size:5pt;color:#8aaad4;
+  flex-direction:column;gap:1mm;
+}
+/* INFO COLUMN */
+.id-info{flex:1;padding:2.5mm 2.5mm 1.5mm;display:flex;flex-direction:column;justify-content:space-between}
+.id-name{font-family:'Orbitron',monospace;font-size:7pt;font-weight:700;color:#0a1628;letter-spacing:0.5px;margin-bottom:0.5mm;line-height:1.2}
+.id-callsign{font-family:'Share Tech Mono',monospace;font-size:5pt;color:#1a6e9e;letter-spacing:1px;margin-bottom:2mm}
+.id-fields{display:grid;gap:1mm}
+.id-field{border-bottom:0.2mm solid #dde8f5;padding-bottom:0.5mm}
+.id-field-label{font-family:'Share Tech Mono',monospace;font-size:4pt;color:#1a3a6e;letter-spacing:0.5px;text-transform:uppercase;display:block}
+.id-field-value{font-family:'Rajdhani',sans-serif;font-size:6pt;font-weight:600;color:#0a1628;display:block;margin-top:0.2mm}
+.id-field-small{display:grid;grid-template-columns:1fr 1fr;gap:1mm}
+/* BOTTOM STRIP */
+.id-footer{
+  background:linear-gradient(90deg,#0a1628,#1a3a6e);
+  padding:1.2mm 3mm;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.id-footer-text{font-family:'Share Tech Mono',monospace;font-size:3.5pt;color:rgba(255,255,255,.6);letter-spacing:0.5px}
+.id-barcode{display:flex;gap:0.3mm;align-items:center}
+.id-bar{height:3mm;background:rgba(255,255,255,.5)}
+/* WATERMARK */
+.id-watermark{
+  position:absolute;bottom:5mm;right:2mm;
+  font-family:'Orbitron',monospace;font-size:18pt;font-weight:900;
+  color:rgba(10,22,40,.04);letter-spacing:2px;
+  pointer-events:none;
+}
+/* ACCENT LINE */
+.id-accent{
+  position:absolute;left:20mm;top:14mm;bottom:7mm;
+  width:0.4mm;background:linear-gradient(to bottom,#4fc3f7,#1a3a6e);
+  opacity:0.4;
+}
+
+/* ══════════════════════════════════════════════
+   FULL CHARACTER SHEET  (A4 redesigned)
+══════════════════════════════════════════════ */
+.cs-page{
+  width:210mm;min-height:297mm;
+  background:#f5f8ff;
+  font-family:'Rajdhani',sans-serif;
+  position:relative;
+  page-break-after:always;
+}
+/* TOP STRIPE */
+.cs-stripe{
+  height:14mm;
+  display:flex;align-items:center;
+  padding:0 10mm;
+  position:relative;overflow:hidden;
+}
+.cs-stripe.sc{background:linear-gradient(135deg,#0a1628 0%,#2a4a1a 100%)}
+.cs-stripe.ac{background:linear-gradient(135deg,#0a1628 0%,#0d4472 100%)}
+.cs-stripe.bc{background:linear-gradient(135deg,#0a1628 0%,#2a3a5e 100%)}
+.cs-stripe::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0,rgba(255,255,255,.03) 1px,transparent 1px,transparent 60px)}
+.cs-stripe-logo{width:10mm;height:10mm;border:0.4mm solid rgba(255,255,255,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:4pt;color:white;margin-right:3mm;flex-shrink:0}
+.cs-stripe-title{font-family:'Orbitron',monospace;font-size:11pt;font-weight:900;color:white;letter-spacing:3px;flex:1}
+.cs-stripe-sub{font-family:'Share Tech Mono',monospace;font-size:5.5pt;color:rgba(255,255,255,.5);letter-spacing:2px;display:block;margin-top:0.5mm}
+.cs-stripe-class{font-family:'Orbitron',monospace;font-size:24pt;font-weight:900;letter-spacing:2px}
+.cs-stripe-class.s{color:#f5c842;text-shadow:0 0 12px rgba(245,200,66,.6)}
+.cs-stripe-class.a{color:#4fc3f7;text-shadow:0 0 12px rgba(79,195,247,.6)}
+.cs-stripe-class.b{color:#8aaad4}
+
+/* MAIN BODY */
+.cs-body{padding:6mm 10mm 18mm;display:grid;grid-template-columns:48mm 1fr;gap:5mm}
+
+/* LEFT COL */
+.cs-left{}
+.cs-portrait{width:48mm;height:60mm;background:#dde8f5;border:0.4mm solid #b0c4e8;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:7pt;color:#8aaad4;margin-bottom:3mm;position:relative}
+.cs-portrait img{width:100%;height:100%;object-fit:cover}
+.cs-portrait-label{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(10,22,40,.8),transparent);padding:1.5mm 2mm 1mm;font-family:'Share Tech Mono',monospace;font-size:4pt;color:rgba(255,255,255,.7);letter-spacing:1px}
+
+/* SECTION TITLE */
+.cs-sec-title{font-family:'Orbitron',monospace;font-size:5.5pt;letter-spacing:2px;color:#1a3a6e;text-transform:uppercase;margin-bottom:1.5mm;display:flex;align-items:center;gap:1.5mm;margin-top:3mm}
+.cs-sec-title:first-child{margin-top:0}
+.cs-sec-title::after{content:'';flex:1;height:0.3mm;background:linear-gradient(to right,#1a3a6e,transparent)}
+
+/* INFO BOXES */
+.cs-infobox{background:white;border:0.3mm solid #ccd8f0;padding:1.5mm 2mm;margin-bottom:1.5mm}
+.cs-infobox-label{font-family:'Share Tech Mono',monospace;font-size:4pt;color:#1a3a6e;letter-spacing:0.5px;text-transform:uppercase;display:block;margin-bottom:0.5mm}
+.cs-infobox-value{font-family:'Orbitron',monospace;font-size:7pt;font-weight:600;color:#0a1628;display:block}
+.cs-infobox-pair{display:grid;grid-template-columns:1fr 1fr;gap:1mm}
+
+/* RIGHT COL */
+.cs-right{}
+
+/* IDENTITY HEADER */
+.cs-identity{background:white;border:0.3mm solid #ccd8f0;padding:3mm 3.5mm;margin-bottom:3mm}
+.cs-pilot-name{font-family:'Orbitron',monospace;font-size:14pt;font-weight:900;color:#0a1628;letter-spacing:1px;margin-bottom:0.5mm}
+.cs-pilot-callsign{font-family:'Share Tech Mono',monospace;font-size:7pt;color:#1a6e9e;letter-spacing:2px;margin-bottom:1.5mm}
+.cs-identity-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5mm}
+.cs-id-field{border-top:0.3mm solid #e0e8f5;padding-top:1mm}
+.cs-id-label{font-family:'Share Tech Mono',monospace;font-size:4pt;color:#1a3a6e;letter-spacing:0.5px;text-transform:uppercase;display:block}
+.cs-id-value{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:7pt;color:#0a1628;display:block;margin-top:0.3mm}
+
+/* STATS BLOCK */
+.cs-stats-block{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5mm;margin-bottom:2mm}
+.cs-stat{background:white;border:0.3mm solid #ccd8f0;padding:2mm 1mm;text-align:center;position:relative;overflow:hidden}
+.cs-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:1mm}
+.cs-stat.hull::before{background:#e74c3c}
+.cs-stat.agi::before{background:#2ecc71}
+.cs-stat.sys::before{background:#3498db}
+.cs-stat.eng::before{background:#f39c12}
+.cs-stat-name{font-family:'Share Tech Mono',monospace;font-size:4.5pt;color:#1a3a6e;display:block;margin-bottom:1mm;margin-top:0.5mm}
+.cs-stat-val{font-family:'Orbitron',monospace;font-size:16pt;font-weight:700;color:#0a1628;display:block;line-height:1}
+.cs-stat-sub{font-family:'Share Tech Mono',monospace;font-size:3.5pt;color:#8aaad4;display:block;margin-top:0.5mm}
+
+.cs-derived{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5mm;margin-bottom:3mm}
+.cs-derived-box{background:white;border:0.3mm solid #ccd8f0;padding:1.5mm;text-align:center}
+.cs-derived-label{font-family:'Share Tech Mono',monospace;font-size:4pt;color:#1a3a6e;display:block}
+.cs-derived-val{font-family:'Orbitron',monospace;font-size:12pt;font-weight:700;color:#0a1628}
+
+/* TRIGGERS GRID */
+.cs-triggers{display:grid;grid-template-columns:1fr 1fr;gap:1mm;margin-bottom:3mm}
+.cs-trigger{background:white;border:0.3mm solid #ccd8f0;padding:1.5mm 2mm;display:flex;align-items:center;justify-content:space-between}
+.cs-trigger-left{}
+.cs-trigger-name{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:6.5pt;color:#0a1628;display:block}
+.cs-trigger-stat{font-family:'Share Tech Mono',monospace;font-size:3.8pt;color:#1a3a6e}
+.cs-trigger-val{font-family:'Orbitron',monospace;font-size:10pt;font-weight:700;color:#0d84b3}
+
+/* ROLL BOXES */
+.cs-rollbox{background:white;border-left:1mm solid #0d84b3;border-top:0.3mm solid #ccd8f0;border-right:0.3mm solid #ccd8f0;border-bottom:0.3mm solid #ccd8f0;padding:1.8mm 2mm;margin-bottom:1.5mm}
+.cs-rollbox.gold{border-left-color:#b8820a}
+.cs-rollbox.green{border-left-color:#1a8a4a}
+.cs-rollbox-label{font-family:'Share Tech Mono',monospace;font-size:4pt;color:#1a3a6e;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:0.5mm}
+.cs-rollbox-name{font-family:'Orbitron',monospace;font-size:7.5pt;font-weight:700;color:#0a1628;margin-bottom:0.5mm}
+.cs-rollbox-benefit{font-size:6pt;color:#1a6e3a;line-height:1.4}
+.cs-rollbox-neg{font-size:6pt;color:#8a1a1a}
+
+/* TALENT BOXES */
+.cs-talent{background:white;border:0.3mm solid #ccd8f0;padding:1.8mm 2mm;margin-bottom:1.5mm;position:relative;overflow:hidden}
+.cs-talent::before{content:'';position:absolute;top:0;left:0;bottom:0;width:1mm;background:linear-gradient(to bottom,#f5c842,#b8820a)}
+.cs-talent-rank{font-family:'Share Tech Mono',monospace;font-size:4pt;color:#b8820a;letter-spacing:1px;margin-bottom:0.3mm}
+.cs-talent-name{font-family:'Orbitron',monospace;font-size:7pt;font-weight:700;color:#0a1628;margin-bottom:0.5mm}
+.cs-talent-ability{font-size:5.5pt;color:#2a3a5e;line-height:1.4}
+.cs-talent-ability strong{color:#0a1628}
+
+/* MECH BLOCK */
+.cs-mech{background:linear-gradient(135deg,#f0f5ff,#e8f0fe);border:0.3mm solid #b0c4e8;padding:2.5mm 3mm;margin-bottom:2mm}
+.cs-mech-frame{font-family:'Orbitron',monospace;font-size:9pt;font-weight:900;color:#0a1628;margin-bottom:0.5mm}
+.cs-mech-sub{font-family:'Share Tech Mono',monospace;font-size:5pt;color:#1a6e9e;letter-spacing:1px;margin-bottom:1.5mm}
+.cs-mech-specs{display:grid;grid-template-columns:repeat(4,1fr);gap:1mm}
+.cs-mspec{text-align:center;background:white;border:0.2mm solid #ccd8f0;padding:1mm}
+.cs-mspec-label{font-family:'Share Tech Mono',monospace;font-size:3.5pt;color:#1a3a6e;display:block}
+.cs-mspec-val{font-family:'Orbitron',monospace;font-size:7pt;font-weight:700;color:#0a1628}
+
+/* NOTES */
+.cs-notes-box{background:white;border:0.3mm solid #ccd8f0;min-height:16mm;padding:2mm}
+
+/* FOOTER */
+.cs-footer{position:absolute;bottom:5mm;left:10mm;right:10mm;display:flex;justify-content:space-between;align-items:center;border-top:0.3mm solid #1a3a6e;padding-top:1.5mm}
+.cs-footer-text{font-family:'Share Tech Mono',monospace;font-size:4.5pt;color:#8aaad4;letter-spacing:0.5px}
+.cs-footer-dots{display:flex;gap:1mm}
+.cs-footer-dot{width:1.5mm;height:1.5mm;border-radius:50%}
+
+/* BOTTOM ACCENT */
+.cs-bottom-accent{position:absolute;bottom:0;left:0;right:0;height:2mm}
+.cs-bottom-accent.sc{background:linear-gradient(90deg,#0a1628,#f5c842,#0a1628)}
+.cs-bottom-accent.ac{background:linear-gradient(90deg,#0a1628,#4fc3f7,#0a1628)}
+.cs-bottom-accent.bc{background:linear-gradient(90deg,#0a1628,#8aaad4,#0a1628)}
+
+@media(max-width:900px){.main{grid-template-columns:1fr}.sb{border-top:1px solid var(--bo)}.rt{grid-template-columns:1fr}.fg{grid-template-columns:1fr}.stg{grid-template-columns:repeat(2,1fr)}.spg{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 
-<!-- PRINT SHEET -->
+<!-- ══════════ PRINT SHEETS ══════════ -->
 <div id="ps">
-  <div class="pp" id="pp-el">
-    <div class="ph">
-      <div class="plogo">AEGIS<br>PRIME</div>
-      <div><div class="ptitle">Union Pilot Academy</div><div class="psub">CADET ENROLLMENT — AEGIS PRIME // OFFICIAL RECORD</div></div>
-      <div class="pcbadge" id="pcb">—</div>
-    </div>
-    <div class="pbody">
-      <div>
-        <div class="pport" id="ppb"><span>PORTRAIT</span></div>
-        <div style="margin-top:2.5mm">
-          <div class="psectit" style="margin-top:0">Identity</div>
-          <div class="pf"><span class="pfl">Faction</span><span class="pfv" id="p-fac">—</span></div>
-          <div class="pf"><span class="pfl">Origin</span><span class="pfv" id="p-ori">—</span></div>
-          <div class="psectit">Mech Frame</div>
-          <div class="pbox"><div class="pboxt">Assigned Frame</div><div class="pboxn">Cadet Mark I</div><div class="pboxb">GMS Everest Base — Training Class</div></div>
-          <div class="psectit">Specialization</div>
-          <div class="pbox"><div class="pboxt">Dept. Track</div><div class="pboxn" id="p-spec">—</div></div>
-        </div>
+
+  <!-- ID CARD -->
+  <div class="id-card" id="id-card-el">
+    <div class="id-watermark">UPA</div>
+    <div class="id-accent"></div>
+    <!-- HEADER -->
+    <div class="id-header">
+      <div class="id-logo-ring">AP</div>
+      <div class="id-org">
+        <span class="id-org-main">UNION PILOT ACADEMY</span>
+        <span class="id-org-sub">AEGIS PRIME STATION</span>
       </div>
-      <div>
-        <div class="pig" style="margin-bottom:2.5mm">
-          <div class="pf" style="grid-column:1/-1"><span class="pfl">Pilot Name</span><span class="pfv" id="p-name">—</span></div>
-          <div class="pf"><span class="pfl">Callsign</span><span class="pfv" id="p-call">—</span></div>
-          <div class="pf"><span class="pfl">Age</span><span class="pfv" id="p-age">—</span></div>
-        </div>
-        <div class="psec">
-          <div class="psectit">Pilot Stats</div>
-          <div class="psr">
-            <div class="pst"><span class="pstn">HULL</span><span class="pstv" id="ps-h">0</span></div>
-            <div class="pst"><span class="pstn">AGILITY</span><span class="pstv" id="ps-a">0</span></div>
-            <div class="pst"><span class="pstn">SYSTEMS</span><span class="pstv" id="ps-s">0</span></div>
-            <div class="pst"><span class="pstn">ENGINEERING</span><span class="pstv" id="ps-e">0</span></div>
+      <div class="id-class-badge" id="id-cbadge">—</div>
+    </div>
+    <!-- BODY -->
+    <div class="id-body">
+      <div class="id-photo-col" id="id-photo-col">
+        <div class="id-photo-placeholder">◎<br>PHOTO</div>
+      </div>
+      <div class="id-info">
+        <div>
+          <div class="id-name" id="id-name">—</div>
+          <div class="id-callsign" id="id-callsign">—</div>
+          <div class="id-fields">
+            <div class="id-field">
+              <span class="id-field-label">Faction</span>
+              <span class="id-field-value" id="id-faction">—</span>
+            </div>
+            <div class="id-field-small">
+              <div class="id-field">
+                <span class="id-field-label">Age</span>
+                <span class="id-field-value" id="id-age">—</span>
+              </div>
+              <div class="id-field">
+                <span class="id-field-label">Mech</span>
+                <span class="id-field-value">Mark I</span>
+              </div>
+            </div>
+            <div class="id-field">
+              <span class="id-field-label">Specialization</span>
+              <span class="id-field-value" id="id-spec">—</span>
+            </div>
+            <div class="id-field">
+              <span class="id-field-label">Origin</span>
+              <span class="id-field-value" id="id-origin">—</span>
+            </div>
           </div>
-          <div class="pss">
-            <div class="pssc"><span class="pssl">HP</span><span class="pssv" id="ps-hp">—</span></div>
-            <div class="pssc"><span class="pssl">GRIT</span><span class="pssv" id="ps-gr">+0</span></div>
-            <div class="pssc"><span class="pssl">LIC. LVL</span><span class="pssv">0</span></div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:1mm">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:4pt;color:#1a3a6e">LIC. LEVEL 0 // YEAR 1</span>
+          <span style="font-family:'Orbitron',monospace;font-size:4pt;color:#1a3a6e;font-weight:700">⬡ UPA</span>
+        </div>
+      </div>
+    </div>
+    <!-- FOOTER BAR -->
+    <div class="id-footer">
+      <span class="id-footer-text">CADET IDENTIFICATION // AEGIS PRIME</span>
+      <div class="id-barcode">
+        <div class="id-bar" style="width:.5mm"></div><div class="id-bar" style="width:.3mm;opacity:.3"></div>
+        <div class="id-bar" style="width:.8mm"></div><div class="id-bar" style="width:.3mm;opacity:.3"></div>
+        <div class="id-bar" style="width:.4mm"></div><div class="id-bar" style="width:.3mm;opacity:.3"></div>
+        <div class="id-bar" style="width:.6mm"></div><div class="id-bar" style="width:.3mm;opacity:.3"></div>
+        <div class="id-bar" style="width:.5mm"></div><div class="id-bar" style="width:.3mm;opacity:.3"></div>
+        <div class="id-bar" style="width:.3mm"></div><div class="id-bar" style="width:.3mm;opacity:.3"></div>
+        <div class="id-bar" style="width:.7mm"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULL CHARACTER SHEET -->
+  <div class="cs-page" id="cs-page-el">
+    <!-- TOP STRIPE -->
+    <div class="cs-stripe" id="cs-stripe-el">
+      <div class="cs-stripe-logo">AP</div>
+      <div style="flex:1">
+        <div class="cs-stripe-title">UNION PILOT ACADEMY</div>
+        <span class="cs-stripe-sub">CADET RECORD — AEGIS PRIME // LICENSE LEVEL 0</span>
+      </div>
+      <div class="cs-stripe-class" id="cs-class-badge">—</div>
+    </div>
+
+    <!-- BODY -->
+    <div class="cs-body">
+      <!-- LEFT COLUMN -->
+      <div class="cs-left">
+        <div class="cs-portrait" id="cs-portrait-el">
+          <span>PORTRAIT</span>
+          <div class="cs-portrait-label" id="cs-portrait-label"></div>
+        </div>
+
+        <div class="cs-sec-title">Mech Frame</div>
+        <div class="cs-mech">
+          <div class="cs-mech-frame">Cadet Mark I</div>
+          <div class="cs-mech-sub">GMS EVEREST BASE — TRAINING CLASS</div>
+          <div class="cs-mech-specs">
+            <div class="cs-mspec"><span class="cs-mspec-label">SIZE</span><span class="cs-mspec-val">1</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">SPEED</span><span class="cs-mspec-val">4</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">ARMOR</span><span class="cs-mspec-val">0</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">EVA</span><span class="cs-mspec-val">8</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">E-DEF</span><span class="cs-mspec-val">8</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">SENS</span><span class="cs-mspec-val">10</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">HEAT</span><span class="cs-mspec-val">6</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">REP</span><span class="cs-mspec-val">5</span></div>
           </div>
         </div>
-        <div class="psec">
-          <div class="psectit">Skill Triggers</div>
-          <div id="pt-list"></div>
+
+        <div class="cs-sec-title">Specialization</div>
+        <div class="cs-infobox">
+          <span class="cs-infobox-label">Department Track</span>
+          <span class="cs-infobox-value" id="cs-spec">—</span>
+        </div>
+
+        <div class="cs-sec-title">Origin</div>
+        <div class="cs-infobox">
+          <span class="cs-infobox-label">Home World / Colony</span>
+          <span class="cs-infobox-value" id="cs-origin">—</span>
+        </div>
+        <div class="cs-infobox">
+          <span class="cs-infobox-label">Faction Allegiance</span>
+          <span class="cs-infobox-value" id="cs-faction">—</span>
         </div>
       </div>
-    </div>
-    <div class="p2col">
-      <div>
-        <div class="psec" style="border-top:.3mm solid #1a3a6e;padding-top:2mm">
-          <div class="psectit">Background Origin</div>
-          <div class="pbox"><div class="pboxt">Family Background</div><div class="pboxn" id="pb-n">—</div><div class="pboxb" id="pb-b"></div><div class="pboxneg" id="pb-neg"></div></div>
-          <div class="psectit">Innate Talent</div>
-          <div class="pbox"><div class="pboxt">Natural Ability</div><div class="pboxn" id="pt-n">—</div><div class="pboxb" id="pt-b"></div><div class="pboxneg" id="pt-neg"></div></div>
-          <div class="psectit">Discipline</div>
-          <div class="pbox"><div class="pboxt">Mental Fortitude</div><div class="pboxn" id="pd-n">—</div><div class="pboxb" id="pd-b"></div><div class="pboxneg" id="pd-neg"></div></div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="cs-right">
+        <!-- IDENTITY -->
+        <div class="cs-identity">
+          <div class="cs-pilot-name" id="cs-name">—</div>
+          <div class="cs-pilot-callsign" id="cs-callsign">—</div>
+          <div class="cs-identity-grid">
+            <div class="cs-id-field"><span class="cs-id-label">Age</span><span class="cs-id-value" id="cs-age">—</span></div>
+            <div class="cs-id-field"><span class="cs-id-label">Class Rank</span><span class="cs-id-value" id="cs-class-rank">—</span></div>
+            <div class="cs-id-field"><span class="cs-id-label">License Level</span><span class="cs-id-value">0</span></div>
+          </div>
         </div>
-      </div>
-      <div>
-        <div class="psec" style="border-top:.3mm solid #1a3a6e;padding-top:2mm">
-          <div class="psectit">Talents (Rank I)</div>
-          <div id="ptal-list"></div>
-          <div class="psectit">Notes</div>
-          <div class="pnotes" id="p-notes"></div>
+
+        <!-- STATS -->
+        <div class="cs-sec-title">Pilot Stats</div>
+        <div class="cs-stats-block">
+          <div class="cs-stat hull"><span class="cs-stat-name">HULL</span><span class="cs-stat-val" id="cs-hull">0</span><span class="cs-stat-sub">Endurance</span></div>
+          <div class="cs-stat agi"><span class="cs-stat-name">AGILITY</span><span class="cs-stat-val" id="cs-agi">0</span><span class="cs-stat-sub">Reflexes</span></div>
+          <div class="cs-stat sys"><span class="cs-stat-name">SYSTEMS</span><span class="cs-stat-val" id="cs-sys">0</span><span class="cs-stat-sub">Tech</span></div>
+          <div class="cs-stat eng"><span class="cs-stat-name">ENGINEERING</span><span class="cs-stat-val" id="cs-eng">0</span><span class="cs-stat-sub">Power</span></div>
         </div>
+        <div class="cs-derived">
+          <div class="cs-derived-box"><span class="cs-derived-label">HP</span><span class="cs-derived-val" id="cs-hp">10</span></div>
+          <div class="cs-derived-box"><span class="cs-derived-label">GRIT</span><span class="cs-derived-val">+0</span></div>
+          <div class="cs-derived-box"><span class="cs-derived-label">LIC. LEVEL</span><span class="cs-derived-val">0</span></div>
+        </div>
+
+        <!-- TRIGGERS -->
+        <div class="cs-sec-title">Skill Triggers</div>
+        <div class="cs-triggers" id="cs-triggers-list"></div>
+
+        <!-- BACKGROUND ROLLS -->
+        <div class="cs-sec-title">Background Rolls</div>
+        <div class="cs-rollbox" id="cs-bg-box">
+          <div class="cs-rollbox-label">Family Background</div>
+          <div class="cs-rollbox-name" id="cs-bg-name">—</div>
+          <div class="cs-rollbox-benefit" id="cs-bg-b"></div>
+          <div class="cs-rollbox-neg" id="cs-bg-neg"></div>
+        </div>
+        <div class="cs-rollbox gold" id="cs-tal-box">
+          <div class="cs-rollbox-label">Innate Talent</div>
+          <div class="cs-rollbox-name" id="cs-tal-name">—</div>
+          <div class="cs-rollbox-benefit" id="cs-tal-b"></div>
+          <div class="cs-rollbox-neg" id="cs-tal-neg"></div>
+        </div>
+        <div class="cs-rollbox green" id="cs-disc-box">
+          <div class="cs-rollbox-label">Discipline / Willpower</div>
+          <div class="cs-rollbox-name" id="cs-disc-name">—</div>
+          <div class="cs-rollbox-benefit" id="cs-disc-b"></div>
+          <div class="cs-rollbox-neg" id="cs-disc-neg"></div>
+        </div>
+
+        <!-- TALENTS -->
+        <div class="cs-sec-title">Pilot Talents — Rank I</div>
+        <div id="cs-talents-list"></div>
+
+        <!-- NOTES -->
+        <div class="cs-sec-title">Notes</div>
+        <div class="cs-notes-box" id="cs-notes-el"></div>
       </div>
     </div>
-    <div class="pfoot">
-      <span class="pfootxt">UNION PILOT ACADEMY — AEGIS PRIME // CADET RECORD</span>
-      <span class="pfootxt">LICENSE LEVEL 0 // YEAR 1 ENROLLMENT</span>
+
+    <div class="cs-footer">
+      <span class="cs-footer-text">UNION PILOT ACADEMY — AEGIS PRIME // CADET RECORD // YEAR 1</span>
+      <div class="cs-footer-dots">
+        <div class="cs-footer-dot" id="cs-dot1" style="background:#4fc3f7"></div>
+        <div class="cs-footer-dot" id="cs-dot2" style="background:#ccd8f0"></div>
+        <div class="cs-footer-dot" id="cs-dot3" style="background:#ccd8f0"></div>
+      </div>
+      <span class="cs-footer-text">LICENSE LEVEL 0 // ENROLLMENT ACTIVE</span>
     </div>
+    <div class="cs-bottom-accent" id="cs-bottom-accent"></div>
+  </div>
+
+</div><!-- /ps -->
+
+<!-- EXPORT MODAL -->
+<div class="modal-overlay" id="export-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title">Export Character</div>
+    <div class="modal-sub">SELECT EXPORT FORMAT // PRINT VIA BROWSER PRINT DIALOG</div>
+    <div class="export-options">
+      <div class="export-card" id="ec-id" onclick="selectExport('id')">
+        <span class="ec-icon">🪪</span>
+        <div class="ec-title">Student ID Card</div>
+        <div class="ec-desc">Compact identity card with portrait and key info. Print and cut for use at the table.</div>
+        <div class="ec-dim">85.6 × 54mm — CR80 Standard</div>
+      </div>
+      <div class="export-card" id="ec-cs" onclick="selectExport('cs')">
+        <span class="ec-icon">📋</span>
+        <div class="ec-title">Full Character Sheet</div>
+        <div class="ec-desc">Complete A4 sheet with all stats, triggers, talents, background rolls, and mech specs.</div>
+        <div class="ec-dim">A4 — 210 × 297mm</div>
+      </div>
+    </div>
+    <button class="btn btn-g" id="export-confirm-btn" onclick="confirmExport()" style="width:100%;justify-content:center;display:flex;align-items:center;gap:8px;padding:13px">
+      ⬡ PRINT / EXPORT
+    </button>
   </div>
 </div>
 
 <!-- APP -->
 <header class="hdr">
+  <a href="/" class="hdr-back">‹ HOME</a>
   <div class="hdr-emb">AP</div>
-  <div><div class="hdr-title">Aegis Prime</div><div class="hdr-sub">Union Pilot Academy — Cadet Enrollment System v1.2</div></div>
-  <div class="hdr-status"><div><span class="sdot"></span>SYSTEM ONLINE</div><div style="opacity:.5">AEGIS-PRIME-01 // CADET CLEARANCE</div></div>
+  <div><div class="hdr-title">Aegis Prime</div><div class="hdr-sub">Cadet Enrollment System v1.3</div></div>
+  <div class="hdr-status"><div><span class="sdot"></span>ONLINE</div></div>
 </header>
 
-<nav class="nav" id="nav">
+<nav class="nav">
   <div class="si active" data-step="1" onclick="go(1)"><div class="sn">1</div><div class="sl">Identity</div></div>
   <div class="si" data-step="2" onclick="go(2)"><div class="sn">2</div><div class="sl">Background</div></div>
-  <div class="si" data-step="3" onclick="go(3)"><div class="sn">3</div><div class="sl">Talent Roll</div></div>
+  <div class="si" data-step="3" onclick="go(3)"><div class="sn">3</div><div class="sl">Talent</div></div>
   <div class="si" data-step="4" onclick="go(4)"><div class="sn">4</div><div class="sl">Discipline</div></div>
   <div class="si" data-step="5" onclick="go(5)"><div class="sn">5</div><div class="sl">Stats</div></div>
   <div class="si" data-step="6" onclick="go(6)"><div class="sn">6</div><div class="sl">Triggers</div></div>
@@ -331,18 +666,17 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:3px;background
 <div class="main">
 <div class="ca">
 
-<!-- S1 IDENTITY -->
 <div class="sec active" id="step1">
-  <div class="sh"><div class="st">Pilot Identity</div><div class="sd">Enter your cadet's personal record and upload your portrait</div></div>
+  <div class="sh"><div class="st">Pilot Identity</div><div class="sd">Personal record, portrait upload, and class rank selection</div></div>
   <div class="port-section">
     <div>
-      <div class="lbl" style="margin-bottom:7px">Pilot Portrait</div>
+      <div class="lbl" style="margin-bottom:7px">Portrait</div>
       <div class="port-zone" id="pz" onclick="document.getElementById('pf').click()">
         <div class="port-ph" id="pph"><div class="port-ico">◎</div><div class="port-hint">CLICK TO<br>UPLOAD</div></div>
-        <div class="port-chg">⬡ CHANGE IMAGE</div>
+        <div class="port-chg">⬡ CHANGE</div>
       </div>
       <input type="file" id="pf" accept="image/*" style="display:none" onchange="handlePort(event)">
-      <div class="port-info">Accepts: JPG · PNG · WEBP<br>Best ratio: 3:4 portrait<br>Anime style recommended</div>
+      <div class="port-info">JPG · PNG · WEBP<br>3:4 ratio best<br>Anime recommended</div>
     </div>
     <div style="flex:1">
       <div class="fg">
@@ -364,44 +698,31 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:3px;background
   </div>
   <div class="lbl" style="margin-bottom:7px">Academy Class Rank</div>
   <div class="cls-sel">
-    <div class="cc" id="cc-s" onclick="selClass('S')"><div class="cr cs">S</div><div class="cd">ELITE CADET<br>Gold Dormitories<br>Top Performers</div></div>
-    <div class="cc" id="cc-a" onclick="selClass('A')"><div class="cr ca2">A</div><div class="cd">SKILLED CADET<br>Modern Dormitories<br>High Performers</div></div>
-    <div class="cc" id="cc-b" onclick="selClass('B')"><div class="cr cb">B</div><div class="cd">STANDARD CADET<br>Military Barracks<br>General Enrollment</div></div>
+    <div class="cc" id="cc-s" onclick="selClass('S')"><div class="cr cs">S</div><div class="cd">ELITE CADET<br>Gold Dormitories</div></div>
+    <div class="cc" id="cc-a" onclick="selClass('A')"><div class="cr ca2">A</div><div class="cd">SKILLED CADET<br>Modern Dormitories</div></div>
+    <div class="cc" id="cc-b" onclick="selClass('B')"><div class="cr cb">B</div><div class="cd">STANDARD CADET<br>Military Barracks</div></div>
   </div>
   <div class="br"><button class="btn btn-p" onclick="go(2)">NEXT — FAMILY BACKGROUND ›</button></div>
 </div>
 
-<!-- S2 BACKGROUND -->
 <div class="sec" id="step2">
-  <div class="sh"><div class="st">Family Background</div><div class="sd">Select your origin — determines social standing, connections & resources</div></div>
-  <div class="tc">
-    <div class="th"><div class="die">D20</div><div><div class="tn">Background Origin</div><div class="ts">Roll 1d20 or choose your origin</div></div><div class="tbadge e" id="b-badge">NOT SELECTED</div></div>
-    <div class="rt" id="bg-t"></div>
-  </div>
-  <div class="br"><button class="btn btn-gh" onclick="go(1)">‹ BACK</button><button class="btn btn-p" onclick="go(3)">NEXT — INNATE TALENT ›</button></div>
+  <div class="sh"><div class="st">Family Background</div><div class="sd">Select your origin — social standing, connections & resources</div></div>
+  <div class="tc"><div class="th"><div class="die">D20</div><div><div class="tn">Background Origin</div><div class="ts">Roll 1d20 or choose</div></div><div class="tbadge e" id="b-badge">NOT SELECTED</div></div><div class="rt" id="bg-t"></div></div>
+  <div class="br"><button class="btn btn-gh" onclick="go(1)">‹ BACK</button><button class="btn btn-p" onclick="go(3)">NEXT ›</button></div>
 </div>
 
-<!-- S3 TALENT ROLL -->
 <div class="sec" id="step3">
-  <div class="sh"><div class="st">Innate Talent</div><div class="sd">Your natural edge — a skill or quirk defining how you operate</div></div>
-  <div class="tc">
-    <div class="th"><div class="die">D20</div><div><div class="tn">Natural Ability</div><div class="ts">Roll 1d20 or choose your innate talent</div></div><div class="tbadge e" id="t-badge">NOT SELECTED</div></div>
-    <div class="rt" id="tal-t"></div>
-  </div>
-  <div class="br"><button class="btn btn-gh" onclick="go(2)">‹ BACK</button><button class="btn btn-p" onclick="go(4)">NEXT — DISCIPLINE ›</button></div>
+  <div class="sh"><div class="st">Innate Talent</div><div class="sd">Your natural edge — the skill that defines how you operate</div></div>
+  <div class="tc"><div class="th"><div class="die">D20</div><div><div class="tn">Natural Ability</div><div class="ts">Roll 1d20 or choose</div></div><div class="tbadge e" id="t-badge">NOT SELECTED</div></div><div class="rt" id="tal-t"></div></div>
+  <div class="br"><button class="btn btn-gh" onclick="go(2)">‹ BACK</button><button class="btn btn-p" onclick="go(4)">NEXT ›</button></div>
 </div>
 
-<!-- S4 DISCIPLINE -->
 <div class="sec" id="step4">
-  <div class="sh"><div class="st">Discipline / Willpower</div><div class="sd">Your mental fortitude — how you endure hardship and pressure</div></div>
-  <div class="tc">
-    <div class="th"><div class="die">D20</div><div><div class="tn">Mental Fortitude</div><div class="ts">Roll 1d20 or choose your discipline level</div></div><div class="tbadge e" id="d-badge">NOT SELECTED</div></div>
-    <div class="rt" id="dis-t"></div>
-  </div>
-  <div class="br"><button class="btn btn-gh" onclick="go(3)">‹ BACK</button><button class="btn btn-p" onclick="go(5)">NEXT — PILOT STATS ›</button></div>
+  <div class="sh"><div class="st">Discipline / Willpower</div><div class="sd">Mental fortitude — how you endure hardship and overcome pressure</div></div>
+  <div class="tc"><div class="th"><div class="die">D20</div><div><div class="tn">Mental Fortitude</div><div class="ts">Roll 1d20 or choose</div></div><div class="tbadge e" id="d-badge">NOT SELECTED</div></div><div class="rt" id="dis-t"></div></div>
+  <div class="br"><button class="btn btn-gh" onclick="go(3)">‹ BACK</button><button class="btn btn-p" onclick="go(5)">NEXT ›</button></div>
 </div>
 
-<!-- S5 STATS -->
 <div class="sec" id="step5">
   <div class="sh"><div class="st">Pilot Stats</div><div class="sd">Distribute 4 points across HULL, AGI, SYS, ENG — max +2 each at LL0</div></div>
   <div class="stg">
@@ -412,59 +733,54 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:3px;background
   </div>
   <div class="sec-stats">
     <div class="ss"><div class="ssl">HP</div><div class="ssv" id="c-hp">10</div></div>
-    <div class="ss"><div class="ssl">GRIT</div><div class="ssv" id="c-gr">+0</div></div>
+    <div class="ss"><div class="ssl">GRIT</div><div class="ssv">+0</div></div>
     <div class="ss"><div class="ssl">LICENSE LVL</div><div class="ssv">0</div></div>
   </div>
-  <div class="stnt"><strong style="color:var(--cyan);font-family:var(--font-m);font-size:8px;letter-spacing:1px">LANCER RULES — LL0</strong><br>HP = 10+(2×HULL) · GRIT=+0 · Mech: Cadet Mark I (GMS Everest) · Heat Cap 6 · Repair Cap 5 · Armor 0 · Speed 4 · Evasion 8 · E-Defense 8 · Sensors 10</div>
-  <div class="br"><button class="btn btn-gh" onclick="go(4)">‹ BACK</button><button class="btn btn-p" onclick="go(6)">NEXT — SKILL TRIGGERS ›</button></div>
+  <div class="stnt"><strong style="color:var(--cy);font-family:var(--fm);font-size:8px">LANCER LL0</strong> — HP=10+(2×HULL) · GRIT=+0 · Heat Cap 6 · Repair Cap 5 · Armor 0 · Speed 4 · Evasion 8 · E-Def 8 · Sensors 10</div>
+  <div class="br"><button class="btn btn-gh" onclick="go(4)">‹ BACK</button><button class="btn btn-p" onclick="go(6)">NEXT — TRIGGERS ›</button></div>
 </div>
 
-<!-- S6 TRIGGERS -->
 <div class="sec" id="step6">
-  <div class="sh"><div class="st">Skill Triggers</div><div class="sd">Distribute 4 points across the 12 pilot skill triggers — max +2 each at LL0</div></div>
+  <div class="sh"><div class="st">Skill Triggers</div><div class="sd">Distribute 4 points across 12 pilot triggers — max +2 each</div></div>
   <div class="trg-hdr">
-    <div style="font-family:var(--font-d);font-size:11px;letter-spacing:2px;color:var(--white)">TRIGGER POINTS</div>
-    <div style="display:flex;align-items:center;gap:10px">
-      <div class="pips" id="t-pips"></div>
-      <div class="pct"><span id="t-rem">4</span> / 4</div>
-    </div>
+    <div style="font-family:var(--fd);font-size:11px;letter-spacing:2px;color:var(--wh)">TRIGGER POINTS</div>
+    <div style="display:flex;align-items:center;gap:10px"><div class="pips" id="t-pips"></div><div class="pct"><span id="t-rem">4</span> / 4</div></div>
   </div>
   <div class="tl" id="tl"></div>
   <div class="br"><button class="btn btn-gh" onclick="go(5)">‹ BACK</button><button class="btn btn-p" onclick="go(7)">NEXT — TALENTS ›</button></div>
 </div>
 
-<!-- S7 TALENTS -->
 <div class="sec" id="step7">
-  <div class="sh"><div class="st">Pilot Talents</div><div class="sd">Choose 3 talents at LL0 — each starts at Rank I. Expand a card to read details before selecting.</div></div>
-  <input class="tsearch" id="tal-search" placeholder="Search talents by name or ability..." oninput="filterTal()">
-  <div class="tctr">Selected: <span id="tal-cnt" style="color:var(--cyan);font-family:var(--font-d);font-weight:700">0</span> / 3 &nbsp;<span style="color:var(--white-dim)">— expand a talent card to select it</span></div>
+  <div class="sh"><div class="st">Pilot Talents</div><div class="sd">Choose 3 talents at LL0 — each starts at Rank I</div></div>
+  <input class="tsearch" id="tal-search" placeholder="Search talents..." oninput="filterTal()">
+  <div class="tctr">Selected: <span id="tal-cnt" style="color:var(--cy);font-family:var(--fd);font-weight:700">0</span> / 3</div>
   <div class="tgrid" id="tgrid"></div>
-  <div class="br"><button class="btn btn-gh" onclick="go(6)">‹ BACK</button><button class="btn btn-p" onclick="go(8)">NEXT — SPECIALIZATION ›</button></div>
+  <div class="br"><button class="btn btn-gh" onclick="go(6)">‹ BACK</button><button class="btn btn-p" onclick="go(8)">NEXT — SPEC ›</button></div>
 </div>
 
-<!-- S8 SPEC -->
 <div class="sec" id="step8">
-  <div class="sh"><div class="st">Academy Specialization</div><div class="sd">Choose your department training track at Union Pilot Academy</div></div>
+  <div class="sh"><div class="st">Academy Specialization</div><div class="sd">Choose your department training track</div></div>
   <div class="spg" id="spg"></div>
   <div class="br"><button class="btn btn-gh" onclick="go(7)">‹ BACK</button><button class="btn btn-p" onclick="go(9)">NEXT — REVIEW ›</button></div>
 </div>
 
-<!-- S9 REVIEW -->
 <div class="sec" id="step9">
-  <div class="sh"><div class="st">Enrollment Complete</div><div class="sd">Review your cadet record and export the character sheet</div></div>
+  <div class="sh"><div class="st">Enrollment Complete</div><div class="sd">Review your record and choose your export format</div></div>
   <div id="rv-content"></div>
-  <div class="br"><button class="btn btn-gh" onclick="go(8)">‹ BACK</button><button class="btn btn-g" onclick="doPrint()">⬡ EXPORT CHARACTER SHEET</button></div>
+  <div class="br">
+    <button class="btn btn-gh" onclick="go(8)">‹ BACK</button>
+    <button class="btn btn-g" onclick="openModal()">⬡ EXPORT CHARACTER</button>
+  </div>
 </div>
 
 </div><!-- /ca -->
 
-<!-- SIDEBAR -->
 <div class="sb">
   <div class="pvs">
     <div class="pvt">◈ Live Preview</div>
     <div class="pvp" id="pv-port"><span>NO PORTRAIT</span></div>
     <div class="pvname" id="pv-name">CADET NAME</div>
-    <div class="pvclass" id="pv-class" style="color:var(--white-dim)">CLASS — UNKNOWN</div>
+    <div class="pvclass" id="pv-class" style="color:var(--wd)">CLASS — UNKNOWN</div>
     <div class="pvrow"><span class="pvk">CALLSIGN</span><span class="pvv" id="pv-call">—</span></div>
     <div class="pvrow"><span class="pvk">FACTION</span><span class="pvv" id="pv-fac">—</span></div>
     <div class="pvrow"><span class="pvk">ORIGIN</span><span class="pvv" id="pv-ori">—</span></div>
@@ -476,20 +792,19 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:3px;background
       <div class="pvsb"><span class="pvsn">SYS</span><span class="pvsv" id="pv-sys">0</span></div>
       <div class="pvsb"><span class="pvsn">ENG</span><span class="pvsv" id="pv-eng">0</span></div>
     </div>
-    <div class="pvsh">◈ Background Rolls</div>
-    <div id="pv-rolls"><div class="pvtag">BG: —</div><br><div class="pvtag" style="margin-top:3px">TALENT: —</div><br><div class="pvtag" style="margin-top:3px">DISC: —</div></div>
+    <div class="pvsh">◈ Rolls</div>
+    <div id="pv-rolls"><div class="pvtag">BG: —</div><br><div class="pvtag" style="margin-top:3px">TAL: —</div><br><div class="pvtag" style="margin-top:3px">DISC: —</div></div>
     <div class="pvsh">◈ Triggers</div>
-    <div id="pv-trg" style="font-size:10px;color:var(--white-dim);font-family:var(--font-m)">Not allocated</div>
+    <div id="pv-trg" style="font-size:10px;color:var(--wd);font-family:var(--fm)">Not allocated</div>
     <div class="pvsh">◈ Talents</div>
-    <div id="pv-tal" style="font-size:10px;color:var(--white-dim);font-family:var(--font-m)">None selected</div>
+    <div id="pv-tal" style="font-size:10px;color:var(--wd);font-family:var(--fm)">None selected</div>
     <div class="pvsh">◈ Specialization</div>
-    <div id="pv-spec" style="font-size:10px;color:var(--white-dim);font-family:var(--font-m)">Not selected</div>
+    <div id="pv-spec" style="font-size:10px;color:var(--wd);font-family:var(--fm)">Not selected</div>
   </div>
 </div>
 </div><!-- /main -->
 
 <script>
-// ===== DATA =====
 const BG=[
   {r:"1",n:"Exiled Renegade",b:"Free black-market contacts",neg:"Hunted by the authorities"},
   {r:"2",n:"Criminal Syndicate",b:"Access to underground favors",neg:"High chance of being blackmailed"},
@@ -554,62 +869,147 @@ const DIS=[
   {r:"20",n:"Unbreakable",b:"Immune to psychological attacks",neg:"Almost incapable of empathy"}
 ];
 const TRIGGERS=[
-  {id:"atf",  n:"Applying Fists to Faces", stat:"HULL",        d:"Brawling, improvised weapons, overpowering enemies physically."},
-  {id:"asl",  n:"Assault",                 stat:"HULL",        d:"Charging enemies, breaching fortifications, overwhelming resistance."},
-  {id:"sc",   n:"Stay Cool",               stat:"HULL",        d:"Endure pain, avoid panic, resist torture, survive extreme conditions."},
-  {id:"tc",   n:"Take Control",            stat:"HULL",        d:"Seize the moment, impose your will through sheer dominance."},
-  {id:"mao",  n:"Move As One",             stat:"AGILITY",     d:"Lead coordinated movement, rapid retreat, or flanking maneuvers."},
-  {id:"thr",  n:"Threaten",               stat:"AGILITY",     d:"Intimidate, menace, or coerce someone through presence or force."},
-  {id:"spt",  n:"Spot",                    stat:"AGILITY",     d:"Notice hidden enemies, detect traps, read a situation at a glance."},
-  {id:"aus",  n:"Act Unseen",              stat:"AGILITY",     d:"Move stealthily, break line of sight, slip past security unnoticed."},
-  {id:"hck",  n:"Hack",                    stat:"SYSTEMS",     d:"Infiltrate electronic systems, override security, crash software."},
-  {id:"pat",  n:"Patch",                   stat:"SYSTEMS",     d:"Jury-rig repairs, stabilize systems, provide emergency medical care."},
-  {id:"scn",  n:"Scan",                    stat:"SYSTEMS",     d:"Analyze targets, identify weaknesses, process sensor data."},
-  {id:"gf",   n:"Get Focused",             stat:"ENGINEERING", d:"Hyper-concentration, technical mastery under pressure."}
+  {id:"atf",n:"Applying Fists to Faces",stat:"HULL",d:"Brawling, improvised weapons, overpowering physically."},
+  {id:"asl",n:"Assault",stat:"HULL",d:"Charging enemies, breaching fortifications, overwhelming resistance."},
+  {id:"sc",n:"Stay Cool",stat:"HULL",d:"Endure pain, avoid panic, resist torture, survive extremes."},
+  {id:"tc",n:"Take Control",stat:"HULL",d:"Seize the moment, impose your will through dominance."},
+  {id:"mao",n:"Move As One",stat:"AGILITY",d:"Coordinated movement, rapid retreat, flanking maneuvers."},
+  {id:"thr",n:"Threaten",stat:"AGILITY",d:"Intimidate or coerce through presence or force."},
+  {id:"spt",n:"Spot",stat:"AGILITY",d:"Notice hidden threats, detect traps, read situations."},
+  {id:"aus",n:"Act Unseen",stat:"AGILITY",d:"Move stealthily, slip past security unnoticed."},
+  {id:"hck",n:"Hack",stat:"SYSTEMS",d:"Infiltrate electronic systems, override security."},
+  {id:"pat",n:"Patch",stat:"SYSTEMS",d:"Jury-rig repairs, emergency medical care."},
+  {id:"scn",n:"Scan",stat:"SYSTEMS",d:"Analyze targets, identify weaknesses, process sensor data."},
+  {id:"gf",n:"Get Focused",stat:"ENGINEERING",d:"Hyper-concentration, technical mastery under pressure."}
 ];
 const LTALENTS=[
-  {id:"ace",   ico:"✈",n:"Ace",            ranks:[{n:"Afterburners",d:"1/round when you Boost, ignore engagement and move through actors. You don't count as having moved for the purpose of making attacks."},{n:"Supersonic",d:"1/round when you Boost, the next attack ignores cover and gains +1 Accuracy."},{n:"One with the Speed",d:"Once per scene, fly up to 10 spaces in a straight line without provoking reactions."}]},
-  {id:"braw",  ico:"👊",n:"Brawler",       ranks:[{n:"Martial Artist",d:"Melee attacks deal 1 bonus damage on hit. You can make improvised attacks with objects."},{n:"Grapple Master",d:"+1 Accuracy on grapple checks, can grapple up to Size 2 targets. Drag grappled targets when moving."},{n:"Juggernaut",d:"1/round on melee hit, push target 1 space. If you moved before attacking, +1d6 kinetic bonus damage."}]},
-  {id:"cent",  ico:"⚙",n:"Centimane",     ranks:[{n:"Snap Loader",d:"Reloading is a free action. You can reload as part of Skirmish once per Skirmish."},{n:"Forward Deploy",d:"Once per scene, mount/dismount as a free action. While mounted as pilot, gain soft cover."},{n:"Supersoldier",d:"Draw and holster weapons as free actions. Make pilot attacks as part of your Full Action."}]},
-  {id:"cshot", ico:"🎯",n:"Crack Shot",    ranks:[{n:"Elimination Shot",d:"1/round on ranged attack, reroll one die and keep either result."},{n:"Marksman",d:"If unmoved this turn, ranged attacks ignore soft cover and first point of armor."},{n:"Devastator",d:"Once per scene, ranged attack deals maximum damage, ignores all cover and armor."}]},
-  {id:"dcmd",  ico:"◉",n:"Drone Commander",ranks:[{n:"Field Commander",d:"Drones activate when you activate. Give orders to drones as free actions."},{n:"Expert Handler",d:"Drones gain +2 HP and +1 Evasion. Spend 1 Repair to immediately redeploy a destroyed drone."},{n:"Hive Controller",d:"Deploy one additional drone simultaneously. Drones deal +1 damage on all attacks."}]},
-  {id:"duel",  ico:"⚔",n:"Duelist",        ranks:[{n:"Challenge",d:"1/scene, mark an enemy as your Rival. Against your Rival, +1 Accuracy on all attacks and checks."},{n:"Riposte",d:"1/round when a melee attack misses you, immediately make a melee attack as a reaction."},{n:"Killing Blow",d:"When you down your Rival, clear all burn and regain 2 HP. Mark a new Rival immediately."}]},
-  {id:"guns",  ico:"🔫",n:"Gunslinger",    ranks:[{n:"Quick Draw",d:"Draw/holster weapons as free actions. Once per round, Skirmish as quick action on your first turn."},{n:"Two-Fisted",d:"Wield two pistols simultaneously. When you Barrage, attack with both, rolling separately."},{n:"Lead Storm",d:"1/scene, flood Burst 2 area. Enemies must pass Agility save or take 3d6 kinetic damage."}]},
-  {id:"hack",  ico:"💻",n:"Hacker",         ranks:[{n:"Infiltrator",d:"When you Invade and succeed, become Hidden to that system's users until your next turn."},{n:"Ghost Protocol",d:"On successful hack: lock it down, corrupt it, or extract data without being traced."},{n:"Black ICE",d:"When you Invade and succeed, deal 2 Heat to the target in addition to Invasion effects."}]},
-  {id:"heav",  ico:"🛡",n:"Heavy",          ranks:[{n:"Armor Up",d:"Gain +1 Armor (stacks). When you take Structure damage, regain 2 HP."},{n:"Immovable",d:"Cannot be pushed, pulled, or knocked Prone by weapons. Grapple checks against you have +1 Difficulty."},{n:"Fortress",d:"1/scene as free action, become immovable. Reduce all incoming damage by 2 and grant soft cover to adjacent allies until next turn."}]},
-  {id:"infl",  ico:"👁",n:"Infiltrator",    ranks:[{n:"Cloak",d:"1/scene, become Hidden until end of next turn or until you attack. Attacks from hiding deal +1d6 damage."},{n:"Vanish",d:"When you deal damage from hiding, immediately attempt to Hide again as a free action."},{n:"Ghost",d:"While Hidden, move through characters and ignore reactions. You can take a full action while Hidden."}]},
-  {id:"lead",  ico:"★",n:"Leader",          ranks:[{n:"Rally",d:"1/scene quick action: ally in line of sight may immediately move 3 spaces or attack as a reaction."},{n:"Inspire",d:"When you or a nearby ally succeeds on a trigger check, one ally within 5 spaces regains 2 HP."},{n:"Spearhead",d:"1/scene free action: allied attacks against chosen target gain +1 Accuracy until your next turn."}]},
-  {id:"medc",  ico:"✚",n:"Medic",           ranks:[{n:"Triage",d:"Stabilize a Dying character as a quick action. When you Patch, target regains 2 additional HP."},{n:"Field Surgeon",d:"Spending a Repair on another also clears one condition. Patch yourself once per scene as free action."},{n:"Emergency Protocol",d:"1/scene: a character within 3 spaces that would be Downed instead remains at 1 HP with damage immunity until your next turn."}]},
-  {id:"mech",  ico:"🔧",n:"Mechanic",        ranks:[{n:"Rapid Repair",d:"When you Stabilize, regain 1 additional HP and clear an extra system."},{n:"Jury Rig",d:"1/scene, restore a destroyed system to temporary function until end of scene."},{n:"Siege Engineer",d:"When you Stabilize, also repair an ally mech within 3 spaces."}]},
-  {id:"nuke",  ico:"☢",n:"Nuclear Cavalier",ranks:[{n:"Hot Swap",d:"Improvised Attack deals energy damage and you may clear 1 heat as a free action."},{n:"Weapon Systems",d:"1/round when you deal energy damage, deal 1 bonus heat to the target."},{n:"Apocalypse Rails",d:"Once per scene, your next attack ignores all armor and resistance and deals maximum damage."}]},
-  {id:"pilot", ico:"🎖",n:"Pilot",           ranks:[{n:"System Familiarity",d:"Use all GMS systems without licensing. GMS weapons don't count against system points."},{n:"Combat Veteran",d:"When you Stabilize, also clear 1 condition. Regain +1 HP when clearing heat."},{n:"Ace Pilot",d:"1/scene, contested Agility check vs enemy pilot. On success, force them to eject."}]},
-  {id:"siege", ico:"💣",n:"Siege Specialist",ranks:[{n:"Breach",d:"Attacks vs structures deal double damage. Blow holes in cover as a Full Action."},{n:"Fortify",d:"Quick action: create Size 1×3 hard cover barrier within 3 spaces until destroyed."},{n:"Bomber",d:"1/scene, call artillery strike. Blast 2 area — Hull save or take 4d6 explosive damage."}]},
-  {id:"skrm",  ico:"⚡",n:"Skirmisher",      ranks:[{n:"Evasive",d:"When you Boost, you don't provoke reactions until end of your turn."},{n:"Hit and Run",d:"On melee attack, move 2 spaces before or after as a free action."},{n:"Blur",d:"1/round, after attacking, immediately Boost as a free action."}]},
-  {id:"spot",  ico:"🔭",n:"Spotter",          ranks:[{n:"Mark Target",d:"Quick action: mark an enemy. Allied ranged attacks gain +1 Accuracy vs that enemy until your next turn."},{n:"Eye in the Sky",d:"When spotting for allies, that attack may reroll one damage die."},{n:"Laser Designator",d:"Once per scene, designate target. All allied attacks ignore cover and gain +1 Accuracy."}]},
-  {id:"strat", ico:"♟",n:"Strategist",       ranks:[{n:"Intel Brief",d:"At combat start, allies gain +1 Accuracy on first attack against chosen enemy each round."},{n:"Coordinated Assault",d:"1/scene quick action: grant an ally an additional quick action on their next turn."},{n:"Mastermind",d:"1/scene: an ally may reposition up to their Speed before the enemy acts."}]},
-  {id:"strm",  ico:"⛈",n:"Stormbringer",     ranks:[{n:"Overcharge",d:"When you Overcharge, take 1 less heat than normal and gain +1 Accuracy on next attack this turn."},{n:"Ride the Lightning",d:"When you Overcharge, move up to 2 spaces as a free action."},{n:"Thunderstruck",d:"1/scene: until next turn, all attacks deal +1d6 energy damage."}]},
-  {id:"tech",  ico:"🔬",n:"Technophile",      ranks:[{n:"System Expert",d:"Once per scene, use any equipped system without paying its activation cost."},{n:"Quick Install",d:"Swap one system in your loadout as a quick action, once per round."},{n:"Overclock",d:"1/scene: activate up to 2 systems as a free action at the start of your turn."}]},
-  {id:"warmo", ico:"🗄",n:"Walking Armory",   ranks:[{n:"Arsenal",d:"Carry one additional weapon in your loadout without counting against mount restrictions."},{n:"Prepared",d:"Once per scene, swap a weapon for any other you have access to as a free action."},{n:"Devastator",d:"1/scene: treat next attack as Barrage with two weapons simultaneously."}]}
+  {id:"ace",ico:"✈",n:"Ace",ranks:[{n:"Afterburners",d:"1/round when you Boost, ignore engagement and move through actors."},{n:"Supersonic",d:"1/round when you Boost, next attack ignores cover, +1 Accuracy."},{n:"One with the Speed",d:"Once/scene, fly 10 spaces in a straight line without provoking reactions."}]},
+  {id:"braw",ico:"👊",n:"Brawler",ranks:[{n:"Martial Artist",d:"Melee attacks deal 1 bonus damage on hit."},{n:"Grapple Master",d:"+1 Accuracy on grapples, can grapple up to Size 2 targets."},{n:"Juggernaut",d:"1/round on melee hit, push target 1 space. If moved before attacking, +1d6 kinetic damage."}]},
+  {id:"cent",ico:"⚙",n:"Centimane",ranks:[{n:"Snap Loader",d:"Reloading is a free action. Can reload as part of Skirmish once."},{n:"Forward Deploy",d:"Once/scene, mount/dismount as free action."},{n:"Supersoldier",d:"Draw/holster weapons as free actions. Pilot attacks as part of Full Action."}]},
+  {id:"cshot",ico:"🎯",n:"Crack Shot",ranks:[{n:"Elimination Shot",d:"1/round on ranged attack, reroll one die and keep either result."},{n:"Marksman",d:"If unmoved, ranged attacks ignore soft cover and first armor point."},{n:"Devastator",d:"Once/scene, ranged attack deals maximum damage, ignores all cover and armor."}]},
+  {id:"dcmd",ico:"◉",n:"Drone Commander",ranks:[{n:"Field Commander",d:"Drones activate when you activate. Give orders as free actions."},{n:"Expert Handler",d:"Drones gain +2 HP, +1 Evasion. Spend 1 Repair to redeploy a destroyed drone."},{n:"Hive Controller",d:"Deploy one additional drone simultaneously. Drones deal +1 damage."}]},
+  {id:"duel",ico:"⚔",n:"Duelist",ranks:[{n:"Challenge",d:"1/scene, mark a Rival. +1 Accuracy against Rival on all attacks."},{n:"Riposte",d:"1/round when a melee attack misses you, immediately attack as a reaction."},{n:"Killing Blow",d:"When you down Rival, clear all burn, regain 2 HP. Mark new Rival."}]},
+  {id:"guns",ico:"🔫",n:"Gunslinger",ranks:[{n:"Quick Draw",d:"Draw/holster as free actions. Once/round, Skirmish as quick action."},{n:"Two-Fisted",d:"Wield two pistols simultaneously. Barrage with both, rolling separately."},{n:"Lead Storm",d:"1/scene, Burst 2 area — Agility save or 3d6 kinetic damage."}]},
+  {id:"hack",ico:"💻",n:"Hacker",ranks:[{n:"Infiltrator",d:"On successful Invade, become Hidden to that system until next turn."},{n:"Ghost Protocol",d:"On successful hack: lock, corrupt, or extract data without trace."},{n:"Black ICE",d:"On successful Invade, deal 2 Heat to target in addition to Invasion effects."}]},
+  {id:"heav",ico:"🛡",n:"Heavy",ranks:[{n:"Armor Up",d:"Gain +1 Armor (stacks). When you take Structure damage, regain 2 HP."},{n:"Immovable",d:"Cannot be pushed, pulled, or knocked Prone. Grapple checks +1 Difficulty."},{n:"Fortress",d:"1/scene: become immovable, reduce incoming damage by 2, grant soft cover to allies."}]},
+  {id:"infl",ico:"👁",n:"Infiltrator",ranks:[{n:"Cloak",d:"1/scene, become Hidden until end of next turn or until you attack. +1d6 from hiding."},{n:"Vanish",d:"When you deal damage from hiding, attempt to Hide again as free action."},{n:"Ghost",d:"While Hidden, move through characters and ignore reactions."}]},
+  {id:"lead",ico:"★",n:"Leader",ranks:[{n:"Rally",d:"1/scene quick action: ally may move 3 spaces or attack as a reaction."},{n:"Inspire",d:"On trigger success, one ally within 5 spaces regains 2 HP."},{n:"Spearhead",d:"1/scene: allied attacks vs chosen target gain +1 Accuracy until your next turn."}]},
+  {id:"medc",ico:"✚",n:"Medic",ranks:[{n:"Triage",d:"Stabilize Dying as quick action. Patch gives +2 additional HP."},{n:"Field Surgeon",d:"Repairing ally also clears one condition. Patch yourself once/scene free."},{n:"Emergency Protocol",d:"1/scene: character within 3 spaces stays at 1 HP with damage immunity until your next turn."}]},
+  {id:"mech",ico:"🔧",n:"Mechanic",ranks:[{n:"Rapid Repair",d:"When you Stabilize, regain 1 additional HP and clear extra system."},{n:"Jury Rig",d:"1/scene, restore a destroyed system temporarily until scene ends."},{n:"Siege Engineer",d:"When you Stabilize, also repair an ally mech within 3 spaces."}]},
+  {id:"nuke",ico:"☢",n:"Nuclear Cavalier",ranks:[{n:"Hot Swap",d:"Improvised Attack deals energy damage, clear 1 heat free."},{n:"Weapon Systems",d:"1/round when you deal energy damage, deal 1 bonus heat to target."},{n:"Apocalypse Rails",d:"Once/scene, next attack ignores all armor and deals maximum damage."}]},
+  {id:"pilot",ico:"🎖",n:"Pilot",ranks:[{n:"System Familiarity",d:"Use all GMS systems without licensing. GMS weapons don't count vs system points."},{n:"Combat Veteran",d:"When you Stabilize, also clear 1 condition. +1 HP when clearing heat."},{n:"Ace Pilot",d:"1/scene, contested Agility vs enemy pilot. On success, force ejection."}]},
+  {id:"siege",ico:"💣",n:"Siege Specialist",ranks:[{n:"Breach",d:"Attacks vs structures deal double damage. Blow holes in cover as Full Action."},{n:"Fortify",d:"Quick action: create Size 1×3 hard cover barrier within 3 spaces."},{n:"Bomber",d:"1/scene, Blast 2 area — Hull save or 4d6 explosive damage."}]},
+  {id:"skrm",ico:"⚡",n:"Skirmisher",ranks:[{n:"Evasive",d:"When you Boost, don't provoke reactions until end of your turn."},{n:"Hit and Run",d:"On melee attack, move 2 spaces before or after as free action."},{n:"Blur",d:"1/round, after attacking, immediately Boost as free action."}]},
+  {id:"spot",ico:"🔭",n:"Spotter",ranks:[{n:"Mark Target",d:"Quick action: mark enemy. Allied ranged attacks gain +1 Accuracy vs that enemy."},{n:"Eye in the Sky",d:"When spotting for allies, that attack may reroll one damage die."},{n:"Laser Designator",d:"Once/scene, designated target — allies ignore cover, +1 Accuracy."}]},
+  {id:"strat",ico:"♟",n:"Strategist",ranks:[{n:"Intel Brief",d:"At combat start, allies gain +1 Accuracy on first attack vs chosen enemy each round."},{n:"Coordinated Assault",d:"1/scene: grant an ally an additional quick action on their next turn."},{n:"Mastermind",d:"1/scene: ally may reposition up to Speed before enemy acts."}]},
+  {id:"strm",ico:"⛈",n:"Stormbringer",ranks:[{n:"Overcharge",d:"When you Overcharge, take 1 less heat, gain +1 Accuracy on next attack."},{n:"Ride the Lightning",d:"When you Overcharge, move up to 2 spaces as free action."},{n:"Thunderstruck",d:"1/scene: all attacks deal +1d6 energy damage until next turn."}]},
+  {id:"tech",ico:"🔬",n:"Technophile",ranks:[{n:"System Expert",d:"Once/scene, use any equipped system without paying activation cost."},{n:"Quick Install",d:"Swap one system in loadout as quick action, once per round."},{n:"Overclock",d:"1/scene: activate up to 2 systems as free action at start of turn."}]},
+  {id:"warmo",ico:"🗄",n:"Walking Armory",ranks:[{n:"Arsenal",d:"Carry one additional weapon without counting against mount restrictions."},{n:"Prepared",d:"Once/scene, swap a weapon for any you have access to as free action."},{n:"Devastator",d:"1/scene: next attack treated as Barrage with two weapons simultaneously."}]}
 ];
 const SPECS=[
-  {ico:"⚔",n:"Combat Operations & Tactics",d:"Advanced battlefield tactics, mech piloting, squad command"},
-  {ico:"⚙",n:"Engineering & Mech Development",d:"Mech technology, repairs, customization, innovation"},
-  {ico:"◈",n:"Cybernetic Augmentation",d:"Implants, neural interfacing, augmentations"},
-  {ico:"◉",n:"Intelligence & Covert Ops",d:"Espionage, surveillance, sabotage, stealth"},
-  {ico:"◌",n:"Frontier & Colonist Relations",d:"Diplomacy, frontier policy, colonial governance"},
-  {ico:"✦",n:"Technological R&D",d:"Experimental weaponry, mech design, prototypes"},
-  {ico:"✚",n:"Medical & Bio-Engineering",d:"Battlefield medicine, bioengineering, enhancement"},
-  {ico:"▣",n:"Logistics & Supply Chain",d:"Resource allocation, logistical planning, support"},
-  {ico:"★",n:"Command & Leadership",d:"Strategic leadership, fleet management, command"}
+  {ico:"⚔",n:"Combat Operations & Tactics",d:"Battlefield tactics, mech piloting, squad command"},
+  {ico:"⚙",n:"Engineering & Mech Dev.",d:"Mech tech, repairs, customization"},
+  {ico:"◈",n:"Cybernetic Augmentation",d:"Implants, neural interfacing"},
+  {ico:"◉",n:"Intelligence & Covert Ops",d:"Espionage, surveillance, stealth"},
+  {ico:"◌",n:"Frontier & Colonist Relations",d:"Diplomacy, colonial governance"},
+  {ico:"✦",n:"Technological R&D",d:"Experimental weaponry, prototypes"},
+  {ico:"✚",n:"Medical & Bio-Engineering",d:"Medicine, bioengineering"},
+  {ico:"▣",n:"Logistics & Supply Chain",d:"Resource allocation, support"},
+  {ico:"★",n:"Command & Leadership",d:"Fleet management, command training"}
 ];
 
-// ===== STATE =====
 const S={name:'',callsign:'',age:'',origin:'',faction:'',notes:'',classRank:'',portrait:null,
-  bg:null,talent:null,disc:null,hull:0,agi:0,sys:0,eng:0,
-  triggers:{},selTalents:[],spec:null};
+  bg:null,talent:null,disc:null,hull:0,agi:0,sys:0,eng:0,triggers:{},selTalents:[],spec:null};
 TRIGGERS.forEach(t=>S.triggers[t.id]=0);
 
-// ===== BUILD ROLL TABLES =====
+let exportMode='cs'; // 'id' or 'cs'
+
+// ── MODAL ──
+function openModal(){
+  document.getElementById('export-modal').classList.add('open');
+  selectExport('cs');
+}
+function closeModal(){document.getElementById('export-modal').classList.remove('open')}
+function selectExport(mode){
+  exportMode=mode;
+  document.getElementById('ec-id').classList.toggle('active-export',mode==='id');
+  document.getElementById('ec-cs').classList.toggle('active-export',mode==='cs');
+}
+function confirmExport(){
+  closeModal();
+  // show only the relevant print element
+  const idCard=document.getElementById('id-card-el');
+  const csPage=document.getElementById('cs-page-el');
+  if(exportMode==='id'){fillIdCard();idCard.style.display='flex';csPage.style.display='none';}
+  else{fillCharSheet();idCard.style.display='none';csPage.style.display='block';}
+  window.print();
+  setTimeout(()=>{idCard.style.display='';csPage.style.display='';},1000);
+}
+
+// ── FILL ID CARD ──
+function fillIdCard(){
+  const cl=S.classRank||'B';
+  const badge=document.getElementById('id-cbadge');
+  badge.textContent=cl;badge.className='id-class-badge '+cl.toLowerCase();
+  document.getElementById('id-name').textContent=S.name||'UNKNOWN CADET';
+  document.getElementById('id-callsign').textContent=S.callsign?'"'+S.callsign+'"':'—';
+  document.getElementById('id-faction').textContent=S.faction||'—';
+  document.getElementById('id-age').textContent=S.age||'—';
+  document.getElementById('id-spec').textContent=S.spec?S.spec.n:'—';
+  document.getElementById('id-origin').textContent=S.origin||'—';
+  const pc=document.getElementById('id-photo-col');
+  pc.innerHTML=S.portrait?`<img src="${S.portrait}">`:'<div class="id-photo-placeholder">◎<br>PHOTO</div>';
+}
+
+// ── FILL CHARACTER SHEET ──
+function fillCharSheet(){
+  const cl=S.classRank||'B';
+  const clLower=cl.toLowerCase();
+  // stripe
+  document.getElementById('cs-stripe-el').className='cs-stripe '+clLower+'c';
+  const badge=document.getElementById('cs-class-badge');
+  badge.textContent=cl+'-CLASS';badge.className='cs-stripe-class '+clLower;
+  // identity
+  document.getElementById('cs-name').textContent=S.name||'—';
+  document.getElementById('cs-callsign').textContent=S.callsign?'"'+S.callsign+'"':'—';
+  document.getElementById('cs-age').textContent=S.age||'—';
+  document.getElementById('cs-class-rank').textContent=cl+'-Class Cadet';
+  document.getElementById('cs-faction').textContent=S.faction||'—';
+  document.getElementById('cs-origin').textContent=S.origin||'—';
+  document.getElementById('cs-spec').textContent=S.spec?S.spec.n:'—';
+  // stats
+  document.getElementById('cs-hull').textContent=S.hull;
+  document.getElementById('cs-agi').textContent=S.agi;
+  document.getElementById('cs-sys').textContent=S.sys;
+  document.getElementById('cs-eng').textContent=S.eng;
+  document.getElementById('cs-hp').textContent=10+(S.hull*2);
+  // portrait
+  const cp=document.getElementById('cs-portrait-el');
+  if(S.portrait){cp.innerHTML=`<img src="${S.portrait}"><div class="cs-portrait-label">${S.name||''}</div>`;}
+  else{cp.innerHTML='<span>PORTRAIT</span>';}
+  // portrait label on ID for class color footer dots
+  const clColors={S:'#f5c842',A:'#4fc3f7',B:'#8aaad4'};
+  document.getElementById('cs-dot1').style.background=clColors[cl]||'#4fc3f7';
+  document.getElementById('cs-bottom-accent').className='cs-bottom-accent '+clLower+'c';
+  // triggers
+  const at=TRIGGERS.filter(t=>(S.triggers[t.id]||0)>0);
+  document.getElementById('cs-triggers-list').innerHTML=at.length
+    ?at.map(t=>`<div class="cs-trigger"><div class="cs-trigger-left"><span class="cs-trigger-name">${t.n}</span><span class="cs-trigger-stat">${t.stat}</span></div><span class="cs-trigger-val">+${S.triggers[t.id]}</span></div>`).join('')
+    :'<div style="font-size:6pt;color:#8aaad4;padding:1mm">No trigger points allocated</div>';
+  // rolls
+  if(S.bg){document.getElementById('cs-bg-name').textContent=S.bg.n;document.getElementById('cs-bg-b').textContent='+ '+S.bg.b;document.getElementById('cs-bg-neg').textContent='− '+S.bg.neg;}
+  if(S.talent){document.getElementById('cs-tal-name').textContent=S.talent.n;document.getElementById('cs-tal-b').textContent='+ '+S.talent.b;document.getElementById('cs-tal-neg').textContent='− '+S.talent.neg;}
+  if(S.disc){document.getElementById('cs-disc-name').textContent=S.disc.n;document.getElementById('cs-disc-b').textContent='+ '+S.disc.b;document.getElementById('cs-disc-neg').textContent='− '+S.disc.neg;}
+  // talents
+  const st=S.selTalents.map(id=>LTALENTS.find(t=>t.id===id)).filter(Boolean);
+  document.getElementById('cs-talents-list').innerHTML=st.length
+    ?st.map(t=>`<div class="cs-talent"><div class="cs-talent-rank">RANK I — ACTIVE</div><div class="cs-talent-name">${t.ico} ${t.n}</div><div class="cs-talent-ability"><strong>${t.ranks[0].n}:</strong> ${t.ranks[0].d}</div></div>`).join('')
+    :'<div style="font-size:6pt;color:#8aaad4;padding:1mm">No talents selected</div>';
+  // notes
+  document.getElementById('cs-notes-el').textContent=S.notes||'';
+}
+
+// ── ROLL TABLES ──
 function buildRT(cid,data,key,bid){
   const c=document.getElementById(cid);c.innerHTML='';
   data.forEach(e=>{
@@ -620,17 +1020,14 @@ function buildRT(cid,data,key,bid){
   });
 }
 
-// ===== TRIGGERS =====
+// ── TRIGGERS ──
 function buildTriggers(){
   const c=document.getElementById('tl');c.innerHTML='';
   TRIGGERS.forEach(t=>{
-    const el=document.createElement('div');el.className='ti';el.id='ti-'+t.id;
+    S.triggers[t.id]=0;
+    const el=document.createElement('div');el.className='ti';
     el.innerHTML=`<div style="flex:1"><div class="tiname">${t.n}</div><div class="tistat">${t.stat}</div><div class="tidesc">${t.d}</div></div>
-      <div class="tc2">
-        <button class="tb" onclick="chgT('${t.id}',-1)" id="tm-${t.id}" disabled>−</button>
-        <div class="tv" id="tv-${t.id}">+0</div>
-        <button class="tb" onclick="chgT('${t.id}',1)" id="tp-${t.id}">+</button>
-      </div>`;
+      <div class="tc2"><button class="tb" onclick="chgT('${t.id}',-1)" id="tm-${t.id}" disabled>−</button><div class="tv" id="tv-${t.id}">+0</div><button class="tb" onclick="chgT('${t.id}',1)" id="tp-${t.id}">+</button></div>`;
     c.appendChild(el);
   });updatePips();
 }
@@ -639,8 +1036,7 @@ function chgT(id,d){
   if(d>0&&(rem<=0||cur>=2))return;if(d<0&&cur<=0)return;
   S.triggers[id]=cur+d;const v=S.triggers[id];
   const el=document.getElementById('tv-'+id);el.textContent='+'+v;el.className='tv'+(v>0?' on':'');
-  document.getElementById('tm-'+id).disabled=v<=0;
-  updatePips();sync();
+  document.getElementById('tm-'+id).disabled=v<=0;updatePips();sync();
 }
 function updatePips(){
   const used=Object.values(S.triggers).reduce((a,b)=>a+b,0),rem=4-used;
@@ -650,46 +1046,30 @@ function updatePips(){
   TRIGGERS.forEach(t=>{const btn=document.getElementById('tp-'+t.id);if(btn)btn.disabled=rem<=0||(S.triggers[t.id]||0)>=2;});
 }
 
-// ===== TALENTS =====
+// ── TALENTS ──
 function buildTalGrid(list){
   const g=document.getElementById('tgrid');g.innerHTML='';
   list.forEach(t=>{
     const isSel=S.selTalents.includes(t.id),isDis=!isSel&&S.selTalents.length>=3;
-    const card=document.createElement('div');
-    card.className='tcard'+(isSel?' tsel':'')+(isDis?' tdis':'');card.id='tc-'+t.id;
-    const ranksH=t.ranks.map((r,i)=>`<div class="tri"><div class="trl">RANK ${['I','II','III'][i]} <span>${i>0?'(Unlocks at higher LL)':'(LL0 — Active)'}</span></div><div class="trname">${r.n}</div><div class="trdesc">${r.d}</div></div>`).join('');
-    card.innerHTML=`<div class="thead2" onclick="togExp('${t.id}')">
-      <div class="tib">${t.ico}</div>
-      <div class="tht"><div class="tname2">${t.n}</div></div>
-      ${isSel?'<div class="tsm">✓</div>':'<div class="ttog">▼</div>'}
-    </div>
-    <div class="tranks" id="tr-${t.id}" style="display:none">
-      ${ranksH}
-      <div style="margin-top:8px">
-        <button class="btn ${isSel?'btn-gh':'btn-p'}" style="font-size:7.5px;padding:7px 14px" onclick="togSel('${t.id}')">
-          ${isSel?'✕ REMOVE TALENT':'+ SELECT TALENT'}
-        </button>
-      </div>
-    </div>`;
+    const card=document.createElement('div');card.className='tcard'+(isSel?' tsel':'')+(isDis?' tdis':'');card.id='tc-'+t.id;
+    const ranksH=t.ranks.map((r,i)=>`<div class="tri"><div class="trl">RANK ${['I','II','III'][i]} <span>${i>0?'(Future LL)':'(LL0 Active)'}</span></div><div class="trname">${r.n}</div><div class="trdesc">${r.d}</div></div>`).join('');
+    card.innerHTML=`<div class="thead2" onclick="togExp('${t.id}')"><div class="tib">${t.ico}</div><div class="tht"><div class="tname2">${t.n}</div></div>${isSel?'<div class="tsm">✓</div>':'<div class="ttog">▼</div>'}</div>
+    <div class="tranks" id="tr-${t.id}" style="display:none">${ranksH}<div style="margin-top:8px"><button class="btn ${isSel?'btn-gh':'btn-p'}" style="font-size:7.5px;padding:7px 14px" onclick="togSel('${t.id}')">${isSel?'✕ REMOVE':'+ SELECT'}</button></div></div>`;
     g.appendChild(card);
   });
 }
 function togExp(id){const el=document.getElementById('tr-'+id);const open=el.style.display!=='none';document.querySelectorAll('[id^="tr-"]').forEach(e=>e.style.display='none');if(!open)el.style.display='block';}
 function togSel(id){
   const idx=S.selTalents.indexOf(id);
-  if(idx>-1)S.selTalents.splice(idx,1);
-  else{if(S.selTalents.length>=3)return;S.selTalents.push(id);}
+  if(idx>-1)S.selTalents.splice(idx,1);else{if(S.selTalents.length>=3)return;S.selTalents.push(id);}
   document.getElementById('tal-cnt').textContent=S.selTalents.length;
   const q=document.getElementById('tal-search').value.toLowerCase();
-  buildTalGrid(LTALENTS.filter(t=>!q||t.n.toLowerCase().includes(q)||t.ranks.some(r=>r.n.toLowerCase().includes(q)||r.d.toLowerCase().includes(q))));
+  buildTalGrid(LTALENTS.filter(t=>!q||t.n.toLowerCase().includes(q)||t.ranks.some(r=>r.n.toLowerCase().includes(q))));
   sync();
 }
-function filterTal(){
-  const q=document.getElementById('tal-search').value.toLowerCase();
-  buildTalGrid(LTALENTS.filter(t=>!q||t.n.toLowerCase().includes(q)||t.ranks.some(r=>r.n.toLowerCase().includes(q)||r.d.toLowerCase().includes(q))));
-}
+function filterTal(){const q=document.getElementById('tal-search').value.toLowerCase();buildTalGrid(LTALENTS.filter(t=>!q||t.n.toLowerCase().includes(q)||t.ranks.some(r=>r.n.toLowerCase().includes(q)||r.d.toLowerCase().includes(q))));}
 
-// ===== SPECS =====
+// ── SPECS ──
 function buildSpecs(){
   const c=document.getElementById('spg');c.innerHTML='';
   SPECS.forEach(s=>{
@@ -700,29 +1080,15 @@ function buildSpecs(){
   });
 }
 
-// ===== CLASS =====
-function selClass(c){
-  ['s','a','b'].forEach(x=>document.getElementById('cc-'+x).className='cc');
-  document.getElementById('cc-'+c.toLowerCase()).className='cc sel-'+c.toLowerCase();
-  S.classRank=c;sync();
-}
+function selClass(c){['s','a','b'].forEach(x=>document.getElementById('cc-'+x).className='cc');document.getElementById('cc-'+c.toLowerCase()).className='cc sel-'+c.toLowerCase();S.classRank=c;sync();}
 
-// ===== PORTRAIT =====
 function handlePort(e){
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=ev=>{
-    S.portrait=ev.target.result;
-    const z=document.getElementById('pz');
-    let img=z.querySelector('img');
-    if(!img){img=document.createElement('img');z.prepend(img);}
-    img.src=ev.target.result;
-    document.getElementById('pph').style.display='none';
-    sync();
-  };r.readAsDataURL(f);
+  r.onload=ev=>{S.portrait=ev.target.result;const z=document.getElementById('pz');let img=z.querySelector('img');if(!img){img=document.createElement('img');z.prepend(img);}img.src=ev.target.result;document.getElementById('pph').style.display='none';sync();};
+  r.readAsDataURL(f);
 }
 
-// ===== NAV =====
 function go(n){
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
   document.getElementById('step'+n).classList.add('active');
@@ -730,15 +1096,11 @@ function go(n){
   if(n===9)buildReview();
 }
 
-// ===== STATS =====
 function syncStats(){
   ['hull','agi','sys','eng'].forEach(s=>{S[s]=parseInt(document.getElementById('s-'+s).value)||0;});
-  document.getElementById('c-hp').textContent=10+(S.hull*2);
-  document.getElementById('c-gr').textContent='+0';
-  sync();
+  document.getElementById('c-hp').textContent=10+(S.hull*2);sync();
 }
 
-// ===== SYNC PREVIEW =====
 function sync(){
   S.name=document.getElementById('i-name').value;S.callsign=document.getElementById('i-call').value;
   S.age=document.getElementById('i-age').value;S.origin=document.getElementById('i-ori').value;
@@ -747,84 +1109,47 @@ function sync(){
   document.getElementById('pv-call').textContent=S.callsign||'—';
   document.getElementById('pv-fac').textContent=S.faction||'—';
   document.getElementById('pv-ori').textContent=S.origin||'—';
-  const cm={S:'var(--gold)',A:'var(--cyan)',B:'var(--white-dim)'};
-  const cl=document.getElementById('pv-class');
-  if(S.classRank){cl.textContent=S.classRank+'-CLASS CADET';cl.style.color=cm[S.classRank];}
+  const cm={S:'var(--go)',A:'var(--cy)',B:'var(--wd)'};
+  const cl=document.getElementById('pv-class');if(S.classRank){cl.textContent=S.classRank+'-CLASS CADET';cl.style.color=cm[S.classRank];}
   if(S.portrait){const p=document.getElementById('pv-port');p.innerHTML=`<img src="${S.portrait}">`;}
   ['hull','agi','sys','eng'].forEach(s=>{S[s]=parseInt(document.getElementById('s-'+s).value)||0;document.getElementById('pv-'+s).textContent=S[s];});
-  // rolls
   document.getElementById('pv-rolls').innerHTML=`<div class="pvtag">BG: ${S.bg?S.bg.n:'—'}</div><br><div class="pvtag" style="margin-top:3px">TAL: ${S.talent?S.talent.n:'—'}</div><br><div class="pvtag" style="margin-top:3px">DISC: ${S.disc?S.disc.n:'—'}</div>`;
-  // triggers
   const at=TRIGGERS.filter(t=>(S.triggers[t.id]||0)>0);
-  document.getElementById('pv-trg').innerHTML=at.length?at.map(t=>`<div style="margin:1px 0">${t.n}: <span style="color:var(--cyan)">+${S.triggers[t.id]}</span></div>`).join(''):'<span>Not allocated</span>';
-  // talents
+  document.getElementById('pv-trg').innerHTML=at.length?at.map(t=>`<div style="margin:1px 0">${t.n}: <span style="color:var(--cy)">+${S.triggers[t.id]}</span></div>`).join(''):'<span>Not allocated</span>';
   document.getElementById('pv-tal').innerHTML=S.selTalents.length?S.selTalents.map(id=>{const t=LTALENTS.find(x=>x.id===id);return t?`<div style="margin:1px 0">${t.ico} ${t.n}</div>`:''}).join(''):'<span>None selected</span>';
-  // spec
   document.getElementById('pv-spec').textContent=S.spec?S.spec.n:'Not selected';
 }
 
-// ===== REVIEW =====
 function buildReview(){
   const hp=10+(S.hull*2),at=TRIGGERS.filter(t=>(S.triggers[t.id]||0)>0),st=S.selTalents.map(id=>LTALENTS.find(t=>t.id===id)).filter(Boolean);
-  const cm={S:'var(--gold)',A:'var(--cyan)',B:'var(--white-dim)'};
+  const cm={S:'var(--go)',A:'var(--cy)',B:'var(--wd)'};
   document.getElementById('rv-content').innerHTML=`
   <div class="rvg">
     <div class="rvp"><div class="rvpt">Pilot Record</div>
       ${rv('Name',S.name||'—')}${rv('Callsign',S.callsign||'—')}${rv('Age',S.age||'—')}${rv('Origin',S.origin||'—')}${rv('Faction',S.faction||'—')}
-      ${rv('Class',`<span style="color:${cm[S.classRank]||'var(--white-dim)'};font-weight:700">${S.classRank||'—'}-Class</span>`)}
-      ${rv('Mech','Cadet Mark I (Everest)')}${rv('Specialization',S.spec?S.spec.n:'—')}
-      ${rv('Stats',`HULL ${S.hull} · AGI ${S.agi} · SYS ${S.sys} · ENG ${S.eng}`)}
-      ${rv('HP / GRIT',`${hp} HP · +0 GRIT`)}
+      ${rv('Class',`<span style="color:${cm[S.classRank]||'var(--wd)'};font-weight:700">${S.classRank||'—'}-Class</span>`)}
+      ${rv('Mech','Cadet Mark I')}${rv('Spec',S.spec?S.spec.n:'—')}
+      ${rv('Stats',`${S.hull}/${S.agi}/${S.sys}/${S.eng}`)}${rv('HP',hp)}
     </div>
-    <div class="rvp"><div class="rvpt">Background Rolls</div>
-      ${rv('Family Background',S.bg?S.bg.n:'—')}${rv('Innate Talent',S.talent?S.talent.n:'—')}${rv('Discipline',S.disc?S.disc.n:'—')}
-      <div style="margin-top:10px;font-family:var(--font-m);font-size:8px;color:var(--cyan);letter-spacing:2px;margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid var(--border)">SKILL TRIGGERS</div>
-      ${at.length?at.map(t=>`${rv(t.n,`<span style="color:var(--cyan)">+${S.triggers[t.id]}</span>`)}`).join(''):'<div style="color:var(--white-dim);font-size:11px;margin-bottom:6px">None allocated</div>'}
-      <div style="margin-top:10px;font-family:var(--font-m);font-size:8px;color:var(--cyan);letter-spacing:2px;margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid var(--border)">TALENTS (RANK I)</div>
-      ${st.length?st.map(t=>`${rv(t.ico+' '+t.n,t.ranks[0].n)}`).join(''):'<div style="color:var(--white-dim);font-size:11px">None selected</div>'}
+    <div class="rvp"><div class="rvpt">Rolls & Abilities</div>
+      ${rv('Background',S.bg?S.bg.n:'—')}${rv('Talent',S.talent?S.talent.n:'—')}${rv('Discipline',S.disc?S.disc.n:'—')}
+      <div style="margin-top:8px;font-family:var(--fm);font-size:8px;color:var(--cy);letter-spacing:2px;margin-bottom:5px;padding-bottom:4px;border-bottom:1px solid var(--bo)">TRIGGERS</div>
+      ${at.length?at.map(t=>`${rv(t.n,`<span style="color:var(--cy)">+${S.triggers[t.id]}</span>`)}`).join(''):'<div style="color:var(--wd);font-size:11px;margin-bottom:5px">None allocated</div>'}
+      <div style="margin-top:8px;font-family:var(--fm);font-size:8px;color:var(--cy);letter-spacing:2px;margin-bottom:5px;padding-bottom:4px;border-bottom:1px solid var(--bo)">TALENTS</div>
+      ${st.length?st.map(t=>`${rv(t.ico+' '+t.n,t.ranks[0].n)}`).join(''):'<div style="color:var(--wd);font-size:11px">None selected</div>'}
     </div>
   </div>
-  ${S.notes?`<div style="padding:11px;border:1px solid var(--border);background:rgba(13,32,68,.4);font-size:12px;color:var(--white-dim);line-height:1.6">${S.notes}</div>`:''}`;
+  ${S.notes?`<div style="padding:10px;border:1px solid var(--bo);background:rgba(13,32,68,.4);font-size:12px;color:var(--wd);line-height:1.6">${S.notes}</div>`:''}`;
 }
 function rv(k,v){return`<div class="pvrow"><span class="pvk">${k}</span><span class="pvv">${v}</span></div>`;}
 
-// ===== PRINT =====
-function doPrint(){
-  const cl=S.classRank||'B';
-  document.getElementById('pp-el').className='pp '+cl.toLowerCase()+'c';
-  document.getElementById('pcb').textContent=cl;document.getElementById('pcb').className='pcbadge '+cl.toLowerCase();
-  document.getElementById('p-name').textContent=S.name||'—';
-  document.getElementById('p-call').textContent=S.callsign||'—';
-  document.getElementById('p-fac').textContent=S.faction||'—';
-  document.getElementById('p-ori').textContent=S.origin||'—';
-  document.getElementById('p-age').textContent=S.age||'—';
-  document.getElementById('p-spec').textContent=S.spec?S.spec.n:'—';
-  document.getElementById('ps-h').textContent=S.hull;
-  document.getElementById('ps-a').textContent=S.agi;
-  document.getElementById('ps-s').textContent=S.sys;
-  document.getElementById('ps-e').textContent=S.eng;
-  document.getElementById('ps-hp').textContent=10+(S.hull*2);
-  document.getElementById('ps-gr').textContent='+0';
-  // triggers print
-  const at=TRIGGERS.filter(t=>(S.triggers[t.id]||0)>0);
-  document.getElementById('pt-list').innerHTML=at.length?at.map(t=>`<div class="ptrow"><div><div class="ptrn">${t.n}</div><div class="ptrs">${t.stat}</div></div><div class="ptrv">+${S.triggers[t.id]}</div></div>`).join(''):'<div style="font-size:6.5pt;color:#6b8cae">No trigger points allocated</div>';
-  // talents print
-  const st=S.selTalents.map(id=>LTALENTS.find(t=>t.id===id)).filter(Boolean);
-  document.getElementById('ptal-list').innerHTML=st.length?st.map(t=>`<div class="ptalb"><div class="ptalr">RANK I — ACTIVE</div><div class="ptaln">${t.ico} ${t.n}</div><div class="ptald"><strong>${t.ranks[0].n}:</strong> ${t.ranks[0].d}</div></div>`).join(''):'<div style="font-size:6.5pt;color:#6b8cae">No talents selected</div>';
-  // rolls print
-  if(S.bg){document.getElementById('pb-n').textContent=S.bg.n;document.getElementById('pb-b').textContent='+ '+S.bg.b;document.getElementById('pb-neg').textContent='− '+S.bg.neg;}
-  if(S.talent){document.getElementById('pt-n').textContent=S.talent.n;document.getElementById('pt-b').textContent='+ '+S.talent.b;document.getElementById('pt-neg').textContent='− '+S.talent.neg;}
-  if(S.disc){document.getElementById('pd-n').textContent=S.disc.n;document.getElementById('pd-b').textContent='+ '+S.disc.b;document.getElementById('pd-neg').textContent='− '+S.disc.neg;}
-  document.getElementById('p-notes').textContent=S.notes||'';
-  const ppb=document.getElementById('ppb');ppb.innerHTML=S.portrait?`<img src="${S.portrait}">`:'<span>PORTRAIT</span>';
-  window.print();
-}
-
-// ===== INIT =====
+// ── INIT ──
 buildRT('bg-t',BG,'bg','b-badge');
 buildRT('tal-t',TAL,'talent','t-badge');
 buildRT('dis-t',DIS,'disc','d-badge');
 buildTriggers();buildTalGrid(LTALENTS);buildSpecs();
+// close modal on overlay click
+document.getElementById('export-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
 </script>
 </body>
 </html>
