@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aegis Prime — Cadet Enrollment System</title>
+<title>Aegis Prime — Enrollment System</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 :root{--ub:#0a1628;--um:#0d2044;--ul:#1a3a6e;--cy:#4fc3f7;--cg:#00b4e6;--wh:#e8f0fe;--wd:#8aaad4;--go:#f5c842;--gd:#b8922a;--re:#ff4757;--gr:#2ecc71;--or:#ff9f43;--bo:rgba(79,195,247,0.25);--bb:rgba(79,195,247,0.7);--fd:'Orbitron',monospace;--fb:'Rajdhani',sans-serif;--fm:'Share Tech Mono',monospace}
@@ -54,6 +54,31 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:3px;background
 .port-ico{font-size:26px;opacity:.4}
 .port-hint{font-family:var(--fm);font-size:9px;letter-spacing:1px;text-align:center;line-height:1.6}
 .port-info{font-family:var(--fm);font-size:8px;color:var(--wd);margin-top:6px;line-height:1.8;opacity:.6}
+/* Type Toggle */
+.type-toggle{display:flex;gap:0;margin-bottom:16px}
+.type-btn{flex:1;padding:10px;text-align:center;border:1px solid var(--bo);cursor:pointer;transition:all .2s;font-family:var(--fd);font-size:8px;letter-spacing:2px;color:var(--wd);text-transform:uppercase;background:rgba(13,32,68,.3)}
+.type-btn:first-child{border-right:none}
+.type-btn.active-cadet{border-color:var(--cy);color:var(--cy);background:rgba(79,195,247,.1)}
+.type-btn.active-npc{border-color:var(--re);color:var(--re);background:rgba(255,71,87,.1)}
+.npc-only{display:none}
+.cadet-only{display:block}
+.is-npc .npc-only{display:block}
+.is-npc .cadet-only{display:none}
+/* Threat pills */
+.threat-sel{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+.threat-pill{border:1px solid var(--bo);padding:10px 6px;cursor:pointer;text-align:center;transition:all .2s;background:rgba(13,32,68,.4)}
+.threat-pill:hover{border-color:rgba(255,159,67,.5)}
+.threat-pill.on{border-color:var(--or);background:rgba(255,159,67,.12)}
+.threat-val{font-family:var(--fd);font-size:14px;font-weight:700;margin-bottom:2px}
+.threat-lbl{font-family:var(--fm);font-size:7px;letter-spacing:1px;color:var(--wd)}
+/* Save toast */
+.save-toast{position:fixed;bottom:24px;right:24px;background:var(--um);border:1px solid var(--gr);padding:12px 20px;font-family:var(--fm);font-size:10px;color:var(--gr);letter-spacing:1px;z-index:700;transform:translateY(80px);opacity:0;transition:all .3s ease}
+.save-toast.show{transform:translateY(0);opacity:1}
+.save-toast.error{border-color:var(--re);color:var(--re)}
+/* Drive URL link field */
+.drive-preview{width:140px;height:190px;border:1px solid var(--bo);background:rgba(13,32,68,.4);overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.drive-preview img{width:100%;height:100%;object-fit:cover;position:absolute}
+.drive-preview-ph{font-family:var(--fm);font-size:8px;color:var(--wd);text-align:center;line-height:1.6;opacity:.5}
 .cls-sel{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
 .cc{border:1px solid var(--bo);padding:12px 8px;cursor:pointer;text-align:center;transition:all .2s;background:rgba(13,32,68,.4);position:relative;overflow:hidden}
 .cc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--bb);transition:all .2s}
@@ -647,7 +672,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:3px;background
 <header class="hdr">
   <a href="/" class="hdr-back">‹ HOME</a>
   <div class="hdr-emb">AP</div>
-  <div><div class="hdr-title">Aegis Prime</div><div class="hdr-sub">Cadet Enrollment System v1.3</div></div>
+  <div><div class="hdr-title">Aegis Prime</div><div class="hdr-sub">Enrollment System v2.0</div></div>
   <div class="hdr-status"><div><span class="sdot"></span>ONLINE</div></div>
 </header>
 
@@ -660,29 +685,44 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:3px;background
   <div class="si" data-step="6" onclick="go(6)"><div class="sn">6</div><div class="sl">Triggers</div></div>
   <div class="si" data-step="7" onclick="go(7)"><div class="sn">7</div><div class="sl">Talents</div></div>
   <div class="si" data-step="8" onclick="go(8)"><div class="sn">8</div><div class="sl">Spec.</div></div>
-  <div class="si" data-step="9" onclick="go(9)"><div class="sn">9</div><div class="sl">Review</div></div>
+  <div class="si" data-step="9" onclick="go(9)"><div class="sn">9</div><div class="sl">Motiv.</div></div>
+  <div class="si" data-step="10" onclick="go(10)"><div class="sn">10</div><div class="sl">Review</div></div>
 </nav>
 
 <div class="main">
 <div class="ca">
 
 <div class="sec active" id="step1">
-  <div class="sh"><div class="st">Pilot Identity</div><div class="sd">Personal record, portrait upload, and class rank selection</div></div>
+  <div class="sh"><div class="st">Pilot Identity</div><div class="sd">Personal record, portrait, and classification</div></div>
+
+  <!-- Type Toggle -->
+  <div class="type-toggle">
+    <div class="type-btn active-cadet" id="type-cadet" onclick="setType('cadet')">⬡ CADET</div>
+    <div class="type-btn" id="type-npc" onclick="setType('npc')">◉ NPC</div>
+  </div>
+
+  <!-- Student ID -->
+  <div class="fg" style="margin-bottom:16px">
+    <div class="grp"><label class="lbl">Student ID *</label><input class="inp" id="i-sid" placeholder="AP-001-S" oninput="sync()" style="text-transform:uppercase;letter-spacing:2px;font-family:var(--fm)"></div>
+    <div class="grp"><label class="lbl">Role / Title</label><input class="inp" id="i-role" placeholder="Cadet, Instructor..." oninput="sync()"></div>
+  </div>
+
   <div class="port-section">
     <div>
       <div class="lbl" style="margin-bottom:7px">Portrait</div>
-      <div class="port-zone" id="pz" onclick="document.getElementById('pf').click()">
-        <div class="port-ph" id="pph"><div class="port-ico">◎</div><div class="port-hint">CLICK TO<br>UPLOAD</div></div>
-        <div class="port-chg">⬡ CHANGE</div>
+      <div class="drive-preview" id="drive-preview">
+        <div class="drive-preview-ph" id="drive-ph">◎<br>PASTE DRIVE<br>LINK BELOW</div>
       </div>
-      <input type="file" id="pf" accept="image/*" style="display:none" onchange="handlePort(event)">
-      <div class="port-info">JPG · PNG · WEBP<br>3:4 ratio best<br>Anime recommended</div>
+      <div class="grp" style="margin-top:8px">
+        <input class="inp" id="i-portrait" placeholder="Google Drive link..." oninput="previewDrivePortrait()" style="font-size:10px">
+      </div>
+      <div class="port-info">Paste Google Drive share link<br>or any direct image URL<br>Auto-converts for display</div>
     </div>
     <div style="flex:1">
       <div class="fg">
-        <div class="grp"><label class="lbl">Full Name</label><input class="inp" id="i-name" placeholder="Cadet name..." oninput="sync()"></div>
+        <div class="grp"><label class="lbl">Full Name *</label><input class="inp" id="i-name" placeholder="Character name..." oninput="sync()"></div>
         <div class="grp"><label class="lbl">Callsign</label><input class="inp" id="i-call" placeholder="Radio handle..." oninput="sync()"></div>
-        <div class="grp"><label class="lbl">Age</label><input class="inp" id="i-age" type="number" min="15" max="30" placeholder="17" oninput="sync()"></div>
+        <div class="grp"><label class="lbl">Age</label><input class="inp" id="i-age" type="number" min="10" max="99" placeholder="17" oninput="sync()"></div>
         <div class="grp"><label class="lbl">Origin World</label><input class="inp" id="i-ori" placeholder="Colony, core world..." oninput="sync()"></div>
       </div>
       <div class="grp" style="margin-bottom:12px"><label class="lbl">Faction Allegiance</label>
@@ -693,15 +733,32 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:3px;background
           <option>Dissident Underground</option><option>PMC Clan</option><option>Independent / No Affiliation</option>
         </select>
       </div>
-      <div class="grp"><label class="lbl">Pilot Bio / Notes</label><textarea class="inp" id="i-notes" rows="3" placeholder="Background story, personality..." style="resize:vertical" oninput="sync()"></textarea></div>
+      <div class="grp" style="margin-bottom:12px"><label class="lbl">Relationship to Players</label><input class="inp" id="i-rel" placeholder="Ally, Rival, Mentor..." oninput="sync()"></div>
+      <div class="grp"><label class="lbl">Bio / Notes</label><textarea class="inp" id="i-notes" rows="2" placeholder="Background, personality..." style="resize:vertical" oninput="sync()"></textarea></div>
     </div>
   </div>
-  <div class="lbl" style="margin-bottom:7px">Academy Class Rank</div>
-  <div class="cls-sel">
-    <div class="cc" id="cc-s" onclick="selClass('S')"><div class="cr cs">S</div><div class="cd">ELITE CADET<br>Gold Dormitories</div></div>
-    <div class="cc" id="cc-a" onclick="selClass('A')"><div class="cr ca2">A</div><div class="cd">SKILLED CADET<br>Modern Dormitories</div></div>
-    <div class="cc" id="cc-b" onclick="selClass('B')"><div class="cr cb">B</div><div class="cd">STANDARD CADET<br>Military Barracks</div></div>
+
+  <!-- Class Rank (cadets only) -->
+  <div class="cadet-only">
+    <div class="lbl" style="margin-bottom:7px">Academy Class Rank</div>
+    <div class="cls-sel">
+      <div class="cc" id="cc-s" onclick="selClass('S')"><div class="cr cs">S</div><div class="cd">ELITE CADET<br>Gold Dormitories</div></div>
+      <div class="cc" id="cc-a" onclick="selClass('A')"><div class="cr ca2">A</div><div class="cd">SKILLED CADET<br>Modern Dormitories</div></div>
+      <div class="cc" id="cc-b" onclick="selClass('B')"><div class="cr cb">B</div><div class="cd">STANDARD CADET<br>Military Barracks</div></div>
+    </div>
   </div>
+
+  <!-- Threat Level (NPCs only) -->
+  <div class="npc-only">
+    <div class="lbl" style="margin-bottom:7px">Threat Level</div>
+    <div class="threat-sel">
+      <div class="threat-pill" onclick="setThreat('Low')"><div class="threat-val" style="color:var(--gr)">▲</div><div class="threat-lbl">LOW</div></div>
+      <div class="threat-pill" onclick="setThreat('Medium')"><div class="threat-val" style="color:var(--or)">▲▲</div><div class="threat-lbl">MEDIUM</div></div>
+      <div class="threat-pill" onclick="setThreat('High')"><div class="threat-val" style="color:var(--re)">▲▲▲</div><div class="threat-lbl">HIGH</div></div>
+      <div class="threat-pill" onclick="setThreat('Critical')"><div class="threat-val" style="color:#ff006e">☠</div><div class="threat-lbl">CRITICAL</div></div>
+    </div>
+  </div>
+
   <div class="br"><button class="btn btn-p" onclick="go(2)">NEXT — FAMILY BACKGROUND ›</button></div>
 </div>
 
@@ -761,16 +818,38 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:3px;background
 <div class="sec" id="step8">
   <div class="sh"><div class="st">Academy Specialization</div><div class="sd">Choose your department training track</div></div>
   <div class="spg" id="spg"></div>
-  <div class="br"><button class="btn btn-gh" onclick="go(7)">‹ BACK</button><button class="btn btn-p" onclick="go(9)">NEXT — REVIEW ›</button></div>
+  <div class="br"><button class="btn btn-gh" onclick="go(7)">‹ BACK</button><button class="btn btn-p" onclick="go(9)">NEXT — MOTIVATIONS ›</button></div>
 </div>
 
 <div class="sec" id="step9">
-  <div class="sh"><div class="st">Enrollment Complete</div><div class="sd">Review your record and choose your export format</div></div>
+  <div class="sh"><div class="st">Motivations & Secrets</div><div class="sd">What drives this character? What are they hiding?</div></div>
+  <div class="grp" style="margin-bottom:18px">
+    <label class="lbl">Motivations</label>
+    <textarea class="inp" id="i-motiv" rows="4" placeholder="What drives this character? Goals, desires, fears..." style="resize:vertical" oninput="sync()"></textarea>
+  </div>
+  <div class="grp" style="margin-bottom:18px">
+    <label class="lbl" style="color:var(--re)">Secrets — Classified</label>
+    <textarea class="inp" id="i-secrets" rows="4" placeholder="Hidden agendas, classified information, dark history..." style="resize:vertical;border-color:rgba(255,71,87,.3)" oninput="sync()"></textarea>
+  </div>
+  <div class="grp">
+    <label class="lbl">Mech Frame (Placeholder)</label>
+    <div class="fg">
+      <div class="grp"><input class="inp" id="i-mech-frame" value="Cadet Mark I" oninput="sync()"></div>
+      <div class="grp"><input class="inp" id="i-mech-mfr" value="GMS" placeholder="Manufacturer" oninput="sync()"></div>
+    </div>
+  </div>
+  <div class="br"><button class="btn btn-gh" onclick="go(8)">‹ BACK</button><button class="btn btn-p" onclick="go(10)">NEXT — REVIEW ›</button></div>
+</div>
+
+<div class="sec" id="step10">
+  <div class="sh"><div class="st">Enrollment Complete</div><div class="sd">Review your record, save to database, or export</div></div>
   <div id="rv-content"></div>
   <div class="br">
-    <button class="btn btn-gh" onclick="go(8)">‹ BACK</button>
-    <button class="btn btn-g" onclick="openModal()">⬡ EXPORT CHARACTER</button>
+    <button class="btn btn-gh" onclick="go(9)">‹ BACK</button>
+    <button class="btn btn-p" id="btn-save-db" onclick="saveToDatabase()">⬡ SAVE TO DATABASE</button>
+    <button class="btn btn-g" onclick="openModal()">⬡ EXPORT / PRINT</button>
   </div>
+  <div id="save-status" style="margin-top:12px"></div>
 </div>
 
 </div><!-- /ca -->
@@ -919,8 +998,16 @@ const SPECS=[
 ];
 
 const S={name:'',callsign:'',age:'',origin:'',faction:'',notes:'',classRank:'',portrait:null,
-  bg:null,talent:null,disc:null,hull:0,agi:0,sys:0,eng:0,triggers:{},selTalents:[],spec:null};
+  bg:null,talent:null,disc:null,hull:0,agi:0,sys:0,eng:0,triggers:{},selTalents:[],spec:null,
+  type:'cadet',studentId:'',roleTitle:'',relationship:'',threatLevel:'',portraitUrl:'',
+  motivations:'',secrets:'',mechFrame:'Cadet Mark I',mechManufacturer:'GMS'};
 TRIGGERS.forEach(t=>S.triggers[t.id]=0);
+
+// Check URL params for type
+(function(){
+  const p=new URLSearchParams(window.location.search);
+  if(p.get('type')==='npc') setType('npc');
+})();
 
 let exportMode='cs'; // 'id' or 'cs'
 
@@ -1082,10 +1169,37 @@ function buildSpecs(){
 
 function selClass(c){['s','a','b'].forEach(x=>document.getElementById('cc-'+x).className='cc');document.getElementById('cc-'+c.toLowerCase()).className='cc sel-'+c.toLowerCase();S.classRank=c;sync();}
 
+function setType(t){
+  S.type=t;
+  document.getElementById('type-cadet').className='type-btn'+(t==='cadet'?' active-cadet':'');
+  document.getElementById('type-npc').className='type-btn'+(t==='npc'?' active-npc':'');
+  document.querySelector('.ca').classList.toggle('is-npc',t==='npc');
+  sync();
+}
+
+function setThreat(level){
+  S.threatLevel=level;
+  document.querySelectorAll('.threat-pill').forEach(p=>p.classList.remove('on'));
+  event.currentTarget.classList.add('on');
+  sync();
+}
+
+function previewDrivePortrait(){
+  const url=document.getElementById('i-portrait').value.trim();
+  S.portraitUrl=url;
+  const preview=document.getElementById('drive-preview');
+  const ph=document.getElementById('drive-ph');
+  if(!url){preview.innerHTML='<div class="drive-preview-ph" id="drive-ph">◎<br>PASTE DRIVE<br>LINK BELOW</div>';S.portrait=null;sync();return;}
+  const converted=convertDriveUrl(url);
+  S.portrait=converted;
+  preview.innerHTML=`<img src="${converted}" onerror="this.outerHTML='<div class=drive-preview-ph>⚠ INVALID<br>URL</div>'">`;
+  sync();
+}
+
 function handlePort(e){
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=ev=>{S.portrait=ev.target.result;const z=document.getElementById('pz');let img=z.querySelector('img');if(!img){img=document.createElement('img');z.prepend(img);}img.src=ev.target.result;document.getElementById('pph').style.display='none';sync();};
+  r.onload=ev=>{S.portrait=ev.target.result;sync();};
   r.readAsDataURL(f);
 }
 
@@ -1093,7 +1207,7 @@ function go(n){
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
   document.getElementById('step'+n).classList.add('active');
   document.querySelectorAll('.si').forEach(el=>{el.classList.remove('active');if(parseInt(el.dataset.step)===n)el.classList.add('active');});
-  if(n===9)buildReview();
+  if(n===10)buildReview();
 }
 
 function syncStats(){
@@ -1105,13 +1219,29 @@ function sync(){
   S.name=document.getElementById('i-name').value;S.callsign=document.getElementById('i-call').value;
   S.age=document.getElementById('i-age').value;S.origin=document.getElementById('i-ori').value;
   S.faction=document.getElementById('i-fac').value;S.notes=document.getElementById('i-notes').value;
-  document.getElementById('pv-name').textContent=S.name||'CADET NAME';
+  S.studentId=document.getElementById('i-sid').value;
+  S.roleTitle=document.getElementById('i-role').value;
+  S.relationship=document.getElementById('i-rel').value;
+  S.motivations=document.getElementById('i-motiv').value;
+  S.secrets=document.getElementById('i-secrets').value;
+  S.mechFrame=document.getElementById('i-mech-frame').value;
+  S.mechManufacturer=document.getElementById('i-mech-mfr').value;
+  const typeLabel=S.type==='npc'?'NPC':'CADET';
+  document.getElementById('pv-name').textContent=S.name||typeLabel+' NAME';
   document.getElementById('pv-call').textContent=S.callsign||'—';
   document.getElementById('pv-fac').textContent=S.faction||'—';
   document.getElementById('pv-ori').textContent=S.origin||'—';
   const cm={S:'var(--go)',A:'var(--cy)',B:'var(--wd)'};
-  const cl=document.getElementById('pv-class');if(S.classRank){cl.textContent=S.classRank+'-CLASS CADET';cl.style.color=cm[S.classRank];}
-  if(S.portrait){const p=document.getElementById('pv-port');p.innerHTML=`<img src="${S.portrait}">`;}
+  const cl=document.getElementById('pv-class');
+  if(S.type==='npc'){
+    cl.textContent=S.threatLevel?'THREAT: '+S.threatLevel:'NPC';
+    cl.style.color='var(--re)';
+  } else if(S.classRank){
+    cl.textContent=S.classRank+'-CLASS CADET';
+    cl.style.color=cm[S.classRank];
+  }
+  if(S.portrait){const p=document.getElementById('pv-port');p.innerHTML=`<img src="${S.portrait}">`;
+}
   ['hull','agi','sys','eng'].forEach(s=>{S[s]=parseInt(document.getElementById('s-'+s).value)||0;document.getElementById('pv-'+s).textContent=S[s];});
   document.getElementById('pv-rolls').innerHTML=`<div class="pvtag">BG: ${S.bg?S.bg.n:'—'}</div><br><div class="pvtag" style="margin-top:3px">TAL: ${S.talent?S.talent.n:'—'}</div><br><div class="pvtag" style="margin-top:3px">DISC: ${S.disc?S.disc.n:'—'}</div>`;
   const at=TRIGGERS.filter(t=>(S.triggers[t.id]||0)>0);
@@ -1123,13 +1253,19 @@ function sync(){
 function buildReview(){
   const hp=10+(S.hull*2),at=TRIGGERS.filter(t=>(S.triggers[t.id]||0)>0),st=S.selTalents.map(id=>LTALENTS.find(t=>t.id===id)).filter(Boolean);
   const cm={S:'var(--go)',A:'var(--cy)',B:'var(--wd)'};
+  const classOrThreat = S.type==='npc'
+    ? rv('Threat Level',`<span style="color:var(--re);font-weight:700">${S.threatLevel||'—'}</span>`)
+    : rv('Class',`<span style="color:${cm[S.classRank]||'var(--wd)'};font-weight:700">${S.classRank||'—'}-Class</span>`);
   document.getElementById('rv-content').innerHTML=`
   <div class="rvg">
-    <div class="rvp"><div class="rvpt">Pilot Record</div>
-      ${rv('Name',S.name||'—')}${rv('Callsign',S.callsign||'—')}${rv('Age',S.age||'—')}${rv('Origin',S.origin||'—')}${rv('Faction',S.faction||'—')}
-      ${rv('Class',`<span style="color:${cm[S.classRank]||'var(--wd)'};font-weight:700">${S.classRank||'—'}-Class</span>`)}
-      ${rv('Mech','Cadet Mark I')}${rv('Spec',S.spec?S.spec.n:'—')}
+    <div class="rvp"><div class="rvpt">${S.type==='npc'?'NPC':'Pilot'} Record</div>
+      ${rv('Student ID',S.studentId||'—')}${rv('Type',S.type==='npc'?'NPC':'Cadet')}
+      ${rv('Name',S.name||'—')}${rv('Callsign',S.callsign||'—')}${rv('Role',S.roleTitle||'—')}
+      ${rv('Age',S.age||'—')}${rv('Origin',S.origin||'—')}${rv('Faction',S.faction||'—')}
+      ${classOrThreat}
+      ${rv('Mech',S.mechFrame||'Cadet Mark I')}${rv('Spec',S.spec?S.spec.n:'—')}
       ${rv('Stats',`${S.hull}/${S.agi}/${S.sys}/${S.eng}`)}${rv('HP',hp)}
+      ${S.relationship?rv('Relationship',S.relationship):''}
     </div>
     <div class="rvp"><div class="rvpt">Rolls & Abilities</div>
       ${rv('Background',S.bg?S.bg.n:'—')}${rv('Talent',S.talent?S.talent.n:'—')}${rv('Discipline',S.disc?S.disc.n:'—')}
@@ -1139,6 +1275,8 @@ function buildReview(){
       ${st.length?st.map(t=>`${rv(t.ico+' '+t.n,t.ranks[0].n)}`).join(''):'<div style="color:var(--wd);font-size:11px">None selected</div>'}
     </div>
   </div>
+  ${S.motivations?`<div style="padding:10px;border:1px solid var(--bo);background:rgba(13,32,68,.4);font-size:12px;color:var(--wd);line-height:1.6;margin-bottom:8px"><span style="font-family:var(--fm);font-size:8px;color:var(--cy);letter-spacing:2px">MOTIVATIONS</span><br>${S.motivations}</div>`:''}
+  ${S.secrets?`<div style="padding:10px;border:1px solid rgba(255,71,87,.3);background:rgba(255,71,87,.05);font-size:12px;color:var(--wd);line-height:1.6;margin-bottom:8px"><span style="font-family:var(--fm);font-size:8px;color:var(--re);letter-spacing:2px">SECRETS — CLASSIFIED</span><br>${S.secrets}</div>`:''}
   ${S.notes?`<div style="padding:10px;border:1px solid var(--bo);background:rgba(13,32,68,.4);font-size:12px;color:var(--wd);line-height:1.6">${S.notes}</div>`:''}`;
 }
 function rv(k,v){return`<div class="pvrow"><span class="pvk">${k}</span><span class="pvv">${v}</span></div>`;}
@@ -1150,6 +1288,69 @@ buildRT('dis-t',DIS,'disc','d-badge');
 buildTriggers();buildTalGrid(LTALENTS);buildSpecs();
 // close modal on overlay click
 document.getElementById('export-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+// ── SAVE TO DATABASE ──
+async function saveToDatabase(){
+  const btn=document.getElementById('btn-save-db');
+  const status=document.getElementById('save-status');
+  if(!S.studentId.trim()){showSaveToast('Student ID is required!',true);return;}
+  if(!S.name.trim()){showSaveToast('Name is required!',true);return;}
+  btn.disabled=true;btn.textContent='SAVING...';
+  try{
+    const record={
+      student_id:S.studentId.trim().toUpperCase(),
+      type:S.type,
+      name:S.name,
+      callsign:S.callsign,
+      role_title:S.roleTitle,
+      faction:S.faction,
+      age:S.age,
+      origin:S.origin,
+      portrait_url:S.portraitUrl,
+      class_rank:S.type==='cadet'?S.classRank:null,
+      threat_level:S.type==='npc'?S.threatLevel:null,
+      relationship:S.relationship,
+      background:S.bg,
+      innate_talent:S.talent,
+      discipline:S.disc,
+      hull:S.hull,agi:S.agi,sys:S.sys,eng:S.eng,
+      triggers:S.triggers,
+      talents:S.selTalents,
+      specialization:S.spec?S.spec.n:null,
+      motivations:S.motivations,
+      secrets:S.secrets,
+      mech_frame:S.mechFrame,
+      mech_manufacturer:S.mechManufacturer,
+      notes:S.notes
+    };
+    const{data,error}=await saveCharacter(record);
+    if(error)throw error;
+    showSaveToast('SAVED: '+S.studentId+' — '+S.name);
+    status.innerHTML=`<div style="padding:10px;border:1px solid var(--gr);background:rgba(46,204,113,.08);font-family:var(--fm);font-size:10px;color:var(--gr);letter-spacing:1px">
+      ✓ RECORD SAVED TO DATABASE<br>
+      ID: ${S.studentId} | <a href="/gm-dashboard" style="color:var(--cy)">VIEW IN GM DASHBOARD →</a>
+    </div>`;
+  }catch(err){
+    showSaveToast('SAVE FAILED: '+(err.message||'Unknown error'),true);
+    status.innerHTML=`<div style="padding:10px;border:1px solid var(--re);background:rgba(255,71,87,.08);font-family:var(--fm);font-size:10px;color:var(--re);letter-spacing:1px">
+      ✕ ${err.message||'Failed to save. Check Supabase credentials.'}
+    </div>`;
+  }
+  btn.disabled=false;btn.textContent='⬡ SAVE TO DATABASE';
+}
+
+function showSaveToast(msg,isError){
+  let toast=document.getElementById('save-toast');
+  if(!toast){toast=document.createElement('div');toast.id='save-toast';toast.className='save-toast';document.body.appendChild(toast);}
+  toast.textContent=msg;
+  toast.className='save-toast'+(isError?' error':'');
+  setTimeout(()=>toast.classList.add('show'),10);
+  setTimeout(()=>toast.classList.remove('show'),3000);
+}
 </script>
+
+<!-- SUPABASE SDK + CLIENT -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase.js"></script>
 </body>
 </html>

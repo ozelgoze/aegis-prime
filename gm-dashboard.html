@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Aegis Prime GM Dashboard — Manage cadets, NPCs, and campaign records.">
+<title>Aegis Prime — GM Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue-deep: #04090f;
+  --blue-dark: #070e1a;
+  --blue-mid: #0a1628;
+  --blue-panel: #0d1f3c;
+  --cyan: #4fc3f7;
+  --cyan-dim: #2a7fa8;
+  --cyan-glow: rgba(79,195,247,0.15);
+  --white: #e8f0fe;
+  --white-dim: #8aaad4;
+  --gold: #f5c842;
+  --gold-dim: rgba(245,200,66,0.2);
+  --red: #ff4757;
+  --red-dim: rgba(255,71,87,0.15);
+  --green: #2ecc71;
+  --orange: #ff9f43;
+  --border: rgba(79,195,247,0.18);
+  --border-gold: rgba(245,200,66,0.3);
+  --fd: 'Orbitron', monospace;
+  --fb: 'Rajdhani', sans-serif;
+  --fm: 'Share Tech Mono', monospace;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--blue-deep);
+  color: var(--white);
+  font-family: var(--fb);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scanlines */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* Top accent line */
+body::after {
+  content: '';
+  position: fixed; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold), var(--red), var(--gold), transparent);
+  z-index: 1001;
+}
+
+/* Grid overlay */
+.grid-bg {
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(79,195,247,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79,195,247,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  position: fixed; top: 3px; left: 0; right: 0;
+  z-index: 100;
+  display: flex; align-items: center;
+  padding: 14px 32px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(4,9,15,0.92);
+  backdrop-filter: blur(14px);
+}
+.topbar-logo {
+  display: flex; align-items: center; gap: 12px;
+  text-decoration: none;
+}
+.logo-hex {
+  width: 36px; height: 36px;
+  border: 1.5px solid var(--gold);
+  clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(245,200,66,0.08);
+  font-family: var(--fd); font-size: 9px; font-weight: 700;
+  color: var(--gold);
+  animation: hex-glow 3s ease-in-out infinite;
+}
+@keyframes hex-glow {
+  0%,100% { box-shadow: 0 0 0 rgba(245,200,66,0); }
+  50% { box-shadow: 0 0 18px rgba(245,200,66,0.4); }
+}
+.logo-text {
+  font-family: var(--fd); font-size: 12px; font-weight: 900;
+  letter-spacing: 3px; color: var(--white); text-transform: uppercase;
+}
+.logo-sub {
+  font-family: var(--fm); font-size: 8px;
+  color: var(--gold); letter-spacing: 2px; opacity: 0.8;
+}
+
+.topbar-nav {
+  display: flex; gap: 4px; margin-left: auto; align-items: center;
+}
+.nav-btn {
+  font-family: var(--fm); font-size: 8px; letter-spacing: 2px;
+  color: var(--white-dim); padding: 7px 14px;
+  border: 1px solid var(--border);
+  text-transform: uppercase; cursor: pointer;
+  transition: all 0.2s; text-decoration: none;
+  background: transparent;
+}
+.nav-btn:hover { color: var(--cyan); border-color: var(--cyan); }
+.nav-btn.active { color: var(--gold); border-color: var(--gold); background: rgba(245,200,66,0.08); }
+
+.topbar-status {
+  margin-left: 20px;
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--fm); font-size: 8px; color: var(--white-dim);
+  border-left: 1px solid var(--border); padding-left: 20px;
+}
+.sdot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: blink 2s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
+
+/* ── MAIN CONTENT ── */
+.main {
+  position: relative; z-index: 10;
+  padding: 80px 32px 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ── DASHBOARD HEADER ── */
+.dash-header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.dash-title {
+  font-family: var(--fd);
+  font-size: clamp(18px, 2.5vw, 28px);
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+.dash-title span { color: var(--gold); }
+.dash-subtitle {
+  font-family: var(--fm); font-size: 9px;
+  color: var(--white-dim); letter-spacing: 2px;
+  margin-top: 4px;
+}
+.dash-actions {
+  display: flex; gap: 8px;
+}
+.btn-action {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  font-family: var(--fd); font-size: 9px;
+  letter-spacing: 2px; text-transform: uppercase;
+  text-decoration: none; cursor: pointer;
+  transition: all 0.25s;
+}
+.btn-action:hover {
+  background: rgba(79,195,247,0.12);
+  box-shadow: 0 0 20px rgba(79,195,247,0.3);
+  transform: translateY(-1px);
+}
+.btn-action.npc {
+  border-color: var(--red);
+  color: var(--red);
+}
+.btn-action.npc:hover {
+  background: rgba(255,71,87,0.12);
+  box-shadow: 0 0 20px rgba(255,71,87,0.3);
+}
+
+/* ── FILTER BAR ── */
+.filter-bar {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.filter-tabs {
+  display: flex; gap: 2px;
+}
+.filter-tab {
+  font-family: var(--fm); font-size: 9px; letter-spacing: 2px;
+  color: var(--white-dim); padding: 8px 16px;
+  border: 1px solid var(--border);
+  text-transform: uppercase; cursor: pointer;
+  transition: all 0.2s; background: transparent;
+}
+.filter-tab:first-child { border-radius: 0; }
+.filter-tab:hover { color: var(--cyan); border-color: rgba(79,195,247,0.4); }
+.filter-tab.active {
+  color: var(--gold); border-color: var(--gold);
+  background: rgba(245,200,66,0.08);
+}
+.search-box {
+  flex: 1; min-width: 200px;
+  background: rgba(13,32,68,0.6);
+  border: 1px solid var(--border);
+  color: var(--white);
+  padding: 8px 14px;
+  font-family: var(--fm); font-size: 11px;
+  letter-spacing: 1px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-box:focus { border-color: var(--cyan); box-shadow: 0 0 0 2px rgba(79,195,247,0.1); }
+.search-box::placeholder { color: var(--white-dim); opacity: 0.5; }
+
+.record-count {
+  font-family: var(--fm); font-size: 9px;
+  color: var(--white-dim); letter-spacing: 1px;
+  margin-left: auto;
+}
+.record-count span { color: var(--cyan); font-family: var(--fd); font-weight: 700; }
+
+/* ── CHARACTER GRID ── */
+.char-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.char-card {
+  background: var(--blue-dark);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.char-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--border);
+  transition: all 0.3s;
+}
+.char-card:hover {
+  border-color: rgba(79,195,247,0.4);
+  background: rgba(13,31,60,0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.char-card:hover::before {
+  background: var(--cyan);
+  box-shadow: 0 0 12px rgba(79,195,247,0.5);
+}
+.char-card.npc-card:hover::before {
+  background: var(--red);
+  box-shadow: 0 0 12px rgba(255,71,87,0.5);
+}
+
+.card-body {
+  display: flex; gap: 14px;
+  padding: 16px;
+}
+.card-portrait {
+  width: 72px; height: 96px;
+  background: rgba(13,32,68,0.6);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.card-portrait img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.card-portrait-ph {
+  font-family: var(--fm); font-size: 8px;
+  color: var(--white-dim); text-align: center;
+  line-height: 1.6; opacity: 0.5;
+}
+.card-info { flex: 1; min-width: 0; }
+
+.card-badges {
+  display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap;
+}
+.badge {
+  font-family: var(--fm); font-size: 7px;
+  letter-spacing: 1px; padding: 2px 7px;
+  border: 1px solid; text-transform: uppercase;
+}
+.badge-cadet { border-color: var(--cyan); color: var(--cyan); background: rgba(79,195,247,0.08); }
+.badge-npc { border-color: var(--red); color: var(--red); background: rgba(255,71,87,0.08); }
+.badge-s { border-color: var(--gold); color: var(--gold); background: rgba(245,200,66,0.08); }
+.badge-a { border-color: var(--cyan); color: var(--cyan); background: rgba(79,195,247,0.08); }
+.badge-b { border-color: var(--white-dim); color: var(--white-dim); background: rgba(138,170,212,0.08); }
+.badge-threat { border-color: var(--orange); color: var(--orange); background: rgba(255,159,67,0.08); }
+
+.card-name {
+  font-family: var(--fd); font-size: 12px;
+  font-weight: 700; letter-spacing: 1px;
+  color: var(--white); text-transform: uppercase;
+  margin-bottom: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.card-callsign {
+  font-family: var(--fm); font-size: 9px;
+  color: var(--cyan); letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.card-meta {
+  font-family: var(--fm); font-size: 8px;
+  color: var(--white-dim); line-height: 1.8;
+  letter-spacing: 0.5px;
+}
+.card-meta span { color: var(--white); }
+.card-id {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 5px 16px;
+  background: rgba(4,9,15,0.6);
+  border-top: 1px solid var(--border);
+  font-family: var(--fm); font-size: 7px;
+  color: var(--white-dim); letter-spacing: 2px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center;
+  padding: 80px 40px;
+  border: 1px dashed var(--border);
+  background: rgba(13,32,68,0.2);
+}
+.empty-icon { font-size: 48px; opacity: 0.3; margin-bottom: 16px; }
+.empty-title {
+  font-family: var(--fd); font-size: 14px;
+  letter-spacing: 3px; color: var(--white-dim);
+  margin-bottom: 8px; text-transform: uppercase;
+}
+.empty-desc {
+  font-family: var(--fm); font-size: 10px;
+  color: var(--white-dim); opacity: 0.6;
+  letter-spacing: 1px;
+}
+
+/* ── LOADING ── */
+.loading-state {
+  text-align: center;
+  padding: 80px 40px;
+}
+.loading-spinner {
+  width: 40px; height: 40px;
+  border: 2px solid var(--border);
+  border-top-color: var(--cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text {
+  font-family: var(--fm); font-size: 10px;
+  color: var(--white-dim); letter-spacing: 2px;
+}
+
+/* ── CHARACTER DETAIL MODAL ── */
+.detail-overlay {
+  position: fixed; inset: 0;
+  background: rgba(4,9,15,0.9);
+  backdrop-filter: blur(10px);
+  z-index: 500;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 60px 20px;
+}
+.detail-overlay.open { display: flex; animation: fadeIn 0.25s ease; }
+@keyframes fadeIn { from{opacity:0}to{opacity:1} }
+
+.detail-box {
+  background: var(--blue-mid);
+  border: 1px solid var(--border);
+  max-width: 900px;
+  width: 100%;
+  position: relative;
+}
+.detail-box::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold), var(--cyan), var(--gold), transparent);
+}
+
+.detail-close {
+  position: absolute; top: 14px; right: 16px;
+  background: transparent; border: 1px solid var(--border);
+  color: var(--white-dim); font-size: 14px;
+  cursor: pointer; font-family: var(--fm);
+  padding: 6px 10px;
+  transition: all 0.2s; z-index: 10;
+}
+.detail-close:hover { color: var(--white); border-color: var(--white); }
+
+.detail-header {
+  display: flex; gap: 24px;
+  padding: 28px 28px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.detail-portrait {
+  width: 140px; height: 186px;
+  background: rgba(13,32,68,0.6);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.detail-portrait img { width: 100%; height: 100%; object-fit: cover; }
+.detail-identity { flex: 1; }
+.detail-name {
+  font-family: var(--fd); font-size: 22px;
+  font-weight: 900; letter-spacing: 3px;
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.detail-callsign {
+  font-family: var(--fm); font-size: 11px;
+  color: var(--cyan); letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.detail-meta-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.detail-field {}
+.detail-label {
+  font-family: var(--fm); font-size: 7px;
+  color: var(--cyan); letter-spacing: 2px;
+  text-transform: uppercase; margin-bottom: 2px;
+}
+.detail-value {
+  font-family: var(--fb); font-size: 13px;
+  font-weight: 600; color: var(--white);
+}
+
+.detail-body {
+  padding: 24px 28px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.detail-section {
+  margin-bottom: 4px;
+}
+.detail-sec-title {
+  font-family: var(--fd); font-size: 8px;
+  letter-spacing: 3px; color: var(--gold);
+  text-transform: uppercase; margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Stats block in detail */
+.detail-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 6px; margin-bottom: 10px;
+}
+.detail-stat {
+  background: rgba(13,32,68,0.6);
+  border: 1px solid var(--border);
+  padding: 8px 4px;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.detail-stat::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+}
+.detail-stat.hull::before { background: #e74c3c; }
+.detail-stat.agi::before { background: #2ecc71; }
+.detail-stat.sys::before { background: #3498db; }
+.detail-stat.eng::before { background: #f39c12; }
+.detail-stat-name {
+  font-family: var(--fm); font-size: 7px;
+  color: var(--cyan); letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.detail-stat-val {
+  font-family: var(--fd); font-size: 18px;
+  font-weight: 700; color: var(--white);
+}
+
+.detail-derived {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+.detail-derived-box {
+  background: rgba(13,32,68,0.4);
+  border: 1px solid var(--border);
+  padding: 6px;
+  text-align: center;
+}
+.detail-derived-label {
+  font-family: var(--fm); font-size: 7px;
+  color: var(--white-dim); letter-spacing: 1px;
+}
+.detail-derived-val {
+  font-family: var(--fd); font-size: 14px;
+  font-weight: 700; color: var(--cyan);
+}
+
+/* Triggers in detail */
+.detail-trigger {
+  display: flex; justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(79,195,247,0.08);
+}
+.detail-trigger-name {
+  font-family: var(--fb); font-size: 12px;
+  font-weight: 600; color: var(--white);
+}
+.detail-trigger-val {
+  font-family: var(--fd); font-size: 13px;
+  font-weight: 700; color: var(--cyan);
+}
+
+/* Rolls in detail */
+.detail-roll {
+  background: rgba(13,32,68,0.4);
+  border-left: 3px solid var(--cyan);
+  padding: 8px 12px;
+  margin-bottom: 6px;
+}
+.detail-roll.gold { border-left-color: var(--gold); }
+.detail-roll.green { border-left-color: var(--green); }
+.detail-roll-label {
+  font-family: var(--fm); font-size: 7px;
+  color: var(--white-dim); letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 2px;
+}
+.detail-roll-name {
+  font-family: var(--fd); font-size: 10px;
+  font-weight: 700; color: var(--white);
+  letter-spacing: 1px; margin-bottom: 2px;
+}
+.detail-roll-text {
+  font-size: 10px; line-height: 1.5;
+}
+.detail-roll-text.benefit { color: var(--green); }
+.detail-roll-text.neg { color: var(--red); opacity: 0.8; }
+
+/* Talents in detail */
+.detail-talent {
+  background: rgba(13,32,68,0.4);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  margin-bottom: 4px;
+  position: relative; overflow: hidden;
+}
+.detail-talent::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; bottom: 0; width: 3px;
+  background: var(--gold);
+}
+.detail-talent-name {
+  font-family: var(--fd); font-size: 9px;
+  font-weight: 700; letter-spacing: 1px;
+  color: var(--white); margin-bottom: 2px;
+}
+.detail-talent-desc {
+  font-size: 10px; color: var(--white-dim);
+  line-height: 1.5;
+}
+
+/* Free text blocks */
+.detail-text-block {
+  background: rgba(13,32,68,0.4);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--white-dim);
+  line-height: 1.7;
+  margin-bottom: 6px;
+  white-space: pre-wrap;
+}
+
+/* Detail footer */
+.detail-footer {
+  padding: 16px 28px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 8px; justify-content: flex-end;
+}
+.btn-detail {
+  font-family: var(--fd); font-size: 8px;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 8px 18px;
+  border: 1px solid; cursor: pointer;
+  transition: all 0.2s; background: transparent;
+}
+.btn-detail.edit { border-color: var(--cyan); color: var(--cyan); }
+.btn-detail.edit:hover { background: rgba(79,195,247,0.12); }
+.btn-detail.delete { border-color: var(--red); color: var(--red); }
+.btn-detail.delete:hover { background: rgba(255,71,87,0.12); }
+
+/* ── CONFIRM DIALOG ── */
+.confirm-overlay {
+  position: fixed; inset: 0;
+  background: rgba(4,9,15,0.85);
+  z-index: 600;
+  display: none;
+  align-items: center; justify-content: center;
+}
+.confirm-overlay.open { display: flex; }
+.confirm-box {
+  background: var(--blue-panel);
+  border: 1px solid var(--red);
+  padding: 28px;
+  max-width: 400px; width: 90%;
+  text-align: center;
+}
+.confirm-box::before {
+  content: '';
+  display: block;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--red), transparent);
+  margin: -28px -28px 20px;
+}
+.confirm-title {
+  font-family: var(--fd); font-size: 12px;
+  letter-spacing: 3px; color: var(--red);
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.confirm-text {
+  font-family: var(--fm); font-size: 10px;
+  color: var(--white-dim); margin-bottom: 20px;
+  letter-spacing: 1px; line-height: 1.6;
+}
+.confirm-actions {
+  display: flex; gap: 8px; justify-content: center;
+}
+.confirm-btn {
+  font-family: var(--fd); font-size: 8px;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 9px 22px;
+  border: 1px solid; cursor: pointer;
+  transition: all 0.2s; background: transparent;
+}
+.confirm-btn.cancel { border-color: var(--border); color: var(--white-dim); }
+.confirm-btn.cancel:hover { border-color: var(--white); color: var(--white); }
+.confirm-btn.danger { border-color: var(--red); color: var(--red); }
+.confirm-btn.danger:hover { background: var(--red); color: var(--blue-deep); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--blue-panel);
+  border: 1px solid var(--green);
+  padding: 12px 20px;
+  font-family: var(--fm); font-size: 10px;
+  color: var(--green); letter-spacing: 1px;
+  z-index: 700;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.error { border-color: var(--red); color: var(--red); }
+
+/* ── FOOTER ── */
+.footer {
+  position: relative; z-index: 10;
+  border-top: 1px solid var(--border);
+  padding: 20px 32px;
+  display: flex; justify-content: space-between;
+  font-family: var(--fm); font-size: 8px;
+  color: var(--white-dim); letter-spacing: 1px;
+  opacity: 0.6;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .topbar { padding: 12px 16px; }
+  .topbar-nav { display: none; }
+  .main { padding: 70px 16px 16px; }
+  .dash-header { flex-direction: column; gap: 12px; }
+  .dash-actions { width: 100%; }
+  .filter-bar { flex-direction: column; }
+  .char-grid { grid-template-columns: 1fr; }
+  .detail-header { flex-direction: column; gap: 16px; }
+  .detail-body { grid-template-columns: 1fr; }
+  .detail-portrait { width: 100%; height: 200px; }
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <a href="/" class="topbar-logo">
+    <div class="logo-hex">GM</div>
+    <div>
+      <div class="logo-text">Aegis Prime</div>
+      <div class="logo-sub">GM Dashboard — Classified</div>
+    </div>
+  </a>
+  <nav class="topbar-nav">
+    <a class="nav-btn" href="/">◁ HQ</a>
+    <a class="nav-btn active" href="/gm-dashboard">Dashboard</a>
+    <a class="nav-btn" href="/enroll">+ Enroll</a>
+  </nav>
+  <div class="topbar-status">
+    <div class="sdot"></div>
+    GM ACCESS
+  </div>
+</header>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- HEADER -->
+  <div class="dash-header">
+    <div>
+      <h1 class="dash-title">ACADEMY <span>DATABASE</span></h1>
+      <div class="dash-subtitle">◈ ALL PERSONNEL RECORDS — CLASSIFIED CLEARANCE</div>
+    </div>
+    <div class="dash-actions">
+      <a href="/enroll" class="btn-action" id="btn-new-cadet">⬡ NEW CADET</a>
+      <a href="/enroll?type=npc" class="btn-action npc" id="btn-new-npc">◉ NEW NPC</a>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-filter="all" id="filter-all">ALL</button>
+      <button class="filter-tab" data-filter="cadet" id="filter-cadet">CADETS</button>
+      <button class="filter-tab" data-filter="npc" id="filter-npc">NPCs</button>
+    </div>
+    <input class="search-box" type="text" id="search-input" placeholder="Search by name, callsign, or ID...">
+    <div class="record-count" id="record-count">
+      RECORDS: <span id="count-num">—</span>
+    </div>
+  </div>
+
+  <!-- CHARACTER GRID -->
+  <div id="grid-container">
+    <div class="loading-state" id="loading-state">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">QUERYING DATABASE...</div>
+    </div>
+  </div>
+</div>
+
+<!-- CHARACTER DETAIL MODAL -->
+<div class="detail-overlay" id="detail-overlay">
+  <div class="detail-box" id="detail-box"></div>
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-title">⚠ CONFIRM DELETION</div>
+    <div class="confirm-text" id="confirm-text">Are you sure you want to permanently delete this record?</div>
+    <div class="confirm-actions">
+      <button class="confirm-btn cancel" onclick="closeConfirm()">CANCEL</button>
+      <button class="confirm-btn danger" id="confirm-delete-btn">DELETE RECORD</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <span>AEGIS PRIME // GM DASHBOARD // CLASSIFIED</span>
+  <span>v2.0 — SUPABASE CONNECTED</span>
+</div>
+
+<!-- SUPABASE SDK + CLIENT -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase.js"></script>
+
+<script>
+// ── Talent & Trigger data (mirrored from enroll.html for display) ──
+const TRIGGERS_DATA = [
+  {id:"atf",n:"Applying Fists to Faces",stat:"HULL"},
+  {id:"asl",n:"Assault",stat:"HULL"},
+  {id:"sc",n:"Stay Cool",stat:"HULL"},
+  {id:"tc",n:"Take Control",stat:"HULL"},
+  {id:"mao",n:"Move As One",stat:"AGILITY"},
+  {id:"thr",n:"Threaten",stat:"AGILITY"},
+  {id:"spt",n:"Spot",stat:"AGILITY"},
+  {id:"aus",n:"Act Unseen",stat:"AGILITY"},
+  {id:"hck",n:"Hack",stat:"SYSTEMS"},
+  {id:"pat",n:"Patch",stat:"SYSTEMS"},
+  {id:"scn",n:"Scan",stat:"SYSTEMS"},
+  {id:"gf",n:"Get Focused",stat:"ENGINEERING"}
+];
+
+const TALENTS_DATA = [
+  {id:"ace",ico:"✈",n:"Ace",r1:{n:"Afterburners",d:"1/round when you Boost, ignore engagement and move through actors."}},
+  {id:"braw",ico:"👊",n:"Brawler",r1:{n:"Martial Artist",d:"Melee attacks deal 1 bonus damage on hit."}},
+  {id:"cent",ico:"⚙",n:"Centimane",r1:{n:"Snap Loader",d:"Reloading is a free action. Can reload as part of Skirmish once."}},
+  {id:"cshot",ico:"🎯",n:"Crack Shot",r1:{n:"Elimination Shot",d:"1/round on ranged attack, reroll one die and keep either result."}},
+  {id:"dcmd",ico:"◉",n:"Drone Commander",r1:{n:"Field Commander",d:"Drones activate when you activate. Give orders as free actions."}},
+  {id:"duel",ico:"⚔",n:"Duelist",r1:{n:"Challenge",d:"1/scene, mark a Rival. +1 Accuracy against Rival on all attacks."}},
+  {id:"guns",ico:"🔫",n:"Gunslinger",r1:{n:"Quick Draw",d:"Draw/holster as free actions. Once/round, Skirmish as quick action."}},
+  {id:"hack",ico:"💻",n:"Hacker",r1:{n:"Infiltrator",d:"On successful Invade, become Hidden to that system until next turn."}},
+  {id:"heav",ico:"🛡",n:"Heavy",r1:{n:"Armor Up",d:"Gain +1 Armor (stacks). When you take Structure damage, regain 2 HP."}},
+  {id:"infl",ico:"👁",n:"Infiltrator",r1:{n:"Cloak",d:"1/scene, become Hidden until end of next turn or until you attack. +1d6 from hiding."}},
+  {id:"lead",ico:"★",n:"Leader",r1:{n:"Rally",d:"1/scene quick action: ally may move 3 spaces or attack as a reaction."}},
+  {id:"medc",ico:"✚",n:"Medic",r1:{n:"Triage",d:"Stabilize Dying as quick action. Patch gives +2 additional HP."}},
+  {id:"mech",ico:"🔧",n:"Mechanic",r1:{n:"Rapid Repair",d:"When you Stabilize, regain 1 additional HP and clear extra system."}},
+  {id:"nuke",ico:"☢",n:"Nuclear Cavalier",r1:{n:"Hot Swap",d:"Improvised Attack deals energy damage, clear 1 heat free."}},
+  {id:"pilot",ico:"🎖",n:"Pilot",r1:{n:"System Familiarity",d:"Use all GMS systems without licensing. GMS weapons don't count vs system points."}},
+  {id:"siege",ico:"💣",n:"Siege Specialist",r1:{n:"Breach",d:"Attacks vs structures deal double damage. Blow holes in cover as Full Action."}},
+  {id:"skrm",ico:"⚡",n:"Skirmisher",r1:{n:"Evasive",d:"When you Boost, don't provoke reactions until end of your turn."}},
+  {id:"spot",ico:"🔭",n:"Spotter",r1:{n:"Mark Target",d:"Quick action: mark enemy. Allied ranged attacks gain +1 Accuracy vs that enemy."}},
+  {id:"strat",ico:"♟",n:"Strategist",r1:{n:"Intel Brief",d:"At combat start, allies gain +1 Accuracy on first attack vs chosen enemy each round."}},
+  {id:"strm",ico:"⛈",n:"Stormbringer",r1:{n:"Overcharge",d:"When you Overcharge, take 1 less heat, gain +1 Accuracy on next attack."}},
+  {id:"tech",ico:"🔬",n:"Technophile",r1:{n:"System Expert",d:"Once/scene, use any equipped system without paying activation cost."}},
+  {id:"warmo",ico:"🗄",n:"Walking Armory",r1:{n:"Arsenal",d:"Carry one additional weapon without counting against mount restrictions."}}
+];
+
+// ── State ──
+let currentFilter = 'all';
+let allCharacters = [];
+let pendingDeleteId = null;
+
+// ── Init ──
+document.addEventListener('DOMContentLoaded', () => {
+  loadCharacters();
+  setupFilterTabs();
+  setupSearch();
+});
+
+// ── Filter Tabs ──
+function setupFilterTabs() {
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentFilter = tab.dataset.filter;
+      renderGrid();
+    });
+  });
+}
+
+// ── Search ──
+function setupSearch() {
+  let debounce;
+  document.getElementById('search-input').addEventListener('input', (e) => {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => renderGrid(), 200);
+  });
+}
+
+// ── Load Characters ──
+async function loadCharacters() {
+  const container = document.getElementById('grid-container');
+  container.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">QUERYING DATABASE...</div></div>';
+
+  try {
+    const { data, error } = await getCharacters();
+    if (error) throw error;
+    allCharacters = data;
+    renderGrid();
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠</div><div class="empty-title">DATABASE ERROR</div><div class="empty-desc">${err.message || 'Failed to connect to Supabase. Check your credentials.'}</div></div>`;
+  }
+}
+
+// ── Render Grid ──
+function renderGrid() {
+  const container = document.getElementById('grid-container');
+  const query = (document.getElementById('search-input').value || '').toLowerCase().trim();
+
+  let filtered = allCharacters;
+
+  // Type filter
+  if (currentFilter !== 'all') {
+    filtered = filtered.filter(c => c.type === currentFilter);
+  }
+
+  // Search filter
+  if (query) {
+    filtered = filtered.filter(c =>
+      (c.name || '').toLowerCase().includes(query) ||
+      (c.callsign || '').toLowerCase().includes(query) ||
+      (c.student_id || '').toLowerCase().includes(query) ||
+      (c.faction || '').toLowerCase().includes(query)
+    );
+  }
+
+  // Update count
+  document.getElementById('count-num').textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">◈</div>
+        <div class="empty-title">NO RECORDS FOUND</div>
+        <div class="empty-desc">${query ? 'No matches for your search.' : 'No characters enrolled yet. Begin a new enrollment.'}</div>
+      </div>`;
+    return;
+  }
+
+  const grid = document.createElement('div');
+  grid.className = 'char-grid';
+
+  filtered.forEach(char => {
+    const card = document.createElement('div');
+    card.className = `char-card ${char.type === 'npc' ? 'npc-card' : ''}`;
+    card.onclick = () => openDetail(char);
+
+    const portraitUrl = char.portrait_url ? convertDriveUrl(char.portrait_url) : '';
+    const portraitHtml = portraitUrl
+      ? `<img src="${portraitUrl}" alt="${char.name}" onerror="this.parentElement.innerHTML='<div class=\\'card-portrait-ph\\'>◎<br>NO<br>IMAGE</div>'">`
+      : '<div class="card-portrait-ph">◎<br>NO<br>IMAGE</div>';
+
+    // Badges
+    let badges = '';
+    if (char.type === 'npc') {
+      badges += '<div class="badge badge-npc">NPC</div>';
+      if (char.threat_level) badges += `<div class="badge badge-threat">${char.threat_level}</div>`;
+    } else {
+      badges += '<div class="badge badge-cadet">CADET</div>';
+      if (char.class_rank) badges += `<div class="badge badge-${char.class_rank.toLowerCase()}">${char.class_rank}-CLASS</div>`;
+    }
+
+    card.innerHTML = `
+      <div class="card-body">
+        <div class="card-portrait">${portraitHtml}</div>
+        <div class="card-info">
+          <div class="card-badges">${badges}</div>
+          <div class="card-name">${char.name || 'UNKNOWN'}</div>
+          <div class="card-callsign">${char.callsign ? '"' + char.callsign + '"' : '—'}</div>
+          <div class="card-meta">
+            ${char.role_title ? 'ROLE: <span>' + char.role_title + '</span><br>' : ''}
+            ${char.faction ? 'FACTION: <span>' + char.faction + '</span><br>' : ''}
+            ${char.origin ? 'ORIGIN: <span>' + char.origin + '</span>' : ''}
+          </div>
+        </div>
+      </div>
+      <div class="card-id">
+        <span>${char.student_id || '—'}</span>
+        <span>${char.specialization || '—'}</span>
+      </div>`;
+
+    grid.appendChild(card);
+  });
+
+  container.innerHTML = '';
+  container.appendChild(grid);
+}
+
+// ── Detail View ──
+function openDetail(char) {
+  const overlay = document.getElementById('detail-overlay');
+  const box = document.getElementById('detail-box');
+
+  const portraitUrl = char.portrait_url ? convertDriveUrl(char.portrait_url) : '';
+  const portraitHtml = portraitUrl
+    ? `<img src="${portraitUrl}" alt="${char.name}" onerror="this.outerHTML='<div style=\\'font-family:var(--fm);font-size:9px;color:var(--white-dim)\\'>NO IMAGE</div>'">`
+    : '<div style="font-family:var(--fm);font-size:9px;color:var(--white-dim)">NO<br>PORTRAIT</div>';
+
+  // Badges
+  let badges = '';
+  if (char.type === 'npc') {
+    badges += '<div class="badge badge-npc" style="font-size:8px;padding:3px 10px">NPC</div>';
+    if (char.threat_level) badges += `<div class="badge badge-threat" style="font-size:8px;padding:3px 10px">THREAT: ${char.threat_level}</div>`;
+  } else {
+    badges += '<div class="badge badge-cadet" style="font-size:8px;padding:3px 10px">CADET</div>';
+    if (char.class_rank) badges += `<div class="badge badge-${char.class_rank.toLowerCase()}" style="font-size:8px;padding:3px 10px">${char.class_rank}-CLASS</div>`;
+  }
+
+  // Build triggers
+  const triggers = char.triggers || {};
+  const activeTriggers = TRIGGERS_DATA.filter(t => (triggers[t.id] || 0) > 0);
+
+  // Build talents
+  const talentIds = char.talents || [];
+  const activeTalents = talentIds.map(id => TALENTS_DATA.find(t => t.id === id)).filter(Boolean);
+
+  // Build rolls
+  const bg = char.background;
+  const tal = char.innate_talent;
+  const disc = char.discipline;
+
+  const hp = 10 + ((char.hull || 0) * 2);
+
+  box.innerHTML = `
+    <button class="detail-close" onclick="closeDetail()">✕ CLOSE</button>
+
+    <div class="detail-header">
+      <div class="detail-portrait">${portraitHtml}</div>
+      <div class="detail-identity">
+        <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">${badges}</div>
+        <div class="detail-name">${char.name || '—'}</div>
+        <div class="detail-callsign">${char.callsign ? '"' + char.callsign + '"' : '—'}</div>
+        <div class="detail-meta-grid">
+          <div class="detail-field"><div class="detail-label">STUDENT ID</div><div class="detail-value">${char.student_id}</div></div>
+          <div class="detail-field"><div class="detail-label">ROLE / TITLE</div><div class="detail-value">${char.role_title || '—'}</div></div>
+          <div class="detail-field"><div class="detail-label">FACTION</div><div class="detail-value">${char.faction || '—'}</div></div>
+          <div class="detail-field"><div class="detail-label">AGE</div><div class="detail-value">${char.age || '—'}</div></div>
+          <div class="detail-field"><div class="detail-label">ORIGIN</div><div class="detail-value">${char.origin || '—'}</div></div>
+          <div class="detail-field"><div class="detail-label">${char.type === 'npc' ? 'THREAT LEVEL' : 'CLASS RANK'}</div><div class="detail-value">${char.type === 'npc' ? (char.threat_level || '—') : (char.class_rank ? char.class_rank + '-Class' : '—')}</div></div>
+          <div class="detail-field"><div class="detail-label">SPECIALIZATION</div><div class="detail-value">${char.specialization || '—'}</div></div>
+          <div class="detail-field"><div class="detail-label">RELATIONSHIP</div><div class="detail-value">${char.relationship || '—'}</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-body">
+      <!-- LEFT COLUMN -->
+      <div>
+        <div class="detail-section">
+          <div class="detail-sec-title">◈ PILOT STATS</div>
+          <div class="detail-stats">
+            <div class="detail-stat hull"><div class="detail-stat-name">HULL</div><div class="detail-stat-val">${char.hull || 0}</div></div>
+            <div class="detail-stat agi"><div class="detail-stat-name">AGI</div><div class="detail-stat-val">${char.agi || 0}</div></div>
+            <div class="detail-stat sys"><div class="detail-stat-name">SYS</div><div class="detail-stat-val">${char.sys || 0}</div></div>
+            <div class="detail-stat eng"><div class="detail-stat-name">ENG</div><div class="detail-stat-val">${char.eng || 0}</div></div>
+          </div>
+          <div class="detail-derived">
+            <div class="detail-derived-box"><div class="detail-derived-label">HP</div><div class="detail-derived-val">${hp}</div></div>
+            <div class="detail-derived-box"><div class="detail-derived-label">GRIT</div><div class="detail-derived-val">+0</div></div>
+          </div>
+        </div>
+
+        <div class="detail-section" style="margin-top:16px">
+          <div class="detail-sec-title">◈ SKILL TRIGGERS</div>
+          ${activeTriggers.length
+            ? activeTriggers.map(t => `<div class="detail-trigger"><span class="detail-trigger-name">${t.n} <span style="font-size:9px;color:var(--white-dim);font-family:var(--fm)">${t.stat}</span></span><span class="detail-trigger-val">+${triggers[t.id]}</span></div>`).join('')
+            : '<div style="font-size:10px;color:var(--white-dim);font-family:var(--fm);padding:6px 0">No triggers allocated</div>'
+          }
+        </div>
+
+        <div class="detail-section" style="margin-top:16px">
+          <div class="detail-sec-title">◈ MECH</div>
+          <div class="detail-text-block" style="font-family:var(--fd);font-size:11px;color:var(--white);letter-spacing:1px">
+            ${char.mech_frame || 'Cadet Mark I'}
+            <div style="font-family:var(--fm);font-size:9px;color:var(--white-dim);margin-top:2px">${char.mech_manufacturer || 'GMS'}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div>
+        <div class="detail-section">
+          <div class="detail-sec-title">◈ D20 ROLLS</div>
+          ${bg ? `<div class="detail-roll"><div class="detail-roll-label">BACKGROUND</div><div class="detail-roll-name">${bg.n}</div><div class="detail-roll-text benefit">+ ${bg.b}</div><div class="detail-roll-text neg">− ${bg.neg}</div></div>` : ''}
+          ${tal ? `<div class="detail-roll gold"><div class="detail-roll-label">INNATE TALENT</div><div class="detail-roll-name">${tal.n}</div><div class="detail-roll-text benefit">+ ${tal.b}</div><div class="detail-roll-text neg">− ${tal.neg}</div></div>` : ''}
+          ${disc ? `<div class="detail-roll green"><div class="detail-roll-label">DISCIPLINE</div><div class="detail-roll-name">${disc.n}</div><div class="detail-roll-text benefit">+ ${disc.b}</div><div class="detail-roll-text neg">− ${disc.neg}</div></div>` : ''}
+          ${!bg && !tal && !disc ? '<div style="font-size:10px;color:var(--white-dim);font-family:var(--fm);padding:6px 0">No rolls recorded</div>' : ''}
+        </div>
+
+        <div class="detail-section" style="margin-top:16px">
+          <div class="detail-sec-title">◈ TALENTS — RANK I</div>
+          ${activeTalents.length
+            ? activeTalents.map(t => `<div class="detail-talent"><div class="detail-talent-name">${t.ico} ${t.n}</div><div class="detail-talent-desc"><strong>${t.r1.n}:</strong> ${t.r1.d}</div></div>`).join('')
+            : '<div style="font-size:10px;color:var(--white-dim);font-family:var(--fm);padding:6px 0">No talents selected</div>'
+          }
+        </div>
+
+        ${char.motivations ? `<div class="detail-section" style="margin-top:16px"><div class="detail-sec-title">◈ MOTIVATIONS</div><div class="detail-text-block">${escHtml(char.motivations)}</div></div>` : ''}
+
+        ${char.secrets ? `<div class="detail-section" style="margin-top:16px"><div class="detail-sec-title">◈ SECRETS — CLASSIFIED</div><div class="detail-text-block" style="border-color:var(--red);color:var(--red)">${escHtml(char.secrets)}</div></div>` : ''}
+
+        ${char.notes ? `<div class="detail-section" style="margin-top:16px"><div class="detail-sec-title">◈ NOTES</div><div class="detail-text-block">${escHtml(char.notes)}</div></div>` : ''}
+      </div>
+    </div>
+
+    <div class="detail-footer">
+      <a href="/enroll?edit=${encodeURIComponent(char.student_id)}" class="btn-detail edit">✎ EDIT RECORD</a>
+      <button class="btn-detail delete" onclick="confirmDelete('${escAttr(char.student_id)}','${escAttr(char.name)}')">✕ DELETE</button>
+    </div>`;
+
+  overlay.classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detail-overlay').classList.remove('open');
+}
+
+// ── Delete Flow ──
+function confirmDelete(studentId, name) {
+  pendingDeleteId = studentId;
+  document.getElementById('confirm-text').textContent = `Permanently delete ${name} (${studentId})? This cannot be undone.`;
+  document.getElementById('confirm-overlay').classList.add('open');
+  document.getElementById('confirm-delete-btn').onclick = () => executeDelete();
+}
+
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('open');
+  pendingDeleteId = null;
+}
+
+async function executeDelete() {
+  if (!pendingDeleteId) return;
+  closeConfirm();
+  closeDetail();
+
+  try {
+    const { error } = await deleteCharacter(pendingDeleteId);
+    if (error) throw error;
+    showToast('RECORD DELETED SUCCESSFULLY');
+    loadCharacters();
+  } catch (err) {
+    showToast('DELETE FAILED: ' + (err.message || 'Unknown error'), true);
+  }
+  pendingDeleteId = null;
+}
+
+// ── Toast ──
+function showToast(msg, isError) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast' + (isError ? ' error' : '');
+  setTimeout(() => toast.classList.add('show'), 10);
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ── Helpers ──
+function escHtml(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+function escAttr(s) {
+  return (s || '').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+}
+
+// Close modals on overlay click
+document.getElementById('detail-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeDetail();
+});
+document.getElementById('confirm-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeConfirm();
+});
+</script>
+</body>
+</html>

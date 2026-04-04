@@ -4,6 +4,10 @@
   "trailingSlash": false,
   "routes": [
     {
+      "src": "/gm-dashboard",
+      "dest": "/gm-dashboard.html"
+    },
+    {
       "src": "/enroll",
       "dest": "/enroll.html"
     },

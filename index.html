@@ -587,6 +587,101 @@ body::before {
   mix-blend-mode: screen;
 }
 
+/* ── GM TERMINAL ── */
+.gm-terminal {
+  width: 100%; max-width: 520px;
+  margin: 0 auto 48px;
+  background: rgba(4,9,15,0.95);
+  border: 1px solid rgba(79,195,247,0.2);
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 1.4s both;
+}
+.gm-terminal::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+}
+.gm-terminal-bar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  background: rgba(79,195,247,0.06);
+  border-bottom: 1px solid rgba(79,195,247,0.12);
+}
+.term-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+}
+.term-dot.r { background: #ff4757; opacity: 0.7; }
+.term-dot.y { background: #f5c842; opacity: 0.7; }
+.term-dot.g { background: #2ecc71; opacity: 0.7; }
+.term-bar-text {
+  font-family: var(--fm); font-size: 7px;
+  color: var(--white-dim); letter-spacing: 2px;
+  margin-left: auto;
+}
+.gm-terminal-body {
+  padding: 14px 16px;
+  min-height: 100px;
+  font-family: var(--fm); font-size: 11px;
+  color: var(--cyan); letter-spacing: 0.5px;
+  line-height: 1.8;
+}
+.term-line {
+  opacity: 0;
+  animation: termFadeIn 0.3s ease forwards;
+}
+.term-line.gold { color: var(--gold); }
+.term-line.red { color: #ff4757; }
+.term-line.green { color: #2ecc71; }
+.term-line.dim { color: var(--white-dim); opacity: 0.5; }
+@keyframes termFadeIn { to { opacity: 1; } }
+
+.term-input-line {
+  display: flex; align-items: center; gap: 0;
+  margin-top: 4px;
+}
+.term-prompt {
+  color: var(--gold); margin-right: 6px;
+  font-family: var(--fm); font-size: 11px;
+}
+.term-input {
+  background: transparent; border: none;
+  color: var(--white); font-family: var(--fm);
+  font-size: 11px; letter-spacing: 1px;
+  outline: none; flex: 1;
+  caret-color: var(--cyan);
+}
+.term-input::placeholder { color: rgba(79,195,247,0.25); }
+
+.term-cursor {
+  display: inline-block;
+  width: 7px; height: 14px;
+  background: var(--cyan);
+  animation: cursorBlink 0.8s step-end infinite;
+  vertical-align: middle;
+  margin-left: 1px;
+}
+@keyframes cursorBlink { 0%,100%{opacity:1}50%{opacity:0} }
+
+/* Glitch effect for access granted */
+.glitch-flash {
+  position: fixed; inset: 0;
+  background: var(--cyan);
+  z-index: 9999;
+  pointer-events: none;
+  animation: glitchFlash 0.6s ease forwards;
+}
+@keyframes glitchFlash {
+  0% { opacity: 0; }
+  10% { opacity: 0.8; }
+  20% { opacity: 0; }
+  30% { opacity: 0.5; }
+  40% { opacity: 0; }
+  50% { opacity: 0.3; }
+  100% { opacity: 0; }
+}
+
 @media (max-width: 768px) {
   .topbar { padding: 12px 20px; }
   .topbar-nav { display: none; }
@@ -598,6 +693,7 @@ body::before {
   .footer { flex-direction: column; gap: 12px; text-align: center; }
   .footer-right { text-align: center; }
   .cursor-ring { display: none; }
+  .gm-terminal { max-width: 100%; }
 }
 </style>
 </head>
@@ -661,9 +757,17 @@ body::before {
       <span class="cta-icon">⬡</span>
       BEGIN ENROLLMENT
     </a>
-    <div class="cta-secondary">
-      <span>Academy Database</span>
-      <span class="soon-tag">SOON</span>
+  </div>
+
+  <!-- GM TERMINAL -->
+  <div class="gm-terminal" id="gm-terminal">
+    <div class="gm-terminal-bar">
+      <div class="term-dot r"></div>
+      <div class="term-dot y"></div>
+      <div class="term-dot g"></div>
+      <span class="term-bar-text">AEGIS PRIME CENTRAL // TERMINAL v2.0</span>
+    </div>
+    <div class="gm-terminal-body" id="term-body">
     </div>
   </div>
 
@@ -856,6 +960,113 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
   el.style.transition='opacity 0.5s ease, transform 0.5s ease';
   obs.observe(el);
 });
+
+// ── GM TERMINAL ──
+(function() {
+  const body = document.getElementById('term-body');
+  const bootLines = [
+    { text: 'AEGIS PRIME CENTRAL MAINFRAME', cls: '', delay: 200 },
+    { text: 'SYSTEM STATUS: ACTIVE', cls: 'green', delay: 400 },
+    { text: 'SECURITY LEVEL: PUBLIC', cls: 'dim', delay: 300 },
+    { text: '————————————————————————————', cls: 'dim', delay: 200 },
+    { text: 'TYPE A COMMAND TO PROCEED...', cls: 'gold', delay: 500 },
+  ];
+
+  let lineIndex = 0;
+  let inputActive = false;
+
+  function addLine(text, cls) {
+    const div = document.createElement('div');
+    div.className = 'term-line' + (cls ? ' ' + cls : '');
+    div.textContent = text;
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+    return div;
+  }
+
+  function showBoot() {
+    if (lineIndex >= bootLines.length) {
+      showPrompt();
+      return;
+    }
+    const line = bootLines[lineIndex];
+    addLine(line.text, line.cls);
+    lineIndex++;
+    setTimeout(showBoot, line.delay);
+  }
+
+  function showPrompt() {
+    inputActive = true;
+    const line = document.createElement('div');
+    line.className = 'term-input-line';
+    line.innerHTML = '<span class="term-prompt">></span><input class="term-input" id="term-cmd" type="text" placeholder="enter command..." autocomplete="off" spellcheck="false" autofocus><span class="term-cursor"></span>';
+    body.appendChild(line);
+    body.scrollTop = body.scrollHeight;
+
+    const input = document.getElementById('term-cmd');
+    input.focus();
+    input.addEventListener('keydown', handleCmd);
+  }
+
+  function handleCmd(e) {
+    if (e.key !== 'Enter') return;
+    const input = document.getElementById('term-cmd');
+    const cmd = input.value.trim().toUpperCase();
+    input.removeEventListener('keydown', handleCmd);
+    input.disabled = true;
+    input.parentElement.querySelector('.term-cursor').style.display = 'none';
+    inputActive = false;
+
+    if (cmd === 'GM') {
+      runAccessSequence();
+    } else if (cmd === '') {
+      addLine('> NO INPUT DETECTED', 'dim');
+      setTimeout(showPrompt, 400);
+    } else {
+      addLine('> UNKNOWN COMMAND: ' + cmd, 'red');
+      addLine('> ACCESS DENIED — TRY AGAIN', 'red');
+      setTimeout(showPrompt, 600);
+    }
+  }
+
+  function runAccessSequence() {
+    const steps = [
+      { text: '> AUTHENTICATING...', cls: 'gold', delay: 600 },
+      { text: '> VERIFYING CLEARANCE CREDENTIALS...', cls: '', delay: 800 },
+      { text: '> ██████████████████████ 100%', cls: 'green', delay: 500 },
+      { text: '> CLEARANCE: ████ GAME MASTER ████', cls: 'gold', delay: 600 },
+      { text: '> ACCESS GRANTED', cls: 'green', delay: 400 },
+      { text: '> REDIRECTING TO GM DASHBOARD...', cls: 'green', delay: 800 },
+    ];
+
+    let i = 0;
+    function nextStep() {
+      if (i >= steps.length) {
+        // Glitch flash then redirect
+        const flash = document.createElement('div');
+        flash.className = 'glitch-flash';
+        document.body.appendChild(flash);
+        setTimeout(() => {
+          window.location.href = '/gm-dashboard';
+        }, 700);
+        return;
+      }
+      addLine(steps[i].text, steps[i].cls);
+      i++;
+      setTimeout(nextStep, steps[i-1].delay);
+    }
+    nextStep();
+  }
+
+  // Start boot sequence after page load animation
+  setTimeout(showBoot, 2000);
+
+  // Allow clicking terminal to focus input
+  document.getElementById('gm-terminal').addEventListener('click', () => {
+    const inp = document.getElementById('term-cmd');
+    if (inp && !inp.disabled) inp.focus();
+  });
+})();
 </script>
 </body>
 </html>
