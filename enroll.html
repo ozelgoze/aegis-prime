@@ -1008,6 +1008,8 @@ TRIGGERS.forEach(t=>S.triggers[t.id]=0);
 (function(){
   const p=new URLSearchParams(window.location.search);
   if(p.get('type')==='npc') setType('npc');
+  const editId=p.get('edit');
+  if(editId) setTimeout(()=>loadEditData(editId),100);
 })();
 
 let exportMode='cs'; // 'id' or 'cs'
@@ -1112,10 +1114,11 @@ function buildRT(cid,data,key,bid){
 function buildTriggers(){
   const c=document.getElementById('tl');c.innerHTML='';
   TRIGGERS.forEach(t=>{
-    S.triggers[t.id]=0;
+    if (typeof S.triggers[t.id] === 'undefined') S.triggers[t.id]=0;
+    const v = S.triggers[t.id];
     const el=document.createElement('div');el.className='ti';
     el.innerHTML=`<div style="flex:1"><div class="tiname">${t.n}</div><div class="tistat">${t.stat}</div><div class="tidesc">${t.d}</div></div>
-      <div class="tc2"><button class="tb" onclick="chgT('${t.id}',-1)" id="tm-${t.id}" disabled>−</button><div class="tv" id="tv-${t.id}">+0</div><button class="tb" onclick="chgT('${t.id}',1)" id="tp-${t.id}">+</button></div>`;
+      <div class="tc2"><button class="tb" onclick="chgT('${t.id}',-1)" id="tm-${t.id}" ${v<=0?'disabled':''}>−</button><div class="tv ${v>0?'on':''}" id="tv-${t.id}">+${v}</div><button class="tb" onclick="chgT('${t.id}',1)" id="tp-${t.id}">+</button></div>`;
     c.appendChild(el);
   });updatePips();
 }
@@ -1349,6 +1352,95 @@ function showSaveToast(msg,isError){
   toast.className='save-toast'+(isError?' error':'');
   setTimeout(()=>toast.classList.add('show'),10);
   setTimeout(()=>toast.classList.remove('show'),3000);
+}
+async function loadEditData(id){
+  try {
+    const {data, error} = await getCharacter(id);
+    if(error || !data) { showSaveToast('Error loading record', true); return; }
+    
+    // Fill S object
+    S.studentId = data.student_id;
+    S.type = data.type || 'cadet';
+    if(S.type === 'npc') setType('npc');
+    
+    S.name = data.name || '';
+    S.callsign = data.callsign || '';
+    S.password = data.password || '';
+    S.roleTitle = data.role_title || '';
+    S.faction = data.faction || '';
+    S.age = data.age || '';
+    S.origin = data.origin || '';
+    S.portraitUrl = data.portrait_url || '';
+    S.classRank = data.class_rank || null;
+    S.threatLevel = data.threat_level || null;
+    S.relationship = data.relationship || '';
+    S.bg = data.background || null;
+    S.talent = data.innate_talent || null;
+    S.disc = data.discipline || null;
+    S.hull = data.hull || 0;
+    S.agi = data.agi || 0;
+    S.sys = data.sys || 0;
+    S.eng = data.eng || 0;
+    S.triggers = data.triggers || {};
+    S.selTalents = data.talents || [];
+    if(data.specialization) { S.spec = SPECS.find(s=>s.n===data.specialization) || null; }
+    S.motivations = data.motivations || '';
+    S.secrets = data.secrets || '';
+    S.mechFrame = data.mech_frame || 'Cadet Mark I';
+    S.mechManufacturer = data.mech_manufacturer || 'GMS';
+    S.notes = data.notes || '';
+
+    // Update UI elements
+    document.getElementById('i-sid').value = S.studentId;
+    document.getElementById('i-name').value = S.name;
+    document.getElementById('i-call').value = S.callsign;
+    document.getElementById('i-pass').value = S.password;
+    document.getElementById('i-role').value = S.roleTitle;
+    document.getElementById('i-fac').value = S.faction;
+    document.getElementById('i-age').value = S.age;
+    document.getElementById('i-ori').value = S.origin;
+    document.getElementById('i-portrait').value = S.portraitUrl;
+    if(S.portraitUrl) previewDrivePortrait();
+    document.getElementById('i-rel').value = S.relationship;
+    document.getElementById('i-motiv').value = S.motivations;
+    document.getElementById('i-secrets').value = S.secrets;
+    document.getElementById('i-mech-frame').value = S.mechFrame;
+    document.getElementById('i-mech-mfr').value = S.mechManufacturer;
+    document.getElementById('i-notes').value = S.notes;
+
+    document.getElementById('s-hull').value = S.hull;
+    document.getElementById('s-agi').value = S.agi;
+    document.getElementById('s-sys').value = S.sys;
+    document.getElementById('s-eng').value = S.eng;
+
+    // Update visual selections
+    if(S.classRank) selClass(S.classRank);
+    if(S.threatLevel) {
+       document.querySelectorAll('.threat-pill').forEach(p=>{
+         if(p.textContent===S.threatLevel) p.classList.add('on');
+       });
+    }
+
+    if(S.bg) document.querySelectorAll('#bg-t .b-badge').forEach(b=>{ if(b.textContent===S.bg.n) { b.classList.add('on'); b.click(); } });
+    if(S.talent) document.querySelectorAll('#tal-t .t-badge').forEach(b=>{ if(b.textContent===S.talent.n) { b.classList.add('on'); b.click(); } });
+    if(S.disc) document.querySelectorAll('#dis-t .d-badge').forEach(b=>{ if(b.textContent===S.disc.n) { b.classList.add('on'); b.click(); } });
+
+    // Rebuild components
+    buildTriggers(); 
+    const q=document.getElementById('tal-search').value.toLowerCase();
+    buildTalGrid(LTALENTS.filter(t=>!q||t.n.toLowerCase().includes(q)||t.ranks.some(r=>r.n.toLowerCase().includes(q))));
+    buildSpecs();
+    
+    // Disable student ID to prevent easy accidental duplication
+    document.getElementById('i-sid').disabled = true;
+    
+    sync(); // Run sync once all mapped
+    
+    showSaveToast('Record loaded for edit');
+  } catch(err) {
+    console.error(err);
+    showSaveToast('Failed to load record', true);
+  }
 }
 </script>
 
