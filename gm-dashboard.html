@@ -617,71 +617,122 @@ body::after {
 /* ── PDF DOSSIER PRINT STYLES ── */
 #dossier-template {
   display: none;
-  background-color: var(--blue-deep);
-  color: var(--white);
-  width: 794px; /* A4 width */
-  min-height: 1123px; /* A4 height */
-  padding: 40px;
+  width: 210mm; min-height: 297mm;
+  background: #f5f8ff;
   font-family: var(--fb);
   position: relative;
+  page-break-after: always;
   box-sizing: border-box;
 }
-.dossier-header {
-  display: flex; gap: 20px; align-items: flex-end;
-  border-bottom: 2px solid var(--gold);
-  padding-bottom: 15px; margin-bottom: 20px;
+#dossier-template * { box-sizing: border-box; }
+.cs-stripe {
+  height: 14mm; display: flex; align-items: center; padding: 0 10mm;
+  position: relative; overflow: hidden;
 }
-.dossier-portrait {
-  width: 120px; height: 160px; object-fit: cover;
-  border: 1px solid var(--cyan);
-  background: var(--blue-mid);
+.cs-stripe.sc{background:linear-gradient(135deg,#0a1628 0%,#2a4a1a 100%)}
+.cs-stripe.ac{background:linear-gradient(135deg,#0a1628 0%,#0d4472 100%)}
+.cs-stripe.bc{background:linear-gradient(135deg,#0a1628 0%,#2a3a5e 100%)}
+.cs-stripe::after {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0, rgba(255,255,255,.03) 1px, transparent 1px, transparent 60px);
 }
-.dossier-title { font-family: var(--fd); flex: 1; }
-.dossier-h1 { font-size: 28px; font-weight: 900; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px; }
-.dossier-h2 { font-size: 14px; color: var(--cyan); letter-spacing: 1px; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; }
-.dossier-id-box {
-  background: rgba(4,9,15, 0.7); border: 1px solid var(--border);
-  padding: 10px 15px; font-family: var(--fm); font-size: 12px;
-  display: grid; grid-template-columns: auto 1fr; gap: 5px 15px;
+.cs-stripe-logo {
+  width: 10mm; height: 10mm; border: 0.4mm solid rgba(255,255,255,.4); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--fd); font-size: 4pt; color: white; margin-right: 3mm; flex-shrink: 0;
 }
-.dossier-grid {
-  display: grid; grid-template-columns: 280px 1fr; gap: 30px;
-}
-.dossier-section {
-  margin-bottom: 20px;
-}
-.dossier-sec-title {
-  font-family: var(--fd); font-size: 12px;
-  color: var(--gold); letter-spacing: 2px;
-  border-bottom: 1px solid var(--border-gold);
-  padding-bottom: 5px; margin-bottom: 10px;
-  font-weight: 700;
-}
-.dossier-kv {
-  display: flex; justify-content: space-between;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  padding: 4px 0; font-size: 11px;
-}
-.dossier-k { color: var(--white-dim); font-family: var(--fm); letter-spacing: 1px; }
-.dossier-v { font-weight: 600; text-align: right; }
+.cs-stripe-title { font-family: var(--fd); font-size: 11pt; font-weight: 900; color: white; letter-spacing: 3px; flex: 1; }
+.cs-stripe-sub { font-family: var(--fm); font-size: 5.5pt; color: rgba(255,255,255,.5); letter-spacing: 2px; display: block; margin-top: 0.5mm; }
+.cs-stripe-class { font-family: var(--fd); font-size: 24pt; font-weight: 900; letter-spacing: 2px; }
+.cs-stripe-class.s { color: #f5c842; text-shadow: 0 0 12px rgba(245,200,66,.6); }
+.cs-stripe-class.a { color: #4fc3f7; text-shadow: 0 0 12px rgba(79,195,247,.6); }
+.cs-stripe-class.b { color: #8aaad4; }
 
-.dossier-stats-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px;
-}
-.dossier-stat-box {
-  background: var(--blue-mid); border: 1px solid var(--border);
-  text-align: center; padding: 10px 0;
-}
-.dossier-stat-val { font-family: var(--fd); font-size: 24px; font-weight: 700; color: var(--cyan); }
-.dossier-stat-label { font-size: 9px; color: var(--white-dim); letter-spacing: 1px; text-transform: uppercase; margin-top: 3px; }
+.cs-body { padding: 6mm 10mm 18mm; display: grid; grid-template-columns: 48mm 1fr; gap: 5mm; }
 
-.dossier-block {
-  background: rgba(13,32,68,0.3); border: 1px solid var(--border);
-  padding: 12px; margin-bottom: 8px; font-size: 11px;
-  color: var(--white); line-height: 1.5; white-space: pre-wrap;
+.cs-portrait {
+  width: 48mm; height: 60mm; background: #dde8f5; border: 0.4mm solid #b0c4e8;
+  overflow: hidden; display: flex; align-items: center; justify-content: center;
+  font-size: 7pt; color: #8aaad4; margin-bottom: 3mm; position: relative;
 }
-.dossier-block.classified { border-color: var(--red); color: #ffccd0; }
-.dossier-talent-name { font-family: var(--fd); font-size: 10px; color: var(--cyan); font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; }
+.cs-portrait img { width: 100%; height: 100%; object-fit: cover; }
+
+.cs-sec-title {
+  font-family: var(--fd); font-size: 5.5pt; letter-spacing: 2px;
+  color: #1a3a6e; text-transform: uppercase; margin-bottom: 1.5mm;
+  display: flex; align-items: center; gap: 1.5mm; margin-top: 3mm;
+}
+.cs-sec-title:first-child { margin-top: 0; }
+.cs-sec-title::after { content: ''; flex: 1; height: 0.3mm; background: linear-gradient(to right, #1a3a6e, transparent); }
+
+.cs-infobox { background: white; border: 0.3mm solid #ccd8f0; padding: 1.5mm 2mm; margin-bottom: 1.5mm; }
+.cs-infobox-label { font-family: var(--fm); font-size: 4pt; color: #1a3a6e; letter-spacing: 0.5px; text-transform: uppercase; display: block; margin-bottom: 0.5mm; }
+.cs-infobox-value { font-family: var(--fd); font-size: 7pt; font-weight: 600; color: #0a1628; display: block; }
+
+.cs-identity { background: white; border: 0.3mm solid #ccd8f0; padding: 3mm 3.5mm; margin-bottom: 3mm; }
+.cs-pilot-name { font-family: var(--fd); font-size: 14pt; font-weight: 900; color: #0a1628; letter-spacing: 1px; margin-bottom: 0.5mm; }
+.cs-pilot-callsign { font-family: var(--fm); font-size: 7pt; color: #1a6e9e; letter-spacing: 2px; margin-bottom: 1.5mm; }
+.cs-identity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5mm; }
+.cs-id-field { border-top: 0.3mm solid #e0e8f5; padding-top: 1mm; }
+.cs-id-label { font-family: var(--fm); font-size: 4pt; color: #1a3a6e; letter-spacing: 0.5px; text-transform: uppercase; display: block; }
+.cs-id-value { font-family: var(--fb); font-weight: 600; font-size: 7pt; color: #0a1628; display: block; margin-top: 0.3mm; }
+
+.cs-stats-block { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5mm; margin-bottom: 2mm; }
+.cs-stat { background: white; border: 0.3mm solid #ccd8f0; padding: 2mm 1mm; text-align: center; position: relative; overflow: hidden; }
+.cs-stat::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1mm; }
+.cs-stat.hull::before { background: #e74c3c; }
+.cs-stat.agi::before { background: #2ecc71; }
+.cs-stat.sys::before { background: #3498db; }
+.cs-stat.eng::before { background: #f39c12; }
+.cs-stat-name { font-family: var(--fm); font-size: 4.5pt; color: #1a3a6e; display: block; margin-bottom: 1mm; margin-top: 0.5mm; }
+.cs-stat-val { font-family: var(--fd); font-size: 16pt; font-weight: 700; color: #0a1628; display: block; line-height: 1; }
+.cs-stat-sub { font-family: var(--fm); font-size: 3.5pt; color: #8aaad4; display: block; margin-top: 0.5mm; }
+
+.cs-derived { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5mm; margin-bottom: 3mm; }
+.cs-derived-box { background: white; border: 0.3mm solid #ccd8f0; padding: 1.5mm; text-align: center; }
+.cs-derived-label { font-family: var(--fm); font-size: 4pt; color: #1a3a6e; display: block; }
+.cs-derived-val { font-family: var(--fd); font-size: 12pt; font-weight: 700; color: #0a1628; }
+
+.cs-triggers { display: grid; grid-template-columns: 1fr 1fr; gap: 1mm; margin-bottom: 3mm; }
+.cs-trigger { background: white; border: 0.3mm solid #ccd8f0; padding: 1.5mm 2mm; display: flex; align-items: center; justify-content: space-between; }
+.cs-trigger-name { font-family: var(--fb); font-weight: 600; font-size: 6.5pt; color: #0a1628; display: block; }
+.cs-trigger-stat { font-family: var(--fm); font-size: 3.8pt; color: #1a3a6e; }
+.cs-trigger-val { font-family: var(--fd); font-size: 10pt; font-weight: 700; color: #0d84b3; }
+
+.cs-rollbox { background: white; border-left: 1mm solid #0d84b3; border-top: 0.3mm solid #ccd8f0; border-right: 0.3mm solid #ccd8f0; border-bottom: 0.3mm solid #ccd8f0; padding: 1.8mm 2mm; margin-bottom: 1.5mm; }
+.cs-rollbox.gold { border-left-color: #b8820a; }
+.cs-rollbox.green { border-left-color: #1a8a4a; }
+.cs-rollbox-label { font-family: var(--fm); font-size: 4pt; color: #1a3a6e; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 0.5mm; }
+.cs-rollbox-name { font-family: var(--fd); font-size: 7.5pt; font-weight: 700; color: #0a1628; margin-bottom: 0.5mm; }
+.cs-rollbox-benefit { font-size: 6pt; color: #1a6e3a; line-height: 1.4; }
+.cs-rollbox-neg { font-size: 6pt; color: #8a1a1a; }
+
+.cs-talent { background: white; border: 0.3mm solid #ccd8f0; padding: 1.8mm 2mm; margin-bottom: 1.5mm; position: relative; overflow: hidden; }
+.cs-talent::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 1mm; background: linear-gradient(to bottom, #f5c842, #b8820a); }
+.cs-talent-rank { font-family: var(--fm); font-size: 4pt; color: #b8820a; letter-spacing: 1px; margin-bottom: 0.3mm; }
+.cs-talent-name { font-family: var(--fd); font-size: 7pt; font-weight: 700; color: #0a1628; margin-bottom: 0.5mm; }
+.cs-talent-ability { font-size: 5.5pt; color: #2a3a5e; line-height: 1.4; }
+.cs-talent-ability strong { color: #0a1628; }
+
+.cs-mech { background: linear-gradient(135deg, #f0f5ff, #e8f0fe); border: 0.3mm solid #b0c4e8; padding: 2.5mm 3mm; margin-bottom: 2mm; }
+.cs-mech-frame { font-family: var(--fd); font-size: 9pt; font-weight: 900; color: #0a1628; margin-bottom: 0.5mm; }
+.cs-mech-sub { font-family: var(--fm); font-size: 5pt; color: #1a6e9e; letter-spacing: 1px; margin-bottom: 1.5mm; }
+.cs-mech-specs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1mm; }
+.cs-mspec { text-align: center; background: white; border: 0.2mm solid #ccd8f0; padding: 1mm; }
+.cs-mspec-label { font-family: var(--fm); font-size: 3.5pt; color: #1a3a6e; display: block; }
+.cs-mspec-val { font-family: var(--fd); font-size: 7pt; font-weight: 700; color: #0a1628; }
+
+.cs-notes-box { background: white; border: 0.3mm solid #ccd8f0; min-height: 16mm; padding: 2mm; font-size: 6pt; color: #2a3a5e; white-space: pre-wrap; line-height: 1.5; }
+
+.cs-footer { position: absolute; bottom: 5mm; left: 10mm; right: 10mm; display: flex; justify-content: space-between; align-items: center; border-top: 0.3mm solid #1a3a6e; padding-top: 1.5mm; }
+.cs-footer-text { font-family: var(--fm); font-size: 4.5pt; color: #8aaad4; letter-spacing: 0.5px; }
+.cs-footer-dots { display: flex; gap: 1mm; }
+.cs-footer-dot { width: 1.5mm; height: 1.5mm; border-radius: 50%; }
+
+.cs-bottom-accent { position: absolute; bottom: 0; left: 0; right: 0; height: 2mm; }
+.cs-bottom-accent.sc{background:linear-gradient(90deg,#0a1628,#f5c842,#0a1628)}
+.cs-bottom-accent.ac{background:linear-gradient(90deg,#0a1628,#4fc3f7,#0a1628)}
+.cs-bottom-accent.bc{background:linear-gradient(90deg,#0a1628,#8aaad4,#0a1628)}
 
 /* ── ID CARD PDF STYLES ── */
 #idcard-template {
@@ -1460,118 +1511,173 @@ async function generatePdf(studentId) {
   let bgHtml = '';
   if (char.background) {
     let bg = typeof char.background === 'string' ? JSON.parse(char.background) : char.background;
-    bgHtml += `<div class="dossier-block">
-      <div class="dossier-talent-name">BACKGROUND: ${bg.n}</div>
-      <div style="color:var(--green)">+ ${bg.b}</div>
-      <div style="color:var(--red)">- ${bg.neg}</div>
+    bgHtml += `<div class="cs-rollbox">
+      <div class="cs-rollbox-label">Family Background</div>
+      <div class="cs-rollbox-name">${bg.n}</div>
+      <div class="cs-rollbox-benefit">+ ${bg.b}</div>
+      <div class="cs-rollbox-neg">- ${bg.neg}</div>
     </div>`;
   }
   if (char.innate_talent) {
     let tal = typeof char.innate_talent === 'string' ? JSON.parse(char.innate_talent) : char.innate_talent;
-    bgHtml += `<div class="dossier-block">
-      <div class="dossier-talent-name">INNATE TALENT: ${tal.n}</div>
-      <div style="color:var(--green)">+ ${tal.b}</div>
-      <div style="color:var(--red)">- ${tal.neg}</div>
+    bgHtml += `<div class="cs-rollbox gold">
+      <div class="cs-rollbox-label">Innate Talent</div>
+      <div class="cs-rollbox-name">${tal.n}</div>
+      <div class="cs-rollbox-benefit">+ ${tal.b}</div>
+      <div class="cs-rollbox-neg">- ${tal.neg}</div>
     </div>`;
   }
   if (char.discipline) {
     let disc = typeof char.discipline === 'string' ? JSON.parse(char.discipline) : char.discipline;
-    bgHtml += `<div class="dossier-block">
-      <div class="dossier-talent-name">DISCIPLINE: ${disc.n}</div>
-      <div style="color:var(--green)">+ ${disc.b}</div>
-      <div style="color:var(--red)">- ${disc.neg}</div>
+    bgHtml += `<div class="cs-rollbox green">
+      <div class="cs-rollbox-label">Discipline / Willpower</div>
+      <div class="cs-rollbox-name">${disc.n}</div>
+      <div class="cs-rollbox-benefit">+ ${disc.b}</div>
+      <div class="cs-rollbox-neg">- ${disc.neg}</div>
     </div>`;
   }
 
   // Talents specific mapping
   const activeTalents = TALENTS_DATA.filter(t => talents.includes(t.id));
   let talentsHtml = activeTalents.length ? activeTalents.map(t => 
-    `<div class="dossier-block">
-       <div class="dossier-talent-name">${t.ico} ${t.n}</div>
-       <div><strong>${t.r1.n}:</strong> ${t.r1.d}</div>
+    `<div class="cs-talent">
+       <div class="cs-talent-rank">RANK I — ACTIVE</div>
+       <div class="cs-talent-name">${t.ico} ${t.n}</div>
+       <div class="cs-talent-ability"><strong>${t.r1.n}:</strong> ${t.r1.d}</div>
      </div>`
-  ).join('') : '<div class="dossier-k">NO TALENTS ACQUIRED</div>';
+  ).join('') : '<div style="font-size:6pt;color:#8aaad4;margin-bottom:2mm">NO TALENTS ACQUIRED</div>';
 
   // Triggers mapping
   const activeTriggers = TRIGGERS_DATA.filter(t => (triggers[t.id] || 0) > 0);
   let triggersHtml = activeTriggers.length ? activeTriggers.map(t =>
-    `<div class="dossier-kv"><span class="dossier-k">${t.n} (${t.stat})</span><span class="dossier-v" style="color:var(--cyan)">+${triggers[t.id]}</span></div>`
-  ).join('') : '<div class="dossier-k">NO SKILL TRIGGERS</div>';
+    `<div class="cs-trigger">
+       <div>
+         <span class="cs-trigger-name">${t.n}</span>
+         <span class="cs-trigger-stat">${t.stat}</span>
+       </div>
+       <span class="cs-trigger-val">+${triggers[t.id]}</span>
+     </div>`
+  ).join('') : '<div style="font-size:6pt;color:#8aaad4">NO SKILL TRIGGERS</div>';
+
+  let themeClass = 'b';
+  if(char.class_rank === 'S') themeClass = 'sc';
+  if(char.class_rank === 'A') themeClass = 'ac';
+  if(char.class_rank === 'B') themeClass = 'bc';
+
+  // Combine Narrative Notes (EXCLUDING Secrets) into Notes Box
+  let fullNotes = char.notes ? char.notes + '\\n\\n' : '';
+  if(char.relationship) fullNotes += 'RELATIONSHIP: ' + char.relationship + '\\n';
+  if(char.motivations) fullNotes += 'MOTIVATIONS: ' + char.motivations;
 
   // Populate hidden DOM container
   const container = document.getElementById('dossier-template');
   container.innerHTML = `
-    <div class="dossier-header">
-      ${portraitUrl 
-        ? `<img src="${portraitUrl}" class="dossier-portrait">` 
-        : `<div class="dossier-portrait" style="display:flex;align-items:center;justify-content:center;font-family:var(--fm);color:var(--white-dim);text-align:center;font-size:10px">NO<br>IMAGE</div>`
-      }
-      <div class="dossier-title">
-        <div class="dossier-h1">${escHtml(char.name || 'UNKNOWN RECORD')} ${char.callsign ? `"${escHtml(char.callsign)}"` : ''}</div>
-        <div class="dossier-h2">${char.role_title || 'CADET'} // ${char.faction || 'UNAFFILIATED'}</div>
-        <div class="dossier-id-box">
-          <div style="color:var(--white-dim)">STUDENT ID:</div><div style="color:var(--white);font-weight:700">${escHtml(char.student_id)}</div>
-          <div style="color:var(--white-dim)">TERMINAL PASS:</div><div style="color:var(--gold);font-weight:700;letter-spacing:2px">${escHtml(char.password || 'NOT SET')}</div>
-        </div>
+    <!-- TOP STRIPE -->
+    <div class="cs-stripe ${themeClass}">
+      <div class="cs-stripe-logo">AP</div>
+      <div style="flex:1">
+        <div class="cs-stripe-title">UNION PILOT ACADEMY</div>
+        <span class="cs-stripe-sub">CADET RECORD — AEGIS PRIME // LICENSE LEVEL 0</span>
       </div>
+      <div class="cs-stripe-class ${char.class_rank ? char.class_rank.toLowerCase() : ''}">${char.class_rank ? char.class_rank.toUpperCase() + '-CLASS' : '—'}</div>
     </div>
-    
-    <div class="dossier-grid">
+
+    <!-- BODY -->
+    <div class="cs-body">
       <!-- LEFT COLUMN -->
-      <div>
-        <div class="dossier-section">
-          <div class="dossier-sec-title">COMBAT METRICS</div>
-          <div class="dossier-stats-grid">
-            <div class="dossier-stat-box"><div class="dossier-stat-val" style="color:var(--white)">${char.hull || 0}</div><div class="dossier-stat-label">HULL</div></div>
-            <div class="dossier-stat-box"><div class="dossier-stat-val">${char.agi || 0}</div><div class="dossier-stat-label">AGILITY</div></div>
-            <div class="dossier-stat-box"><div class="dossier-stat-val">${char.sys || 0}</div><div class="dossier-stat-label">SYSTEMS</div></div>
-            <div class="dossier-stat-box"><div class="dossier-stat-val">${char.eng || 0}</div><div class="dossier-stat-label">ENGINEERING</div></div>
+      <div class="cs-left">
+        <div class="cs-portrait">
+          ${portraitUrl ? `<img src="${portraitUrl}">` : '<span>PORTRAIT</span>'}
+        </div>
+
+        <div class="cs-sec-title">Mech Frame</div>
+        <div class="cs-mech">
+          <div class="cs-mech-frame">${escHtml(char.mech_frame || 'Cadet Mark I')}</div>
+          <div class="cs-mech-sub">${escHtml(char.mech_manufacturer || 'GMS')} — TRAINING CLASS</div>
+          <div class="cs-mech-specs">
+            <div class="cs-mspec"><span class="cs-mspec-label">SIZE</span><span class="cs-mspec-val">1</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">SPEED</span><span class="cs-mspec-val">4</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">ARMOR</span><span class="cs-mspec-val">0</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">EVA</span><span class="cs-mspec-val">8</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">E-DEF</span><span class="cs-mspec-val">8</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">SENS</span><span class="cs-mspec-val">10</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">HEAT</span><span class="cs-mspec-val">6</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">REP</span><span class="cs-mspec-val">5</span></div>
           </div>
-          <div class="dossier-kv"><span class="dossier-k">MAX HIT POINTS</span><span class="dossier-v" style="color:var(--green)">${hp}</span></div>
-          <div class="dossier-kv"><span class="dossier-k">GRIT</span><span class="dossier-v">1/2 LEVEL</span></div>
-          <div class="dossier-kv"><span class="dossier-k">SPECIALIZATION</span><span class="dossier-v">${char.specialization || '—'}</span></div>
         </div>
 
-        <div class="dossier-section">
-          <div class="dossier-sec-title">SKILL TRIGGERS</div>
-          ${triggersHtml}
+        <div class="cs-sec-title">Specialization</div>
+        <div class="cs-infobox">
+          <span class="cs-infobox-label">Department Track</span>
+          <span class="cs-infobox-value">${escHtml(char.specialization || '—')}</span>
         </div>
 
-        <div class="dossier-section">
-          <div class="dossier-sec-title">MECH ASSET</div>
-          <div class="dossier-kv"><span class="dossier-k">FRAME</span><span class="dossier-v">${escHtml(char.mech_frame || '—')}</span></div>
-          <div class="dossier-kv"><span class="dossier-k">MANUFACTURER</span><span class="dossier-v">${escHtml(char.mech_manufacturer || '—')}</span></div>
+        <div class="cs-sec-title">Origin</div>
+        <div class="cs-infobox">
+          <span class="cs-infobox-label">Home World / Colony</span>
+          <span class="cs-infobox-value">${escHtml(char.origin || '—')}</span>
         </div>
-        
-        <div class="dossier-section">
-          <div class="dossier-sec-title">PERSONALIA</div>
-           <div class="dossier-kv"><span class="dossier-k">AGE</span><span class="dossier-v">${escHtml(char.age || '—')}</span></div>
-           <div class="dossier-kv"><span class="dossier-k">ORIGIN</span><span class="dossier-v">${escHtml(char.origin || '—')}</span></div>
-           <div class="dossier-kv"><span class="dossier-k">CLASS RANK</span><span class="dossier-v">${char.class_rank ? char.class_rank + '-CLASS' : '—'}</span></div>
+        <div class="cs-infobox">
+          <span class="cs-infobox-label">Faction Allegiance</span>
+          <span class="cs-infobox-value">${escHtml(char.faction || '—')}</span>
         </div>
       </div>
 
       <!-- RIGHT COLUMN -->
-      <div>
-        <div class="dossier-section">
-          <div class="dossier-sec-title">TRAITS & BACKGROUND</div>
-          ${bgHtml}
-        </div>
-        
-        <div class="dossier-section">
-          <div class="dossier-sec-title">OBTAINED TALENTS (RANK I)</div>
-          ${talentsHtml}
+      <div class="cs-right">
+        <!-- IDENTITY -->
+        <div class="cs-identity">
+          <div class="cs-pilot-name">${escHtml(char.name || '—')}</div>
+          <div class="cs-pilot-callsign">${char.callsign ? '"' + escHtml(char.callsign) + '"' : '—'}</div>
+          <div class="cs-identity-grid">
+            <div class="cs-id-field"><span class="cs-id-label">Age</span><span class="cs-id-value">${escHtml(char.age || '—')}</span></div>
+            <div class="cs-id-field"><span class="cs-id-label">Class Rank</span><span class="cs-id-value">${char.class_rank ? char.class_rank + ' Cadet' : '—'}</span></div>
+            <div class="cs-id-field"><span class="cs-id-label">License Level</span><span class="cs-id-value">0</span></div>
+          </div>
         </div>
 
-        <div class="dossier-section">
-          <div class="dossier-sec-title">NARRATIVE INTELLIGENCE</div>
-          ${char.relationship ? `<div class="dossier-block"><span class="dossier-k">RELATIONSHIP TO CADETS:</span><br>${escHtml(char.relationship)}</div>` : ''}
-          ${char.motivations ? `<div class="dossier-block"><span class="dossier-k">DRIVING MOTIVATIONS:</span><br>${escHtml(char.motivations)}</div>` : ''}
-          ${char.secrets ? `<div class="dossier-block classified"><span class="dossier-k">CLASSIFIED SECRETS:</span><br>${escHtml(char.secrets)}</div>` : ''}
-          ${char.notes ? `<div class="dossier-block"><span class="dossier-k">ADDITIONAL BIOS/NOTES:</span><br>${escHtml(char.notes)}</div>` : ''}
+        <!-- STATS -->
+        <div class="cs-sec-title">Pilot Stats</div>
+        <div class="cs-stats-block">
+          <div class="cs-stat hull"><span class="cs-stat-name">HULL</span><span class="cs-stat-val">${char.hull || 0}</span><span class="cs-stat-sub">Endurance</span></div>
+          <div class="cs-stat agi"><span class="cs-stat-name">AGILITY</span><span class="cs-stat-val">${char.agi || 0}</span><span class="cs-stat-sub">Reflexes</span></div>
+          <div class="cs-stat sys"><span class="cs-stat-name">SYSTEMS</span><span class="cs-stat-val">${char.sys || 0}</span><span class="cs-stat-sub">Tech</span></div>
+          <div class="cs-stat eng"><span class="cs-stat-name">ENGINEERING</span><span class="cs-stat-val">${char.eng || 0}</span><span class="cs-stat-sub">Power</span></div>
         </div>
+        <div class="cs-derived">
+          <div class="cs-derived-box"><span class="cs-derived-label">HP</span><span class="cs-derived-val">${hp}</span></div>
+          <div class="cs-derived-box"><span class="cs-derived-label">GRIT</span><span class="cs-derived-val">1/2 LVL</span></div>
+          <div class="cs-derived-box"><span class="cs-derived-label">LIC. LEVEL</span><span class="cs-derived-val">0</span></div>
+        </div>
+
+        <!-- TRIGGERS -->
+        <div class="cs-sec-title">Skill Triggers</div>
+        <div class="cs-triggers">${triggersHtml}</div>
+
+        <!-- BACKGROUND ROLLS -->
+        <div class="cs-sec-title">Background Rolls</div>
+        ${bgHtml}
+
+        <!-- TALENTS -->
+        <div class="cs-sec-title">Pilot Talents — Rank I</div>
+        <div>${talentsHtml}</div>
+
+        <!-- NOTES -->
+        <div class="cs-sec-title">Notes & File History</div>
+        <div class="cs-notes-box">${escHtml(fullNotes)}</div>
       </div>
     </div>
+
+    <div class="cs-footer">
+      <span class="cs-footer-text">UNION PILOT ACADEMY — AEGIS PRIME // CADET RECORD // YEAR 1</span>
+      <div class="cs-footer-dots">
+        <div class="cs-footer-dot" style="background:#4fc3f7"></div>
+        <div class="cs-footer-dot" style="background:#ccd8f0"></div>
+        <div class="cs-footer-dot" style="background:#ccd8f0"></div>
+      </div>
+      <span class="cs-footer-text">STUDENT ID: ${escHtml(char.student_id)} // ENROLLMENT ACTIVE</span>
+    </div>
+    <div class="cs-bottom-accent ${themeClass}"></div>
   `;
 
   // Make visible very briefly inside a zero-height container to render accurately
