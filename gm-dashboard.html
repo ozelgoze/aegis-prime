@@ -1114,7 +1114,11 @@ function renderGrid() {
 
   // Type filter
   if (currentFilter !== 'all') {
-    filtered = filtered.filter(c => c.type === currentFilter);
+    if (currentFilter === 'cadet') {
+      filtered = filtered.filter(c => c.type !== 'npc'); // Include both cadets and players
+    } else {
+      filtered = filtered.filter(c => c.type === currentFilter);
+    }
   }
 
   // Search filter
