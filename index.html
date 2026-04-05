@@ -707,6 +707,237 @@ body::before {
   .cursor-ring { display: none; }
   .gm-terminal { max-width: 100%; }
 }
+
+/* ══════════════════════════════════════════════
+   PRINT — SHARED
+   (Same as GM Dashboard for High Fidelity)
+══════════════════════════════════════════════ */
+#ps { display: none; }
+@media print {
+  body > *:not(#ps) { display: none !important; }
+  #ps { display: flex !important; justify-content: center; align-items: flex-start; margin: 0; padding: 0; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  @page { margin: 0; }
+}
+
+/* ── PDF DOSSIER PRINT STYLES ── */
+#dossier-template {
+  display: none;
+  width: 210mm; min-height: 297mm;
+  background: #f5f8ff;
+  font-family: var(--fb);
+  position: relative;
+  display: flex; flex-direction: column;
+  page-break-after: always;
+  box-sizing: border-box;
+}
+#dossier-template * { box-sizing: border-box; }
+.cs-stripe {
+  height: 14mm; display: flex; align-items: center; padding: 0 10mm;
+  position: relative; overflow: hidden;
+}
+.cs-stripe.sc { background: linear-gradient(135deg,#0a1628 0%,#2a4a1a 100%); }
+.cs-stripe.ac { background: linear-gradient(135deg,#0a1628 0%,#0d4472 100%); }
+.cs-stripe.bc { background: linear-gradient(135deg,#0a1628 0%,#2a3a5e 100%); }
+.cs-stripe::after {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0, rgba(255,255,255,.03) 1px, transparent 1px, transparent 60px);
+}
+.cs-stripe-logo {
+  width: 10mm; height: 10mm; border: 0.4mm solid rgba(255,255,255,.4); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--fd); font-size: 4pt; color: white; margin-right: 3mm; flex-shrink: 0;
+}
+.cs-stripe-title { font-family: var(--fd); font-size: 11pt; font-weight: 900; color: white; letter-spacing: 3px; flex: 1; }
+.cs-stripe-sub { font-family: var(--fm); font-size: 5.5pt; color: rgba(255,255,255,.5); letter-spacing: 2px; display: block; margin-top: 0.5mm; }
+.cs-stripe-class { font-family: var(--fd); font-size: 24pt; font-weight: 900; letter-spacing: 2px; }
+.cs-stripe-class.s { color: #f5c842; text-shadow: 0 0 12px rgba(245,200,66,.6); }
+.cs-stripe-class.a { color: #4fc3f7; text-shadow: 0 0 12px rgba(79,195,247,.6); }
+.cs-stripe-class.b { color: #8aaad4; }
+
+.cs-body { padding: 6mm 10mm 18mm; display: grid; grid-template-columns: 48mm 1fr; gap: 5mm; }
+
+.cs-portrait {
+  width: 48mm; height: 60mm; background: #dde8f5; border: 0.4mm solid #b0c4e8;
+  overflow: hidden; display: flex; align-items: center; justify-content: center;
+  font-size: 7pt; color: #8aaad4; margin-bottom: 3mm; position: relative;
+}
+.cs-portrait img { width: 100%; height: 100%; object-fit: cover; }
+
+.cs-sec-title {
+  font-family: var(--fd); font-size: 5.5pt; letter-spacing: 2px;
+  color: #1a3a6e; text-transform: uppercase; margin-bottom: 1.5mm;
+  display: flex; align-items: center; gap: 1.5mm; margin-top: 3mm;
+}
+.cs-sec-title:first-child { margin-top: 0; }
+.cs-sec-title::after { content: ''; flex: 1; height: 0.3mm; background: linear-gradient(to right, #1a3a6e, transparent); }
+
+.cs-infobox { background: white; border: 0.3mm solid #ccd8f0; padding: 1.5mm 2mm; margin-bottom: 1.5mm; }
+.cs-infobox-label { font-family: var(--fm); font-size: 4pt; color: #1a3a6e; letter-spacing: 0.5px; text-transform: uppercase; display: block; margin-bottom: 0.5mm; }
+.cs-infobox-value { font-family: var(--fd); font-size: 7pt; font-weight: 600; color: #0a1628; display: block; }
+
+.cs-identity { background: white; border: 0.3mm solid #ccd8f0; padding: 3mm 3.5mm; margin-bottom: 3mm; }
+.cs-pilot-name { font-family: var(--fd); font-size: 14pt; font-weight: 900; color: #0a1628; letter-spacing: 1px; margin-bottom: 0.5mm; }
+.cs-pilot-callsign { font-family: var(--fm); font-size: 7pt; color: #1a6e9e; letter-spacing: 2px; margin-bottom: 1.5mm; }
+.cs-identity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5mm; }
+.cs-id-field { border-top: 0.3mm solid #e0e8f5; padding-top: 1mm; }
+.cs-id-label { font-family: var(--fm); font-size: 4pt; color: #1a3a6e; letter-spacing: 0.5px; text-transform: uppercase; display: block; }
+.cs-id-value { font-family: var(--fb); font-weight: 600; font-size: 7pt; color: #0a1628; display: block; margin-top: 0.3mm; }
+
+.cs-stats-block { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5mm; margin-bottom: 2mm; }
+.cs-stat { background: white; border: 0.3mm solid #ccd8f0; padding: 2mm 1mm; text-align: center; position: relative; overflow: hidden; }
+.cs-stat::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1mm; }
+.cs-stat.hull::before { background: #e74c3c; }
+.cs-stat.agi::before { background: #2ecc71; }
+.cs-stat.sys::before { background: #3498db; }
+.cs-stat.eng::before { background: #f39c12; }
+.cs-stat-name { font-family: var(--fm); font-size: 4.5pt; color: #1a3a6e; display: block; margin-bottom: 1mm; margin-top: 0.5mm; }
+.cs-stat-val { font-family: var(--fd); font-size: 16pt; font-weight: 700; color: #0a1628; display: block; line-height: 1; }
+.cs-stat-sub { font-family: var(--fm); font-size: 3.5pt; color: #8aaad4; display: block; margin-top: 0.5mm; }
+
+.cs-derived { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5mm; margin-bottom: 3mm; }
+.cs-derived-box { background: white; border: 0.3mm solid #ccd8f0; padding: 1.5mm; text-align: center; }
+.cs-derived-label { font-family: var(--fm); font-size: 4pt; color: #1a3a6e; display: block; }
+.cs-derived-val { font-family: var(--fd); font-size: 12pt; font-weight: 700; color: #0a1628; }
+
+.cs-triggers { display: grid; grid-template-columns: 1fr 1fr; gap: 1mm; margin-bottom: 3mm; }
+.cs-trigger { background: white; border: 0.3mm solid #ccd8f0; padding: 1.5mm 2mm; display: flex; align-items: center; justify-content: space-between; }
+.cs-trigger-name { font-family: var(--fb); font-weight: 600; font-size: 6.5pt; color: #0a1628; display: block; }
+.cs-trigger-stat { font-family: var(--fm); font-size: 3.8pt; color: #1a3a6e; }
+.cs-trigger-val { font-family: var(--fd); font-size: 10pt; font-weight: 700; color: #0d84b3; }
+
+.cs-rollbox { background: white; border-left: 1mm solid #0d84b3; border-top: 0.3mm solid #ccd8f0; border-right: 0.3mm solid #ccd8f0; border-bottom: 0.3mm solid #ccd8f0; padding: 1.8mm 2mm; margin-bottom: 1.5mm; }
+.cs-rollbox.gold { border-left-color: #b8820a; }
+.cs-rollbox.green { border-left-color: #1a8a4a; }
+.cs-rollbox-label { font-family: var(--fm); font-size: 4pt; color: #1a3a6e; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 0.5mm; }
+.cs-rollbox-name { font-family: var(--fd); font-size: 7.5pt; font-weight: 700; color: #0a1628; margin-bottom: 0.5mm; }
+.cs-rollbox-benefit { font-size: 6pt; color: #1a6e3a; line-height: 1.4; }
+.cs-rollbox-neg { font-size: 6pt; color: #8a1a1a; }
+
+.cs-talent { background: white; border: 0.3mm solid #ccd8f0; padding: 1.8mm 2mm; margin-bottom: 1.5mm; position: relative; overflow: hidden; }
+.cs-talent::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 1mm; background: linear-gradient(to bottom, #f5c842, #b8820a); }
+.cs-talent-rank { font-family: var(--fm); font-size: 4pt; color: #b8820a; letter-spacing: 1px; margin-bottom: 0.3mm; }
+.cs-talent-name { font-family: var(--fd); font-size: 7pt; font-weight: 700; color: #0a1628; margin-bottom: 0.5mm; }
+.cs-talent-ability { font-size: 5.5pt; color: #2a3a5e; line-height: 1.4; }
+.cs-talent-ability strong { color: #0a1628; }
+
+.cs-mech { background: linear-gradient(135deg, #f0f5ff, #e8f0fe); border: 0.3mm solid #b0c4e8; padding: 2.5mm 3mm; margin-bottom: 2mm; }
+.cs-mech-frame { font-family: var(--fd); font-size: 9pt; font-weight: 900; color: #0a1628; margin-bottom: 0.5mm; }
+.cs-mech-sub { font-family: var(--fm); font-size: 5pt; color: #1a6e9e; letter-spacing: 1px; margin-bottom: 1.5mm; }
+.cs-mech-specs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1mm; }
+.cs-mspec { text-align: center; background: white; border: 0.2mm solid #ccd8f0; padding: 1mm; }
+.cs-mspec-label { font-family: var(--fm); font-size: 3.5pt; color: #1a3a6e; display: block; }
+.cs-mspec-val { font-family: var(--fd); font-size: 7pt; font-weight: 700; color: #0a1628; }
+
+.cs-notes-box { background: white; border: 0.3mm solid #ccd8f0; min-height: 16mm; padding: 2mm; font-size: 6pt; color: #2a3a5e; white-space: pre-wrap; line-height: 1.5; }
+
+.cs-footer { margin-top: auto; display: flex; justify-content: space-between; align-items: center; border-top: 0.3mm solid #1a3a6e; padding-top: 1.5mm; margin-left: 10mm; margin-right: 10mm; margin-bottom: 5mm; }
+.cs-footer-text { font-family: var(--fm); font-size: 4.5pt; color: #8aaad4; letter-spacing: 0.5px; }
+.cs-footer-dots { display: flex; gap: 1mm; }
+.cs-footer-dot { width: 1.5mm; height: 1.5mm; border-radius: 50%; }
+
+.cs-bottom-accent { height: 2mm; width: 100%; }
+.cs-bottom-accent.sc{background:linear-gradient(90deg,#0a1628,#f5c842,#0a1628)}
+.cs-bottom-accent.ac{background:linear-gradient(90deg,#0a1628,#4fc3f7,#0a1628)}
+.cs-bottom-accent.bc{background:linear-gradient(90deg,#0a1628,#8aaad4,#0a1628)}
+
+/* ── ID CARD PDF STYLES ── */
+#idcard-template {
+  display: none;
+  width: 85.6mm; height: 53.98mm; /* CR-80 Credit Card size Standard */
+  background: white; font-family: var(--fb); position: relative;
+  overflow: hidden; box-sizing: border-box;
+}
+#idcard-template * { box-sizing: border-box; }
+.id-header {
+  background: linear-gradient(135deg,#0a1628 0%,#1a3a6e 100%);
+  padding: 2.5mm 3mm 2mm; display: flex; align-items: center; gap: 2mm;
+  flex-shrink: 0;
+}
+.id-logo-ring {
+  width: 7mm; height: 7mm; border: 0.4mm solid #4fc3f7; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--fd); font-size: 4pt; font-weight: 700; color: #4fc3f7;
+}
+.id-org { color: white; flex: 1; }
+.id-org-main { font-family: var(--fd); font-size: 5.5pt; font-weight: 700; letter-spacing: 1.5px; display: block; line-height: 1.2; }
+.id-org-sub { font-family: var(--fm); font-size: 4pt; color: #4fc3f7; letter-spacing: 1px; display: block; margin-top: 0.5mm; }
+.id-class-badge {
+  font-family: var(--fd); font-size: 11pt; font-weight: 900;
+  width: 9mm; height: 9mm; border: 0.5mm solid; border-radius: 1mm;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.id-class-badge.s { color: #f5c842; border-color: #f5c842; background: rgba(245,200,66,.15); }
+.id-class-badge.a { color: #4fc3f7; border-color: #4fc3f7; background: rgba(79,195,247,.15); }
+.id-class-badge.b { color: #8aaad4; border-color: #8aaad4; background: rgba(138,170,212,.15); }
+.id-body {
+  flex: 1; display: flex; gap: 0; padding: 0; overflow: hidden; height: calc(53.98mm - 11mm);
+}
+.id-photo-col {
+  width: 20mm; flex-shrink: 0; background: #e8f0fe; border-right: 0.3mm solid #ccd8f0;
+  overflow: hidden; position: relative; height: 100%;
+}
+.id-photo-col img { width: 100%; height: 100%; object-fit: cover; }
+.id-photo-placeholder {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  font-family: var(--fm); font-size: 5pt; color: #8aaad4; flex-direction: column; gap: 1mm;
+}
+.id-info { flex: 1; padding: 2.5mm 2.5mm 1.5mm; display: flex; flex-direction: column; justify-content: space-between; }
+.id-name { font-family: var(--fd); font-size: 7pt; font-weight: 700; color: #0a1628; letter-spacing: 0.5px; margin-bottom: 0.5mm; line-height: 1.2; }
+.id-callsign { font-family: var(--fm); font-size: 5pt; color: #1a6e9e; letter-spacing: 1px; margin-bottom: 2mm; }
+.id-fields { display: grid; gap: 1mm; }
+.id-field { border-bottom: 0.2mm solid #dde8f5; padding-bottom: 0.5mm; }
+.id-field-label { font-family: var(--fm); font-size: 4pt; color: #1a3a6e; letter-spacing: 0.5px; text-transform: uppercase; display: block; }
+.id-field-value { font-family: var(--fb); font-size: 6pt; font-weight: 600; color: #0a1628; display: block; margin-top: 0.2mm; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.id-field-small { display: grid; grid-template-columns: 1fr 1fr; gap: 1mm; }
+.id-watermark {
+  position: absolute; bottom: 5mm; right: 2mm; font-family: var(--fd); font-size: 18pt;
+  font-weight: 900; color: rgba(10,22,40,.04); letter-spacing: 2px; pointer-events: none;
+}
+.id-accent {
+  position: absolute; left: 20mm; top: 14mm; bottom: 7mm;
+  width: 0.4mm; background: linear-gradient(to bottom,#4fc3f7,#1a3a6e); opacity: 0.4;
+}
+
+/* ── MECHA SHEET PDF STYLES ── */
+#mechsheet-template {
+  display: none;
+  background: white; font-family: var(--fb); color: #0a1628;
+  padding: 10mm; width: 210mm; min-height: 297mm;
+  box-sizing: border-box;
+}
+.ms-header {
+  border-bottom: 2px solid #0a1628;
+  padding-bottom: 5mm; margin-bottom: 8mm;
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+.ms-title { font-family: var(--fd); font-size: 18pt; font-weight: 900; letter-spacing: 2px; }
+.ms-subtitle { font-family: var(--fm); font-size: 10pt; color: #1a6e9e; letter-spacing: 1px; }
+
+.ms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10mm; }
+
+.ms-section { margin-bottom: 8mm; }
+.ms-sec-title {
+  font-family: var(--fd); font-size: 10pt; font-weight: 700;
+  border-bottom: 1px solid #ccd8f0; padding-bottom: 2mm; margin-bottom: 4mm;
+  display: flex; align-items: center; gap: 3mm;
+}
+.ms-sec-title::after { content:''; flex:1; height:0.5mm; background:#eee; }
+
+.ms-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; }
+.ms-stat-box { border: 0.3mm solid #0a1628; padding: 2mm; text-align: center; }
+.ms-stat-val { font-family: var(--fd); font-size: 14pt; font-weight: 700; }
+.ms-stat-label { font-family: var(--fm); font-size: 6pt; text-transform: uppercase; }
+
+.ms-mount { border-left: 1mm solid #0a1628; padding-left: 4mm; margin-bottom: 5mm; }
+.ms-mount-label { font-family: var(--fm); font-size: 7pt; color: #1a6e9e; text-transform: uppercase; }
+.ms-mount-name { font-family: var(--fd); font-size: 11pt; font-weight: 700; }
+
+.ms-system { display: flex; justify-content: space-between; border-bottom: 0.2mm solid #eee; padding: 2mm 0; }
+.ms-system-name { font-weight: 600; font-size: 10pt; }
+.ms-system-cost { font-family: var(--fm); font-size: 8pt; border: 0.2mm solid #0a1628; padding: 0.5mm 1.5mm; }
+
+.ms-footer { border-top: 1px solid #eee; margin-top: 10mm; padding-top: 5mm; display: flex; justify-content: space-between; font-family: var(--fm); font-size: 8pt; color: #888; }
 </style>
 </head>
 <body>
@@ -918,6 +1149,412 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
   obs.observe(el);
 });
 
+// ── DATA CATALOGS ──
+const TRIGGERS_DATA = [
+  {id:"atf",n:"Applying Fists to Faces",stat:"HULL",d:"Brawling, improvised weapons, overpowering physically."},
+  {id:"asl",n:"Assault",stat:"HULL",d:"Charging enemies, breaching fortifications, overwhelming resistance."},
+  {id:"sc",n:"Stay Cool",stat:"HULL",d:"Endure pain, avoid panic, resist torture, survive extremes."},
+  {id:"tc",n:"Take Control",stat:"HULL",d:"Seize the moment, impose your will through dominance."},
+  {id:"mao",n:"Move As One",stat:"AGILITY",d:"Coordinated movement, rapid retreat, flanking maneuvers."},
+  {id:"thr",n:"Threaten",stat:"AGILITY",d:"Intimidate or coerce through presence or force."},
+  {id:"spt",n:"Spot",stat:"AGILITY",d:"Notice hidden threats, detect traps, read situations."},
+  {id:"aus",n:"Act Unseen",stat:"AGILITY",d:"Move stealthily, slip past security unnoticed."},
+  {id:"hck",n:"Hack",stat:"SYSTEMS",d:"Infiltrate electronic systems, override security."},
+  {id:"pat",n:"Patch",stat:"SYSTEMS",d:"Jury-rig repairs, emergency medical care."},
+  {id:"scn",n:"Scan",stat:"SYSTEMS",d:"Analyze targets, identify weaknesses, process sensor data."},
+  {id:"gf",n:"Get Focused",stat:"ENGINEERING",d:"Hyper-concentration, technical mastery under pressure."}
+];
+
+const TALENTS_DATA = [
+  {id:"ace",ico:"✈",n:"Ace",r1:{n:"Afterburners",d:"1/round when you Boost, ignore engagement and move through actors."}},
+  {id:"braw",ico:"👊",n:"Brawler",r1:{n:"Martial Artist",d:"Melee attacks deal 1 bonus damage on hit."}},
+  {id:"cent",ico:"⚙",n:"Centimane",r1:{n:"Snap Loader",d:"Reloading is a free action. Can reload as part of Skirmish once."}},
+  {id:"cshot",ico:"🎯",n:"Crack Shot",r1:{n:"Elimination Shot",d:"1/round on ranged attack, reroll one die and keep either result."}},
+  {id:"dcmd",ico:"◉",n:"Drone Commander",r1:{n:"Field Commander",d:"Drones activate when you activate. Give orders as free actions."}},
+  {id:"duel",ico:"⚔",n:"Duelist",r1:{n:"Challenge",d:"1/scene, mark a Rival. +1 Accuracy against Rival on all attacks."}},
+  {id:"guns",ico:"🔫",n:"Gunslinger",r1:{n:"Quick Draw",d:"Draw/holster as free actions. Once/round, Skirmish as quick action."}},
+  {id:"hack",ico:"💻",n:"Hacker",r1:{n:"Infiltrator",d:"On successful Invade, become Hidden to that system until next turn."}},
+  {id:"heav",ico:"🛡",n:"Heavy",r1:{n:"Armor Up",d:"Gain +1 Armor (stacks). When you take Structure damage, regain 2 HP."}},
+  {id:"infl",ico:"👁",n:"Infiltrator",r1:{n:"Cloak",d:"1/scene, become Hidden until end of next turn or until you attack. +1d6 from hiding."}},
+  {id:"lead",ico:"★",n:"Leader",r1:{n:"Rally",d:"1/scene quick action: ally may move 3 spaces or attack as a reaction."}},
+  {id:"medc",ico:"✚",n:"Medic",r1:{n:"Triage",d:"Stabilize Dying as quick action. Patch gives +2 additional HP."}},
+  {id:"mech",ico:"🔧",n:"Mechanic",r1:{n:"Rapid Repair",d:"When you Stabilize, regain 1 additional HP and clear extra system."}},
+  {id:"nuke",ico:"☢",n:"Nuclear Cavalier",r1:{n:"Hot Swap",d:"Improvised Attack deals energy damage, clear 1 heat free."}},
+  {id:"pilot",ico:"🎖",n:"Pilot",r1:{n:"System Familiarity",d:"Use all GMS systems without licensing. GMS weapons don't count vs system points."}},
+  {id:"siege",ico:"💣",n:"Siege Specialist",r1:{n:"Breach",d:"Attacks vs structures deal double damage. Blow holes in cover as Full Action."}},
+  {id:"skrm",ico:"⚡",n:"Skirmisher",r1:{n:"Evasive",d:"When you Boost, don't provoke reactions until end of your turn."}},
+  {id:"spot",ico:"🔭",n:"Spotter",r1:{n:"Mark Target",d:"Quick action: mark enemy. Allied ranged attacks gain +1 Accuracy vs that enemy."}},
+  {id:"strat",ico:"♟",n:"Strategist",r1:{n:"Intel Brief",d:"At combat start, allies gain +1 Accuracy on first attack vs chosen enemy each round."}},
+  {id:"strm",ico:"⛈",n:"Stormbringer",r1:{n:"Overcharge",d:"When you Overcharge, take 1 less heat, gain +1 Accuracy on next attack."}},
+  {id:"tech",ico:"🔬",n:"Technophile",r1:{n:"System Expert",d:"Once/scene, use any equipped system without paying activation cost."}},
+  {id:"warmo",ico:"🗄",n:"Walking Armory",r1:{n:"Arsenal",d:"Carry one additional weapon without counting against mount restrictions."}}
+];
+
+const SYSTEM_CATALOG = [
+  { id: 'pers', name: 'Personalizations (+2 HP)', cost: 1 },
+  { id: 'paint', name: 'Custom Paint Job', cost: 1 },
+  { id: 'comp', name: 'Expanded Compartment', cost: 1 },
+  { id: 'manip', name: 'Manipulators', cost: 1 },
+  { id: 'smoke', name: 'Pattern-A Smoke Charges', cost: 1 },
+  { id: 'shield1', name: 'GMS Shield Type-I', cost: 2 },
+  { id: 'hex', name: 'Hex Charges', cost: 2 },
+  { id: 'turret', name: 'Turret Drones', cost: 2 },
+  { id: 'flight', name: 'Type-I Flight System', cost: 3 }
+];
+
+// ── HELPERS ──
+function escHtml(s) {
+  return (s || '').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+function escAttr(s) {
+  return (s || '').toString().replace(/'/g,"\\'").replace(/"/g,'&quot;');
+}
+function convertDriveUrl(url) {
+  if (!url) return '';
+  if (url.includes('drive.google.com/file/d/')) {
+    const id = url.split('/d/')[1].split('/')[0];
+    return `https://lh3.googleusercontent.com/u/0/d/${id}=w1000`;
+  }
+  return url;
+}
+
+// ── PDF GENERATION FUNCTIONS ──
+async function generatePdf(char) {
+  if (!char) return;
+
+  // Parse arrays safely
+  let talents = [];
+  try { talents = typeof char.talents === 'string' ? JSON.parse(char.talents) : (char.talents || []); } catch(e){}
+  
+  let triggers = {};
+  try { triggers = typeof char.triggers === 'string' ? JSON.parse(char.triggers) : (char.triggers || {}); } catch(e){}
+
+  const portraitUrl = char.portrait_url ? convertDriveUrl(char.portrait_url) : '';
+  const hp = 10 + ((char.hull || 0) * 2);
+
+  // Backgrounds & Traits processing
+  let bgHtml = '';
+  if (char.background) {
+    let bg = typeof char.background === 'string' ? JSON.parse(char.background) : char.background;
+    bgHtml += `<div class="cs-rollbox">
+      <div class="cs-rollbox-label">Family Background</div>
+      <div class="cs-rollbox-name">${bg.n}</div>
+      <div class="cs-rollbox-benefit">+ ${bg.b}</div>
+      <div class="cs-rollbox-neg">- ${bg.neg}</div>
+    </div>`;
+  }
+  if (char.innate_talent) {
+    let tal = typeof char.innate_talent === 'string' ? JSON.parse(char.innate_talent) : char.innate_talent;
+    bgHtml += `<div class="cs-rollbox gold">
+      <div class="cs-rollbox-label">Innate Talent</div>
+      <div class="cs-rollbox-name">${tal.n}</div>
+      <div class="cs-rollbox-benefit">+ ${tal.b}</div>
+      <div class="cs-rollbox-neg">- ${tal.neg}</div>
+    </div>`;
+  }
+  if (char.discipline) {
+    let disc = typeof char.discipline === 'string' ? JSON.parse(char.discipline) : char.discipline;
+    bgHtml += `<div class="cs-rollbox green">
+      <div class="cs-rollbox-label">Discipline / Willpower</div>
+      <div class="cs-rollbox-name">${disc.n}</div>
+      <div class="cs-rollbox-benefit">+ ${disc.b}</div>
+      <div class="cs-rollbox-neg">- ${disc.neg}</div>
+    </div>`;
+  }
+
+  // Talents specific mapping
+  const activeTalents = TALENTS_DATA.filter(t => talents.includes(t.id));
+  let talentsHtml = activeTalents.length ? activeTalents.map(t => 
+    `<div class="cs-talent">
+       <div class="cs-talent-rank">RANK I — ACTIVE</div>
+       <div class="cs-talent-name">${t.ico} ${t.n}</div>
+       <div class="cs-talent-ability"><strong>${t.r1.n}:</strong> ${t.r1.d}</div>
+     </div>`
+  ).join('') : '<div style="font-size:6pt;color:#8aaad4;margin-bottom:2mm">NO TALENTS ACQUIRED</div>';
+
+  // Triggers mapping
+  const activeTriggers = TRIGGERS_DATA.filter(t => (triggers[t.id] || 0) > 0);
+  let triggersHtml = activeTriggers.length ? activeTriggers.map(t =>
+    `<div class="cs-trigger">
+       <div>
+         <span class="cs-trigger-name">${t.n}</span>
+         <span class="cs-trigger-stat">${t.d}</span>
+       </div>
+       <span class="cs-trigger-val">+${triggers[t.id]}</span>
+     </div>`
+  ).join('') : '<div style="font-size:6pt;color:#8aaad4">NO SKILL TRIGGERS</div>';
+
+  let themeClass = 'b';
+  if(char.class_rank === 'S' || char.class_rank === 's') themeClass = 'sc';
+  if(char.class_rank === 'A' || char.class_rank === 'a') themeClass = 'ac';
+  if(char.class_rank === 'B' || char.class_rank === 'b') themeClass = 'bc';
+
+  // Combine Narrative Notes (EXCLUDING Secrets) into Notes Box
+  let fullNotes = char.notes ? char.notes + '\n\n' : '';
+  if(char.relationship) fullNotes += 'RELATIONSHIP: ' + char.relationship + '\n';
+  if(char.motivations) fullNotes += 'MOTIVATIONS: ' + char.motivations;
+
+  // Populate hidden DOM container
+  const container = document.getElementById('ps');
+  container.innerHTML = `
+    <div id="dossier-template" style="display:flex">
+    <div class="cs-page">
+    <!-- TOP STRIPE -->
+    <div class="cs-stripe ${themeClass}">
+      <div class="cs-stripe-logo">AP</div>
+      <div style="flex:1">
+        <div class="cs-stripe-title">UNION PILOT ACADEMY</div>
+        <span class="cs-stripe-sub">CADET RECORD — AEGIS PRIME // LICENSE LEVEL 0</span>
+      </div>
+      <div class="cs-stripe-class ${char.class_rank ? char.class_rank.toLowerCase() : ''}">${char.class_rank ? char.class_rank.toUpperCase() + '-CLASS' : '—'}</div>
+    </div>
+
+    <!-- BODY -->
+    <div class="cs-body">
+      <!-- LEFT COLUMN -->
+      <div class="cs-left">
+        <div class="cs-portrait">
+          ${portraitUrl ? `<img src="${portraitUrl}">` : '<span>PORTRAIT</span>'}
+        </div>
+
+        <div class="cs-sec-title">Mech Frame</div>
+        <div class="cs-mech">
+          <div class="cs-mech-frame">${escHtml(char.mech_frame || 'Cadet Mark I')}</div>
+          <div class="cs-mech-sub">${escHtml(char.mech_manufacturer || 'GMS')} — TRAINING CLASS</div>
+          <div class="cs-mech-specs">
+            <div class="cs-mspec"><span class="cs-mspec-label">SIZE</span><span class="cs-mspec-val">1</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">SPEED</span><span class="cs-mspec-val">4</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">ARMOR</span><span class="cs-mspec-val">0</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">EVA</span><span class="cs-mspec-val">8</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">E-DEF</span><span class="cs-mspec-val">8</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">SENS</span><span class="cs-mspec-val">10</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">HEAT</span><span class="cs-mspec-val">6</span></div>
+            <div class="cs-mspec"><span class="cs-mspec-label">REP</span><span class="cs-mspec-val">5</span></div>
+          </div>
+        </div>
+
+        <div class="cs-sec-title">Specialization</div>
+        <div class="cs-infobox">
+          <span class="cs-infobox-label">Department Track</span>
+          <span class="cs-infobox-value">${escHtml(char.specialization || '—')}</span>
+        </div>
+
+        <div class="cs-sec-title">Origin</div>
+        <div class="cs-infobox">
+          <span class="cs-infobox-label">Home World / Colony</span>
+          <span class="cs-infobox-value">${escHtml(char.origin || '—')}</span>
+        </div>
+        <div class="cs-infobox">
+          <span class="cs-infobox-label">Faction Allegiance</span>
+          <span class="cs-infobox-value">${escHtml(char.faction || '—')}</span>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="cs-right">
+        <div class="cs-identity">
+          <div class="cs-pilot-name">${escHtml(char.name || '—')}</div>
+          <div class="cs-pilot-callsign">${char.callsign ? '"' + escHtml(char.callsign) + '"' : '—'}</div>
+          <div class="cs-identity-grid">
+            <div class="cs-id-field"><span class="cs-id-label">Age</span><span class="cs-id-value">${escHtml(char.age || '—')}</span></div>
+            <div class="cs-id-field"><span class="cs-id-label">Class Rank</span><span class="cs-id-value">${char.class_rank ? char.class_rank + ' Cadet' : '—'}</span></div>
+            <div class="cs-id-field"><span class="cs-id-label">License Level</span><span class="cs-id-value">0</span></div>
+          </div>
+        </div>
+
+        <div class="cs-sec-title">Pilot Stats</div>
+        <div class="cs-stats-block">
+          <div class="cs-stat hull"><span class="cs-stat-name">HULL</span><span class="cs-stat-val">${char.hull || 0}</span><span class="cs-stat-sub">Endurance</span></div>
+          <div class="cs-stat agi"><span class="cs-stat-name">AGILITY</span><span class="cs-stat-val">${char.agi || 0}</span><span class="cs-stat-sub">Reflexes</span></div>
+          <div class="cs-stat sys"><span class="cs-stat-name">SYSTEMS</span><span class="cs-stat-val">${char.sys || 0}</span><span class="cs-stat-sub">Tech</span></div>
+          <div class="cs-stat eng"><span class="cs-stat-name">ENGINEERING</span><span class="cs-stat-val">${char.eng || 0}</span><span class="cs-stat-sub">Power</span></div>
+        </div>
+        <div class="cs-derived">
+          <div class="cs-derived-box"><span class="cs-derived-label">HP</span><span class="cs-derived-val">${hp}</span></div>
+          <div class="cs-derived-box"><span class="cs-derived-label">GRIT</span><span class="cs-derived-val">1/2 LVL</span></div>
+          <div class="cs-derived-box"><span class="cs-derived-label">LIC. LEVEL</span><span class="cs-derived-val">0</span></div>
+        </div>
+
+        <div class="cs-sec-title">Skill Triggers</div>
+        <div class="cs-triggers">${triggersHtml}</div>
+
+        <div class="cs-sec-title">Background Rolls</div>
+        ${bgHtml}
+
+        <div class="cs-sec-title">Pilot Talents — Rank I</div>
+        <div>${talentsHtml}</div>
+
+        <div class="cs-sec-title">Notes & File History</div>
+        <div class="cs-notes-box">${escHtml(fullNotes)}</div>
+      </div>
+    </div>
+
+    <div class="cs-footer">
+      <span class="cs-footer-text">UNION PILOT ACADEMY — AEGIS PRIME // CADET RECORD // YEAR 1</span>
+      <div class="cs-footer-dots">
+        <div class="cs-footer-dot" style="background:#4fc3f7"></div>
+        <div class="cs-footer-dot" style="background:#ccd8f0"></div>
+        <div class="cs-footer-dot" style="background:#ccd8f0"></div>
+      </div>
+      <span class="cs-footer-text">STUDENT ID: ${escHtml(char.student_id)} // ENROLLMENT ACTIVE</span>
+    </div>
+    <div class="cs-bottom-accent ${themeClass}"></div>
+    </div>
+    </div>
+  `;
+
+  setTimeout(() => { window.print(); }, 300);
+}
+
+async function generateMechPdf(char) {
+  if (!char || !char.mech_loadout) return;
+
+  const loadout = typeof char.mech_loadout === 'string' ? JSON.parse(char.mech_loadout) : char.mech_loadout;
+  const hull = char.hull || 0;
+  const agi = char.agi || 0;
+  const sys = char.sys || 0;
+  const eng = char.eng || 0;
+
+  const hp = 10 + (hull * 2) + (loadout.systems?.includes('pers') ? 2 : 0);
+  const eva = 8 + agi;
+  const spd = 4 + Math.floor(agi / 2);
+  const heat = 6 + eng;
+  const rep = 5 + hull;
+  const edef = 8 + sys;
+  const spMax = 6 + sys;
+
+  const activeSystems = (loadout.systems || []).map(sid => SYSTEM_CATALOG.find(s => s.id === sid)).filter(Boolean);
+
+  const container = document.getElementById('ps');
+  container.innerHTML = `
+    <div id="mechsheet-template" style="display:block">
+      <div class="ms-header">
+        <div>
+          <div class="ms-title">${escHtml(char.mech_frame || 'Cadet Mark I')}</div>
+          <div class="ms-subtitle">GMS STANDARD FRAME // PILOT: ${escHtml(char.name)}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:var(--fm);font-size:8pt;color:#888">LICENSE LEVEL 0</div>
+        </div>
+      </div>
+
+      <div class="ms-grid">
+        <div>
+          <div class="ms-section">
+            <div class="ms-sec-title">MECHANICAL SPECIFICATIONS</div>
+            <div class="ms-stat-grid">
+              <div class="ms-stat-box"><div class="ms-stat-val">${hp}</div><div class="ms-stat-label">HP</div></div>
+              <div class="ms-stat-box"><div class="ms-stat-val">0</div><div class="ms-stat-label">Armor</div></div>
+              <div class="ms-stat-box"><div class="ms-stat-val">${eva}</div><div class="ms-stat-label">Evasion</div></div>
+              <div class="ms-stat-box"><div class="ms-stat-val">${spd}</div><div class="ms-stat-label">Speed</div></div>
+              <div class="ms-stat-box"><div class="ms-stat-val">${heat}</div><div class="ms-stat-label">Heat Cap</div></div>
+              <div class="ms-stat-box"><div class="ms-stat-val">${rep}</div><div class="ms-stat-label">Rep Cap</div></div>
+              <div class="ms-stat-box"><div class="ms-stat-val">${edef}</div><div class="ms-stat-label">E-Def</div></div>
+              <div class="ms-stat-box"><div class="ms-stat-val">10</div><div class="ms-stat-label">Sensors</div></div>
+            </div>
+          </div>
+
+          <div class="ms-section">
+            <div class="ms-sec-title">WEAPON MOUNTS</div>
+            <div class="ms-mount">
+              <div class="ms-mount-label">Main Mount</div>
+              <div class="ms-mount-name">${escHtml(loadout.main || 'UNARMED')}</div>
+            </div>
+            <div class="ms-mount">
+              <div class="ms-mount-label">Flex Mount</div>
+              <div class="ms-mount-name">${escHtml(loadout.flex || 'UNARMED')}</div>
+            </div>
+            <div class="ms-mount">
+              <div class="ms-mount-label">Heavy Mount</div>
+              <div class="ms-mount-name">${escHtml(loadout.heavy || 'UNARMED')}</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="ms-section">
+            <div class="ms-sec-title">INTEGRATED SYSTEMS <span style="margin-left:auto;font-family:var(--fm);font-size:8pt">${loadout.systems?.length ? loadout.systems.reduce((acc, sid) => acc + (SYSTEM_CATALOG.find(s => s.id === sid)?.cost || 0), 0) : 0} / ${spMax} SP</span></div>
+            ${activeSystems.length 
+              ? activeSystems.map(s => `
+                <div class="ms-system">
+                  <div class="ms-system-name">${escHtml(s.name)}</div>
+                  <div class="ms-system-cost">${s.cost} SP</div>
+                </div>`).join('')
+              : '<div style="font-family:var(--fm);font-size:9pt;color:#888;padding-top:4mm">NO SYSTEMS INSTALLED</div>'
+            }
+          </div>
+
+          <div class="ms-section">
+            <div class="ms-sec-title">CORE SYSTEM: INITIATIVE</div>
+            <div style="font-size:9pt;line-height:1.5">
+              Once per scene, you can take an extra Quick Action as a Free Action.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ms-footer">
+        <div>UNION PILOT ACADEMY // MECHA BAY // REF: ${escHtml(char.student_id)}</div>
+        <div>AEGIS PRIME STATION - SEC: PUBLIC</div>
+      </div>
+    </div>
+  `;
+
+  setTimeout(() => { window.print(); }, 300);
+}
+
+async function generateIdPdf(char) {
+  if (!char) return;
+
+  const portraitUrl = char.portrait_url ? convertDriveUrl(char.portrait_url) : '';
+
+  const container = document.getElementById('ps');
+  container.innerHTML = `
+    <div id="idcard-template" style="display:flex; flex-direction:column; background:white">
+    <div class="id-watermark">UPA</div>
+    <div class="id-accent"></div>
+    <div class="id-header">
+      <div class="id-logo-ring">AP</div>
+      <div class="id-org">
+        <span class="id-org-main">UNION PILOT ACADEMY</span>
+        <span class="id-org-sub">AEGIS PRIME STATION</span>
+      </div>
+      <div class="id-class-badge ${char.class_rank ? char.class_rank.toLowerCase() : ''}">${char.class_rank ? char.class_rank.toUpperCase() : '—'}</div>
+    </div>
+    <div class="id-body">
+      <div class="id-photo-col">
+        ${portraitUrl ? `<img src="${portraitUrl}">` : `<div class="id-photo-placeholder">◎<br>PHOTO</div>`}
+      </div>
+      <div class="id-info">
+        <div>
+          <div class="id-name">${escHtml(char.name || '—')}</div>
+          <div class="id-callsign">${char.callsign ? '"' + escHtml(char.callsign) + '"' : '—'}</div>
+          <div class="id-fields">
+            <div class="id-field">
+              <span class="id-field-label">Faction</span>
+              <span class="id-field-value">${escHtml(char.faction || '—')}</span>
+            </div>
+            <div class="id-field-small">
+              <div class="id-field">
+                <span class="id-field-label">Rank</span>
+                <span class="id-field-value">${char.class_rank ? char.class_rank + ' Cadet' : '—'}</span>
+              </div>
+              <div class="id-field">
+                <span class="id-field-label">Year</span>
+                <span class="id-field-value">2026</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="font-family:var(--fm); font-size:4pt; opacity:0.6; letter-spacing:1px">STUDENT_ID: ${escHtml(char.student_id)}</div>
+      </div>
+    </div>
+    </div>
+  `;
+
+  setTimeout(() => { window.print(); }, 300);
+}
+
 // ── GM TERMINAL ──
 (function() {
   const body = document.getElementById('term-body');
@@ -1017,12 +1654,28 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
         runHackingAccessSequence(loginState.id);
       } else if (cmd === '4') {
         runHangarAccessSequence(loginState.id);
+      } else if (cmd === '11') {
+        addLine('> GENERATING ENCRYPTED DOSSIER...', 'gold');
+        generatePdf(loginState.cadet);
+        setTimeout(() => showPrompt('select option [1-13]...'), 1000);
+      } else if (cmd === '12') {
+        if (loginState.cadet.mech_loadout && Object.keys(loginState.cadet.mech_loadout).length > 2) {
+          addLine('> GENERATING MECHA DATASHEET...', 'gold');
+          generateMechPdf(loginState.cadet);
+        } else {
+          addLine('> ERROR: NO MECHA CONFIGURATION DATA FOUND', 'red');
+        }
+        setTimeout(() => showPrompt('select option [1-13]...'), 1000);
+      } else if (cmd === '13') {
+        addLine('> GENERATING STUDENT ID CARD...', 'gold');
+        generateIdPdf(loginState.cadet);
+        setTimeout(() => showPrompt('select option [1-13]...'), 1000);
       } else if (['1','2','3','5','6','7','8','9'].includes(cmd)) {
         addLine('> MODULE OFFLINE / ACCESS RESTRICTED', 'red');
-        setTimeout(() => showPrompt('select option [1-10]...'), 600);
+        setTimeout(() => showPrompt('select option [1-13]...'), 600);
       } else {
         addLine('> INVALID SELECTION', 'red');
-        setTimeout(() => showPrompt('select option [1-10]...'), 600);
+        setTimeout(() => showPrompt('select option [1-13]...'), 600);
       }
       return;
     }
@@ -1117,9 +1770,18 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
     addLine('[9] Black Market', 'dim');
     addLine('[10] System Terminal (Hacking Interface)', 'green');
     addLine('————————————————————————————', 'dim');
+    
+    // Check if mecha exists for green/dim status
+    const hasMecha = cadet.mech_loadout && Object.keys(cadet.mech_loadout).length > 2;
+    
+    addLine('[11] Print Student Dossier', 'green');
+    addLine('[12] Print Mecha Specs', hasMecha ? 'green' : 'dim');
+    addLine('[13] Student ID Card Application', 'green');
+    addLine('————————————————————————————', 'dim');
+    
     setTimeout(() => {
-      loginState = { id: cadet.student_id, menu: true };
-      showPrompt('select option [1-10]...');
+      loginState = { id: cadet.student_id, menu: true, cadet: cadet };
+      showPrompt('select option [1-13]...');
     }, 400);
   }
 
@@ -1202,5 +1864,7 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
   });
 })();
 </script>
+
+<div id="ps"></div>
 </body>
 </html>
