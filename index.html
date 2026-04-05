@@ -942,9 +942,16 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
     return div;
   }
 
+  let returningFromHangar = null;
+
   function showBoot() {
     if (lineIndex >= bootLines.length) {
-      showPrompt();
+      if (returningFromHangar) {
+        addLine('> MECHA CONFIGURATION SAVED TO MAINFRAME', 'green');
+        setTimeout(() => showMenu(returningFromHangar), 600);
+      } else {
+        showPrompt();
+      }
       return;
     }
     const line = bootLines[lineIndex];
@@ -1170,7 +1177,23 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
   }
 
   // Start boot sequence after page load animation
-  setTimeout(showBoot, 2000);
+  setTimeout(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('mecha_saved') === 'true' && params.get('student_id')) {
+      const studentId = params.get('student_id');
+      _supabase.from('characters').select('*').eq('student_id', studentId).single().then(({data}) => {
+        if (data) {
+          returningFromHangar = data;
+          window.openTerminalMode();
+          showBoot(); // Boot will now finish with the menu and save message
+        } else {
+          showBoot();
+        }
+      });
+    } else {
+      showBoot();
+    }
+  }, 2000);
 
   // Allow clicking terminal to focus input
   document.getElementById('gm-terminal').addEventListener('click', () => {

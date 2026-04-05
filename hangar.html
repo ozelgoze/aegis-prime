@@ -288,7 +288,10 @@ async function saveLoadout() {
   try {
     const { error } = await _supabase.from('characters').update({ mech_loadout: loadout }).eq('student_id', currentUser.student_id);
     if (error) throw error;
-    showToast('LOADOUT SAVED. RETURN TO TERMINAL.', 'success');
+    showToast('LOADOUT SAVED. REDIRECTING...', 'success');
+    setTimeout(() => {
+      window.location.href = `/?student_id=${encodeURIComponent(currentUser.student_id)}&mecha_saved=true`;
+    }, 1500);
   } catch(e) {
     showToast('DATABASE SYNC FAILED', 'error');
   } finally {
