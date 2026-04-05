@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Union Pilot Academy — Aegis Prime. The premier mech pilot training institution in Union-controlled space.">
-<title>Aegis Prime — Union Pilot Academy</title>
+<meta name="description" content="Union Pilot Academy. The premier mech pilot training institution in Union-controlled space.">
+<title>Union Pilot Academy — Systems Online</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -716,14 +716,13 @@ body::before {
 <!-- TOP BAR -->
 <header class="topbar">
   <a href="/" class="topbar-logo">
-    <div class="logo-hex">AP</div>
+    <div class="logo-hex">UP</div>
     <div>
-      <div class="logo-text">Aegis Prime</div>
-      <div class="logo-sub">Union Pilot Academy</div>
+      <div class="logo-text">Union Pilot Academy</div>
+      <div class="logo-sub">Aegis Prime Station</div>
     </div>
   </a>
   <nav class="topbar-nav">
-    <a class="nav-item" href="/enroll">Enrollment</a>
     <a class="nav-item soon" href="#">Academy Database</a>
     <a class="nav-item soon" href="#">Faction Archive</a>
     <a class="nav-item soon" href="#">NPC Roster</a>
@@ -742,8 +741,8 @@ body::before {
     <div class="emblem-inner">UPA</div>
   </div>
 
-  <h1 class="hero-title">AEGIS <span>PRIME</span></h1>
-  <div class="hero-subtitle">Union Pilot Academy</div>
+  <h1 class="hero-title">UNION <span>PILOT ACADEMY</span></h1>
+  <div class="hero-subtitle">Aegis Prime Station</div>
   <div class="hero-divider"></div>
 
   <p class="hero-desc">
@@ -753,19 +752,19 @@ body::before {
   </p>
 
   <div class="cta-group">
-    <a href="/enroll" class="cta-primary">
-      <span class="cta-icon">⬡</span>
-      BEGIN ENROLLMENT
-    </a>
+    <button onclick="document.getElementById('t-input').focus()" class="cta-primary">
+      <span class="cta-icon">⬢</span>
+      ACCESS SYSTEM TERMINAL
+    </button>
   </div>
 
-  <!-- GM TERMINAL -->
+  <!-- TERMINAL -->
   <div class="gm-terminal" id="gm-terminal">
     <div class="gm-terminal-bar">
       <div class="term-dot r"></div>
       <div class="term-dot y"></div>
       <div class="term-dot g"></div>
-      <span class="term-bar-text">AEGIS PRIME CENTRAL // TERMINAL v2.0</span>
+      <span class="term-bar-text">ACADEMY SYSTEM TERMINAL v2.0</span>
     </div>
     <div class="gm-terminal-body" id="term-body">
     </div>
@@ -821,14 +820,12 @@ body::before {
 
   <div class="modules-grid">
 
-    <a href="/enroll" class="mod-link">
-      <div class="module-card active-card">
-        <span class="mod-icon">⬡</span>
-        <div class="mod-title">Cadet Enrollment</div>
-        <div class="mod-desc">Create your pilot. Select background, innate talent, discipline, allocate stats and skill triggers, choose talents. Export a printable character sheet.</div>
-        <div class="mod-tag online">● ONLINE</div>
-      </div>
-    </a>
+    <div class="module-card locked-card">
+      <span class="mod-icon">⬡</span>
+      <div class="mod-title">Cadet Enrollment</div>
+      <div class="mod-desc">Create your pilot. Select background, innate talent, discipline, allocate stats and skill triggers, choose talents. Export a printable character sheet.</div>
+      <div class="mod-tag locked">○ OFFLINE</div>
+    </div>
 
     <div class="module-card locked-card">
       <span class="mod-icon">📚</span>
@@ -891,9 +888,9 @@ body::before {
 <!-- FOOTER -->
 <footer class="footer">
   <div class="footer-left">
-    AEGIS PRIME // UNION PILOT ACADEMY<br>
+    UNION PILOT ACADEMY // AEGIS PRIME STATION<br>
     CAMPAIGN TOOLS — FOR PERSONAL USE<br>
-    <span class="footer-version">v1.2 — YEAR 1 ENROLLMENT OPEN</span>
+    <span class="footer-version">v1.3 — TERMINAL ACCESS ONLINE</span>
   </div>
   <div class="footer-right">
     Based on LANCER RPG by Massif Press<br>
