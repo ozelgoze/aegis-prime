@@ -1150,7 +1150,7 @@ async function executeDelete() {
     const { error } = await deleteCharacter(pendingDeleteId);
     if (error) throw error;
     showToast('RECORD DELETED SUCCESSFULLY');
-    loadCharacters();
+    fetchCharacters();
   } catch (err) {
     showToast('DELETE FAILED: ' + (err.message || 'Unknown error'), true);
   }

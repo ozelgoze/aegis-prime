@@ -1423,6 +1423,7 @@ async function loadEditData(id){
     document.getElementById('s-agi').value = S.agi;
     document.getElementById('s-sys').value = S.sys;
     document.getElementById('s-eng').value = S.eng;
+    syncStats();
 
     // Update visual selections
     if(S.classRank) selClass(S.classRank);
