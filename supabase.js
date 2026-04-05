@@ -194,11 +194,14 @@ async function getCharacter(studentId) {
 
 async function deleteCharacter(studentId) {
   if (!_supabase) return { error: { message: 'Supabase not configured.' } };
-  const { error } = await _supabase
+  const { data, error } = await _supabase
     .from('characters')
     .delete()
-    .eq('student_id', studentId);
-
+    .eq('student_id', studentId)
+    .select();
+  if (!error && (!data || data.length === 0)) {
+    return { error: { message: "No row matched this ID or RLS silently blocked deletion." } };
+  }
   return { error };
 }
 

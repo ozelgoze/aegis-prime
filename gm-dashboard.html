@@ -1143,11 +1143,12 @@ function closeConfirm() {
 
 async function executeDelete() {
   if (!pendingDeleteId) return;
+  const targetId = pendingDeleteId;
   closeConfirm();
   closeDetail();
 
   try {
-    const { error } = await deleteCharacter(pendingDeleteId);
+    const { error } = await deleteCharacter(targetId);
     if (error) throw error;
     showToast('RECORD DELETED SUCCESSFULLY');
     loadCharacters();
