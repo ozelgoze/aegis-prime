@@ -1001,9 +1001,24 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
     inputActive = false;
 
     // PASSWORD PHASE — verify against database
-    if (loginState) {
+    if (loginState && !loginState.menu) {
       addLine('> ••••••••', 'dim');
       verifyLogin(loginState.id, raw);
+      return;
+    }
+
+    // MENU PHASE
+    if (loginState && loginState.menu) {
+      addLine('> INPUT: ' + cmd, '');
+      if (cmd === '10') {
+        runHackingAccessSequence(loginState.id);
+      } else if (['1','2','3','4','5','6','7','8','9'].includes(cmd)) {
+        addLine('> MODULE OFFLINE / ACCESS RESTRICTED', 'red');
+        setTimeout(() => showPrompt('select option [1-10]...'), 600);
+      } else {
+        addLine('> INVALID SELECTION', 'red');
+        setTimeout(() => showPrompt('select option [1-10]...'), 600);
+      }
       return;
     }
 
@@ -1067,18 +1082,13 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
       { text: '> OPERATOR: ' + cadet.name, cls: '', delay: 400 },
       { text: '> CLEARANCE: ████ CADET TERMINAL ████', cls: 'gold', delay: 600 },
       { text: '> ACCESS GRANTED', cls: 'green', delay: 400 },
-      { text: '> LAUNCHING HACKING INTERFACE...', cls: 'green', delay: 800 },
+      { text: '> INITIALIZING MAIN INTERFACE...', cls: 'green', delay: 600 },
     ];
 
     let i = 0;
     function nextStep() {
       if (i >= steps.length) {
-        const flash = document.createElement('div');
-        flash.className = 'glitch-flash';
-        document.body.appendChild(flash);
-        setTimeout(() => {
-          window.location.href = '/terminal?cadet_id=' + encodeURIComponent(cadet.student_id);
-        }, 700);
+        showMenu(cadet);
         return;
       }
       addLine(steps[i].text, steps[i].cls);
@@ -1086,6 +1096,38 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
       setTimeout(nextStep, steps[i-1].delay);
     }
     nextStep();
+  }
+
+  function showMenu(cadet) {
+    addLine('————————————————————————————', 'dim');
+    addLine('MAIN MENU:', 'gold');
+    addLine('[1] Academy Events', 'dim');
+    addLine('[2] Courses', 'dim');
+    addLine('[3] Academy Chat', 'dim');
+    addLine('[4] Mecha Hangar', 'dim');
+    addLine('[5] Workshop', 'dim');
+    addLine('[6] Discipline Community', 'dim');
+    addLine('[7] Weapon & Armor Shop', 'dim');
+    addLine('[8] Tech Shop', 'dim');
+    addLine('[9] Black Market', 'dim');
+    addLine('[10] System Terminal (Hacking Interface)', 'green');
+    addLine('————————————————————————————', 'dim');
+    setTimeout(() => {
+      loginState = { id: cadet.student_id, menu: true };
+      showPrompt('select option [1-10]...');
+    }, 400);
+  }
+
+  function runHackingAccessSequence(studentId) {
+    addLine('> LAUNCHING HACKING INTERFACE...', 'green');
+    setTimeout(() => {
+      const flash = document.createElement('div');
+      flash.className = 'glitch-flash';
+      document.body.appendChild(flash);
+      setTimeout(() => {
+        window.location.href = '/terminal?cadet_id=' + encodeURIComponent(studentId);
+      }, 700);
+    }, 600);
   }
 
   function runAccessSequence() {
