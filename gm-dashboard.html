@@ -614,6 +614,75 @@ body::after {
 .btn-detail.delete { border-color: var(--red); color: var(--red); }
 .btn-detail.delete:hover { background: rgba(255,71,87,0.12); }
 
+/* ── PDF DOSSIER PRINT STYLES ── */
+#dossier-template {
+  display: none;
+  background-color: var(--blue-deep);
+  color: var(--white);
+  width: 794px; /* A4 width */
+  min-height: 1123px; /* A4 height */
+  padding: 40px;
+  font-family: var(--fb);
+  position: relative;
+  box-sizing: border-box;
+}
+.dossier-header {
+  display: flex; gap: 20px; align-items: flex-end;
+  border-bottom: 2px solid var(--gold);
+  padding-bottom: 15px; margin-bottom: 20px;
+}
+.dossier-portrait {
+  width: 120px; height: 160px; object-fit: cover;
+  border: 1px solid var(--cyan);
+  background: var(--blue-mid);
+}
+.dossier-title { font-family: var(--fd); flex: 1; }
+.dossier-h1 { font-size: 28px; font-weight: 900; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px; }
+.dossier-h2 { font-size: 14px; color: var(--cyan); letter-spacing: 1px; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; }
+.dossier-id-box {
+  background: rgba(4,9,15, 0.7); border: 1px solid var(--border);
+  padding: 10px 15px; font-family: var(--fm); font-size: 12px;
+  display: grid; grid-template-columns: auto 1fr; gap: 5px 15px;
+}
+.dossier-grid {
+  display: grid; grid-template-columns: 280px 1fr; gap: 30px;
+}
+.dossier-section {
+  margin-bottom: 20px;
+}
+.dossier-sec-title {
+  font-family: var(--fd); font-size: 12px;
+  color: var(--gold); letter-spacing: 2px;
+  border-bottom: 1px solid var(--border-gold);
+  padding-bottom: 5px; margin-bottom: 10px;
+  font-weight: 700;
+}
+.dossier-kv {
+  display: flex; justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding: 4px 0; font-size: 11px;
+}
+.dossier-k { color: var(--white-dim); font-family: var(--fm); letter-spacing: 1px; }
+.dossier-v { font-weight: 600; text-align: right; }
+
+.dossier-stats-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px;
+}
+.dossier-stat-box {
+  background: var(--blue-mid); border: 1px solid var(--border);
+  text-align: center; padding: 10px 0;
+}
+.dossier-stat-val { font-family: var(--fd); font-size: 24px; font-weight: 700; color: var(--cyan); }
+.dossier-stat-label { font-size: 9px; color: var(--white-dim); letter-spacing: 1px; text-transform: uppercase; margin-top: 3px; }
+
+.dossier-block {
+  background: rgba(13,32,68,0.3); border: 1px solid var(--border);
+  padding: 12px; margin-bottom: 8px; font-size: 11px;
+  color: var(--white); line-height: 1.5; white-space: pre-wrap;
+}
+.dossier-block.classified { border-color: var(--red); color: #ffccd0; }
+.dossier-talent-name { font-family: var(--fd); font-size: 10px; color: var(--cyan); font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; }
+
 /* ── CONFIRM DIALOG ── */
 .confirm-overlay {
   position: fixed; inset: 0;
@@ -1117,6 +1186,8 @@ function openDetail(char) {
     </div>
 
     <div class="detail-footer">
+      <button class="btn-detail" style="border-color:var(--gold);color:var(--gold)" onclick="generatePdf('${escAttr(char.student_id)}')">⬡ EXPORT DOSSIER (PDF)</button>
+      <div style="flex:1"></div>
       <a href="/enroll?edit=${encodeURIComponent(char.student_id)}" class="btn-detail edit">✎ EDIT RECORD</a>
       <button class="btn-detail delete" onclick="confirmDelete('${escAttr(char.student_id)}','${escAttr(char.name)}')">✕ DELETE</button>
     </div>`;
@@ -1308,6 +1379,166 @@ function parseCSV(csv) {
   }
   return results;
 }
+
+// ── DOSSIER PDF EXPORT ──
+async function generatePdf(studentId) {
+  const char = allCharacters.find(c => c.student_id === studentId);
+  if (!char) return;
+
+  showToast('GENERATING ENCRYPTED DOSSIER...', false);
+
+  // Parse arrays safely
+  let talents = [];
+  try { talents = typeof char.talents === 'string' ? JSON.parse(char.talents) : (char.talents || []); } catch(e){}
+  
+  let triggers = {};
+  try { triggers = typeof char.triggers === 'string' ? JSON.parse(char.triggers) : (char.triggers || {}); } catch(e){}
+
+  const portraitUrl = char.portrait_url ? convertDriveUrl(char.portrait_url) : '';
+  const hp = 10 + ((char.hull || 0) * 2);
+
+  // Backgrounds & Traits processing
+  let bgHtml = '';
+  if (char.background) {
+    let bg = typeof char.background === 'string' ? JSON.parse(char.background) : char.background;
+    bgHtml += `<div class="dossier-block">
+      <div class="dossier-talent-name">BACKGROUND: ${bg.n}</div>
+      <div style="color:var(--green)">+ ${bg.b}</div>
+      <div style="color:var(--red)">- ${bg.neg}</div>
+    </div>`;
+  }
+  if (char.innate_talent) {
+    let tal = typeof char.innate_talent === 'string' ? JSON.parse(char.innate_talent) : char.innate_talent;
+    bgHtml += `<div class="dossier-block">
+      <div class="dossier-talent-name">INNATE TALENT: ${tal.n}</div>
+      <div style="color:var(--green)">+ ${tal.b}</div>
+      <div style="color:var(--red)">- ${tal.neg}</div>
+    </div>`;
+  }
+  if (char.discipline) {
+    let disc = typeof char.discipline === 'string' ? JSON.parse(char.discipline) : char.discipline;
+    bgHtml += `<div class="dossier-block">
+      <div class="dossier-talent-name">DISCIPLINE: ${disc.n}</div>
+      <div style="color:var(--green)">+ ${disc.b}</div>
+      <div style="color:var(--red)">- ${disc.neg}</div>
+    </div>`;
+  }
+
+  // Talents specific mapping
+  const activeTalents = LTALENTS.filter(t => talents.includes(t.id));
+  let talentsHtml = activeTalents.length ? activeTalents.map(t => 
+    `<div class="dossier-block">
+       <div class="dossier-talent-name">${t.ico} ${t.n}</div>
+       <div><strong>${t.r1.n}:</strong> ${t.r1.d}</div>
+     </div>`
+  ).join('') : '<div class="dossier-k">NO TALENTS ACQUIRED</div>';
+
+  // Triggers mapping
+  const activeTriggers = TRIGGERS.filter(t => (triggers[t.id] || 0) > 0);
+  let triggersHtml = activeTriggers.length ? activeTriggers.map(t =>
+    `<div class="dossier-kv"><span class="dossier-k">${t.n} (${t.stat})</span><span class="dossier-v" style="color:var(--cyan)">+${triggers[t.id]}</span></div>`
+  ).join('') : '<div class="dossier-k">NO SKILL TRIGGERS</div>';
+
+  // Populate hidden DOM container
+  const container = document.getElementById('dossier-template');
+  container.innerHTML = `
+    <div class="dossier-header">
+      ${portraitUrl 
+        ? `<img src="${portraitUrl}" class="dossier-portrait">` 
+        : `<div class="dossier-portrait" style="display:flex;align-items:center;justify-content:center;font-family:var(--fm);color:var(--white-dim);text-align:center;font-size:10px">NO<br>IMAGE</div>`
+      }
+      <div class="dossier-title">
+        <div class="dossier-h1">${escHtml(char.name || 'UNKNOWN RECORD')} ${char.callsign ? `"${escHtml(char.callsign)}"` : ''}</div>
+        <div class="dossier-h2">${char.role_title || 'CADET'} // ${char.faction || 'UNAFFILIATED'}</div>
+        <div class="dossier-id-box">
+          <div style="color:var(--white-dim)">STUDENT ID:</div><div style="color:var(--white);font-weight:700">${escHtml(char.student_id)}</div>
+          <div style="color:var(--white-dim)">TERMINAL PASS:</div><div style="color:var(--gold);font-weight:700;letter-spacing:2px">${escHtml(char.password || 'NOT SET')}</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="dossier-grid">
+      <!-- LEFT COLUMN -->
+      <div>
+        <div class="dossier-section">
+          <div class="dossier-sec-title">COMBAT METRICS</div>
+          <div class="dossier-stats-grid">
+            <div class="dossier-stat-box"><div class="dossier-stat-val" style="color:var(--white)">${char.hull || 0}</div><div class="dossier-stat-label">HULL</div></div>
+            <div class="dossier-stat-box"><div class="dossier-stat-val">${char.agi || 0}</div><div class="dossier-stat-label">AGILITY</div></div>
+            <div class="dossier-stat-box"><div class="dossier-stat-val">${char.sys || 0}</div><div class="dossier-stat-label">SYSTEMS</div></div>
+            <div class="dossier-stat-box"><div class="dossier-stat-val">${char.eng || 0}</div><div class="dossier-stat-label">ENGINEERING</div></div>
+          </div>
+          <div class="dossier-kv"><span class="dossier-k">MAX HIT POINTS</span><span class="dossier-v" style="color:var(--green)">${hp}</span></div>
+          <div class="dossier-kv"><span class="dossier-k">GRIT</span><span class="dossier-v">1/2 LEVEL</span></div>
+          <div class="dossier-kv"><span class="dossier-k">SPECIALIZATION</span><span class="dossier-v">${char.specialization || '—'}</span></div>
+        </div>
+
+        <div class="dossier-section">
+          <div class="dossier-sec-title">SKILL TRIGGERS</div>
+          ${triggersHtml}
+        </div>
+
+        <div class="dossier-section">
+          <div class="dossier-sec-title">MECH ASSET</div>
+          <div class="dossier-kv"><span class="dossier-k">FRAME</span><span class="dossier-v">${escHtml(char.mech_frame || '—')}</span></div>
+          <div class="dossier-kv"><span class="dossier-k">MANUFACTURER</span><span class="dossier-v">${escHtml(char.mech_manufacturer || '—')}</span></div>
+        </div>
+        
+        <div class="dossier-section">
+          <div class="dossier-sec-title">PERSONALIA</div>
+           <div class="dossier-kv"><span class="dossier-k">AGE</span><span class="dossier-v">${escHtml(char.age || '—')}</span></div>
+           <div class="dossier-kv"><span class="dossier-k">ORIGIN</span><span class="dossier-v">${escHtml(char.origin || '—')}</span></div>
+           <div class="dossier-kv"><span class="dossier-k">CLASS RANK</span><span class="dossier-v">${char.class_rank ? char.class_rank + '-CLASS' : '—'}</span></div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div>
+        <div class="dossier-section">
+          <div class="dossier-sec-title">TRAITS & BACKGROUND</div>
+          ${bgHtml}
+        </div>
+        
+        <div class="dossier-section">
+          <div class="dossier-sec-title">OBTAINED TALENTS (RANK I)</div>
+          ${talentsHtml}
+        </div>
+
+        <div class="dossier-section">
+          <div class="dossier-sec-title">NARRATIVE INTELLIGENCE</div>
+          ${char.relationship ? `<div class="dossier-block"><span class="dossier-k">RELATIONSHIP TO CADETS:</span><br>${escHtml(char.relationship)}</div>` : ''}
+          ${char.motivations ? `<div class="dossier-block"><span class="dossier-k">DRIVING MOTIVATIONS:</span><br>${escHtml(char.motivations)}</div>` : ''}
+          ${char.secrets ? `<div class="dossier-block classified"><span class="dossier-k">CLASSIFIED SECRETS:</span><br>${escHtml(char.secrets)}</div>` : ''}
+          ${char.notes ? `<div class="dossier-block"><span class="dossier-k">ADDITIONAL BIOS/NOTES:</span><br>${escHtml(char.notes)}</div>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Make visible very briefly inside a zero-height container to render accurately
+  container.style.display = 'block';
+  
+  // PDF Configuration
+  const opt = {
+    margin:       0,
+    filename:     `${char.name || char.student_id}_Dossier.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2, useCORS: true, logging: false },
+    jsPDF:        { unit: 'px', format: [794, 1123], orientation: 'portrait' }
+  };
+
+  // Generate and save
+  html2pdf().set(opt).from(container).save().then(() => {
+    container.style.display = 'none';
+  }).catch(err => {
+    console.error(err);
+    showToast('FAILED TO GENERATE PDF', true);
+    container.style.display = 'none';
+  });
+}
 </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<div id="dossier-template"></div>
 </body>
 </html>
