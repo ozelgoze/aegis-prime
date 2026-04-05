@@ -183,6 +183,14 @@ body::after {
   background: rgba(255,71,87,0.12);
   box-shadow: 0 0 20px rgba(255,71,87,0.3);
 }
+.btn-action.green {
+  border-color: var(--green);
+  color: var(--green);
+}
+.btn-action.green:hover {
+  background: rgba(46,204,113,0.12);
+  box-shadow: 0 0 20px rgba(46,204,113,0.3);
+}
 
 /* ── FILTER BAR ── */
 .filter-bar {
@@ -653,6 +661,18 @@ body::after {
 .confirm-btn.cancel:hover { border-color: var(--white); color: var(--white); }
 .confirm-btn.danger { border-color: var(--red); color: var(--red); }
 .confirm-btn.danger:hover { background: var(--red); color: var(--blue-deep); }
+.confirm-btn.green { border-color: var(--green); color: var(--green); }
+.confirm-btn.green:hover { background: var(--green); color: var(--blue-deep); }
+
+/* ── IMPORT MODAL ── */
+.import-box { max-width: 500px; padding: 32px; border-color: var(--green); }
+.import-box::before { background: linear-gradient(90deg, transparent, var(--green), transparent); margin: -32px -32px 24px; }
+.import-title { color: var(--green); font-family: var(--fd); font-size: 14px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; }
+.import-desc { font-family:var(--fm); font-size:10px; color:var(--white-dim); letter-spacing:1px; line-height:1.6; margin-bottom: 20px; text-align: left; background: rgba(13,32,68,0.4); padding: 12px; border: 1px solid var(--border); }
+.import-desc strong { color: var(--gold); }
+.import-input { width: 100%; background: rgba(4,9,15,0.8); border: 1px solid var(--border); color: var(--white); padding: 10px 14px; font-family: var(--fm); font-size: 11px; margin-bottom: 16px; outline: none; }
+.import-input:focus { border-color: var(--green); box-shadow: 0 0 10px rgba(46,204,113,0.2); }
+#import-status { font-family: var(--fm); font-size: 10px; color: var(--cyan); margin-bottom: 16px; min-height: 15px; }
 
 /* ── TOAST ── */
 .toast {
@@ -729,6 +749,7 @@ body::after {
       <div class="dash-subtitle">◈ ALL PERSONNEL RECORDS — CLASSIFIED CLEARANCE</div>
     </div>
     <div class="dash-actions">
+      <button class="btn-action green" id="btn-import" onclick="openImportModal()">⬢ IMPORT SHEET</button>
       <a href="/enroll" class="btn-action" id="btn-new-cadet">⬡ NEW CADET</a>
       <a href="/enroll?type=npc" class="btn-action npc" id="btn-new-npc">◉ NEW NPC</a>
     </div>
@@ -769,6 +790,24 @@ body::after {
     <div class="confirm-actions">
       <button class="confirm-btn cancel" onclick="closeConfirm()">CANCEL</button>
       <button class="confirm-btn danger" id="confirm-delete-btn">DELETE RECORD</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT DIALOG -->
+<div class="confirm-overlay" id="import-overlay">
+  <div class="confirm-box import-box">
+    <div class="import-title">⬢ BATCH IMPORT DATA</div>
+    <div class="import-desc">
+      Paste a Google Sheets URL below. <br><br>
+      <strong>REQUIREMENT:</strong> The sheet must be set to <em>"Anyone with the link can view."</em><br>
+      Row 1 must contain specific database column headers (e.g. <code>student_id</code>, <code>name</code>, <code>type</code>).
+    </div>
+    <input type="text" class="import-input" id="import-url" placeholder="https://docs.google.com/spreadsheets/d/..." autocomplete="off">
+    <div id="import-status"></div>
+    <div class="confirm-actions">
+      <button class="confirm-btn cancel" onclick="closeImportModal()" id="import-cancel-btn">CANCEL</button>
+      <button class="confirm-btn green" id="import-submit-btn" onclick="startImport()">SYNC DATA</button>
     </div>
   </div>
 </div>
@@ -1142,6 +1181,132 @@ document.getElementById('detail-overlay').addEventListener('click', function(e) 
 document.getElementById('confirm-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeConfirm();
 });
+document.getElementById('import-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeImportModal();
+});
+
+// ── IMPORT LOGIC ──
+function openImportModal() {
+  document.getElementById('import-overlay').classList.add('open');
+  document.getElementById('import-url').value = '';
+  document.getElementById('import-status').textContent = '';
+  document.getElementById('import-url').disabled = false;
+  document.getElementById('import-submit-btn').disabled = false;
+  document.getElementById('import-submit-btn').textContent = 'SYNC DATA';
+}
+
+function closeImportModal() {
+  document.getElementById('import-overlay').classList.remove('open');
+}
+
+async function startImport() {
+  const urlInp = document.getElementById('import-url');
+  const statusEl = document.getElementById('import-status');
+  const submitBtn = document.getElementById('import-submit-btn');
+  let url = urlInp.value.trim();
+  
+  if (!url) { statusEl.style.color = 'var(--red)'; statusEl.textContent = 'Please paste a valid URL.'; return; }
+
+  // Convert standard edit url to export csv
+  if (url.includes('docs.google.com/spreadsheets/d/')) {
+    const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (match && match[1]) {
+      const gId = match[1];
+      url = `https://docs.google.com/spreadsheets/d/${gId}/export?format=csv`;
+    }
+  }
+
+  urlInp.disabled = true;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'SYNCING...';
+  statusEl.style.color = 'var(--cyan)';
+  statusEl.textContent = 'Fetching sheet data...';
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Failed to fetch dataset. Ensure it is "Anyone with link".');
+    const csvText = await res.text();
+    
+    statusEl.textContent = 'Parsing CSV data...';
+    const records = parseCSV(csvText);
+    
+    if (records.length === 0) throw new Error('No valid records found or empty sheet.');
+
+    statusEl.textContent = `Pushing ${records.length} records to Supabase...`;
+    
+    // Attempt batch upsert
+    const { data, error } = await batchSaveCharacters(records);
+    if (error) throw error;
+    
+    statusEl.style.color = 'var(--green)';
+    statusEl.textContent = `SUCCESS: ${data ? data.length : records.length} records synced!`;
+    
+    // Refresh dashboard
+    fetchCharacters();
+    
+    setTimeout(closeImportModal, 1500);
+
+  } catch (err) {
+    statusEl.style.color = 'var(--red)';
+    statusEl.textContent = 'ERROR: ' + err.message;
+    urlInp.disabled = false;
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'RETRY SYNC';
+  }
+}
+
+// Basic CSV Parser handling quoted strings safely
+function parseCSV(csv) {
+  const lines = [];
+  let currentLine = [];
+  let currTerm = '';
+  let insideQuotes = false;
+  
+  for(let i = 0; i < csv.length; i++) {
+    const char = csv.charAt(i);
+    const nextChar = csv.charAt(i+1);
+    
+    if (char === '"' && insideQuotes && nextChar === '"') {
+      currTerm += '"'; i++; // escaped quote
+    } else if (char === '"') {
+      insideQuotes = !insideQuotes;
+    } else if (char === ',' && !insideQuotes) {
+      currentLine.push(currTerm); currTerm = '';
+    } else if ((char === '\n' || char === '\r') && !insideQuotes) {
+      if (char === '\r' && nextChar === '\n') i++;
+      currentLine.push(currTerm); currTerm = '';
+      if(currentLine.some(x=>x)) lines.push(currentLine); // ensure not entirely empty
+      currentLine = [];
+    } else {
+      currTerm += char;
+    }
+  }
+  if (currTerm !== '' || currentLine.length > 0) {
+    currentLine.push(currTerm); lines.push(currentLine);
+  }
+
+  if (lines.length < 2) return [];
+
+  const headers = lines[0].map(h => h.trim().toLowerCase());
+  const results = [];
+
+  for(let i = 1; i < lines.length; i++) {
+    const row = lines[i];
+    const obj = {};
+    for(let j = 0; j < headers.length; j++) {
+      if(headers[j]) obj[headers[j]] = (row[j] !== undefined ? row[j] : null);
+    }
+    // Only accept if ID exists
+    if (obj['student_id'] && obj['student_id'].trim() !== '') {
+      // JSON Parse columns if necessary (triggers, talents)
+      try { if (typeof obj.triggers === 'string' && obj.triggers.startsWith('{')) obj.triggers = JSON.parse(obj.triggers); } catch(e){}
+      try { if (typeof obj.talents === 'string' && obj.talents.startsWith('[')) obj.talents = JSON.parse(obj.talents); } catch(e){}
+      
+      results.push(obj);
+    }
+  }
+  return results;
+}
 </script>
 </body>
 </html>

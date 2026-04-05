@@ -119,6 +119,53 @@ async function saveCharacter(data) {
   return { data: result, error };
 }
 
+async function batchSaveCharacters(recordsArray) {
+  if (!_supabase) return { error: { message: 'Supabase not configured.' } };
+  
+  // Format each record properly
+  const formattedRecords = recordsArray.map(data => ({
+    student_id: data.student_id,
+    type: data.type || 'cadet',
+    name: data.name,
+    password: data.password || null,
+    callsign: data.callsign || null,
+    role_title: data.role_title || null,
+    faction: data.faction || null,
+    age: data.age || null,
+    origin: data.origin || null,
+    portrait_url: data.portrait_url || null,
+    class_rank: data.class_rank || null,
+    threat_level: data.threat_level || null,
+    relationship: data.relationship || null,
+    background: data.background || null,
+    innate_talent: data.innate_talent || null,
+    discipline: data.discipline || null,
+    hull: parseInt(data.hull) || 0,
+    agi: parseInt(data.agi) || 0,
+    sys: parseInt(data.sys) || 0,
+    eng: parseInt(data.eng) || 0,
+    tech_bonus: parseInt(data.tech_bonus) || 0,
+    triggers: data.triggers || {},
+    talents: data.talents || [],
+    specialization: data.specialization || null,
+    motivations: data.motivations || null,
+    secrets: data.secrets || null,
+    mech_frame: data.mech_frame || 'Cadet Mark I',
+    mech_manufacturer: data.mech_manufacturer || 'GMS',
+    notes: data.notes || null,
+    updated_at: new Date().toISOString()
+  })).filter(r => r.student_id && r.name); // Ignore empty rows entirely
+
+  if (formattedRecords.length === 0) return { data: [], error: {message: 'No valid records with ID and Name found in sheet.'} };
+
+  const { data, error } = await _supabase
+    .from('characters')
+    .upsert(formattedRecords, { onConflict: 'student_id' })
+    .select();
+
+  return { data, error };
+}
+
 async function getCharacters(typeFilter) {
   if (!_supabase) return { data: [], error: { message: 'Supabase not configured. Edit supabase.js with your project URL and anon key.' } };
   let query = _supabase
