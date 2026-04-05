@@ -804,6 +804,46 @@ body::after {
   width: 0.4mm; background: linear-gradient(to bottom,#4fc3f7,#1a3a6e); opacity: 0.4;
 }
 
+/* ── MECHA SHEET PDF STYLES ── */
+#mechsheet-template {
+  display: none;
+  background: white; font-family: var(--fb); color: #0a1628;
+  padding: 10mm; width: 210mm; min-height: 297mm;
+  box-sizing: border-box;
+}
+.ms-header {
+  border-bottom: 2px solid #0a1628;
+  padding-bottom: 5mm; margin-bottom: 8mm;
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+.ms-title { font-family: var(--fd); font-size: 18pt; font-weight: 900; letter-spacing: 2px; }
+.ms-subtitle { font-family: var(--fm); font-size: 10pt; color: #1a6e9e; letter-spacing: 1px; }
+
+.ms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10mm; }
+
+.ms-section { margin-bottom: 8mm; }
+.ms-sec-title {
+  font-family: var(--fd); font-size: 10pt; font-weight: 700;
+  border-bottom: 1px solid #ccd8f0; padding-bottom: 2mm; margin-bottom: 4mm;
+  display: flex; align-items: center; gap: 3mm;
+}
+.ms-sec-title::after { content:''; flex:1; height:0.5mm; background:#eee; }
+
+.ms-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; }
+.ms-stat-box { border: 0.3mm solid #0a1628; padding: 2mm; text-align: center; }
+.ms-stat-val { font-family: var(--fd); font-size: 14pt; font-weight: 700; }
+.ms-stat-label { font-family: var(--fm); font-size: 6pt; text-transform: uppercase; }
+
+.ms-mount { border-left: 1mm solid #0a1628; padding-left: 4mm; margin-bottom: 5mm; }
+.ms-mount-label { font-family: var(--fm); font-size: 7pt; color: #1a6e9e; text-transform: uppercase; }
+.ms-mount-name { font-family: var(--fd); font-size: 11pt; font-weight: 700; }
+
+.ms-system { display: flex; justify-content: space-between; border-bottom: 0.2mm solid #eee; padding: 2mm 0; }
+.ms-system-name { font-weight: 600; font-size: 10pt; }
+.ms-system-cost { font-family: var(--fm); font-size: 8pt; border: 0.2mm solid #0a1628; padding: 0.5mm 1.5mm; }
+
+.ms-footer { border-top: 1px solid #eee; margin-top: 10mm; padding-top: 5mm; display: flex; justify-content: space-between; font-family: var(--fm); font-size: 8pt; color: #888; }
+
 /* ── CONFIRM DIALOG ── */
 .confirm-overlay {
   position: fixed; inset: 0;
@@ -1055,6 +1095,18 @@ const TALENTS_DATA = [
   {id:"strm",ico:"⛈",n:"Stormbringer",r1:{n:"Overcharge",d:"When you Overcharge, take 1 less heat, gain +1 Accuracy on next attack."}},
   {id:"tech",ico:"🔬",n:"Technophile",r1:{n:"System Expert",d:"Once/scene, use any equipped system without paying activation cost."}},
   {id:"warmo",ico:"🗄",n:"Walking Armory",r1:{n:"Arsenal",d:"Carry one additional weapon without counting against mount restrictions."}}
+];
+
+const SYSTEM_CATALOG = [
+  { id: 'pers', name: 'Personalizations (+2 HP)', cost: 1 },
+  { id: 'paint', name: 'Custom Paint Job', cost: 1 },
+  { id: 'comp', name: 'Expanded Compartment', cost: 1 },
+  { id: 'manip', name: 'Manipulators', cost: 1 },
+  { id: 'smoke', name: 'Pattern-A Smoke Charges', cost: 1 },
+  { id: 'shield1', name: 'GMS Shield Type-I', cost: 2 },
+  { id: 'hex', name: 'Hex Charges', cost: 2 },
+  { id: 'turret', name: 'Turret Drones', cost: 2 },
+  { id: 'flight', name: 'Type-I Flight System', cost: 3 }
 ];
 
 // ── State ──
@@ -1313,6 +1365,11 @@ function openDetail(char) {
     <div class="detail-footer">
       <button class="btn-detail" style="border-color:var(--cyan);color:var(--cyan)" onclick="generateIdPdf('${escAttr(char.student_id)}')">⬡ EXPORT ID (PDF)</button>
       <button class="btn-detail" style="border-color:var(--gold);color:var(--gold)" onclick="generatePdf('${escAttr(char.student_id)}')">⬡ EXPORT DOSSIER (PDF)</button>
+      <button class="btn-detail" id="btn-export-mech" style="border-color:var(--green);color:var(--green)" 
+        onclick="generateMechPdf('${escAttr(char.student_id)}')"
+        ${!char.mech_loadout || (typeof char.mech_loadout === 'object' && Object.keys(char.mech_loadout).length === 0) ? 'disabled' : ''}>
+        ⬢ EXPORT MECHA SHEET
+      </button>
       <div style="flex:1"></div>
       <a href="/enroll?edit=${encodeURIComponent(char.student_id)}" class="btn-detail edit">✎ EDIT RECORD</a>
       <button class="btn-detail delete" onclick="confirmDelete('${escAttr(char.student_id)}','${escAttr(char.name)}')">✕ DELETE</button>
@@ -1497,9 +1554,10 @@ function parseCSV(csv) {
     }
     // Only accept if ID exists
     if (obj['student_id'] && obj['student_id'].trim() !== '') {
-      // JSON Parse columns if necessary (triggers, talents)
+      // JSON Parse columns if necessary (triggers, talents, loadout)
       try { if (typeof obj.triggers === 'string' && obj.triggers.startsWith('{')) obj.triggers = JSON.parse(obj.triggers); } catch(e){}
       try { if (typeof obj.talents === 'string' && obj.talents.startsWith('[')) obj.talents = JSON.parse(obj.talents); } catch(e){}
+      try { if (typeof obj.mech_loadout === 'string' && obj.mech_loadout.startsWith('{')) obj.mech_loadout = JSON.parse(obj.mech_loadout); } catch(e){}
       
       results.push(obj);
     }
@@ -1763,6 +1821,112 @@ async function generateIdPdf(studentId) {
         </div>
       </div>
     </div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    window.print();
+  }, 300);
+}
+
+// ── MECHA SHEET PDF EXPORT ──
+async function generateMechPdf(studentId) {
+  const char = allCharacters.find(c => c.student_id === studentId);
+  if (!char || !char.mech_loadout) return;
+
+  showToast('GENERATING MECHA DATASHEET...', false);
+  const loadout = typeof char.mech_loadout === 'string' ? JSON.parse(char.mech_loadout) : char.mech_loadout;
+
+  const hull = char.hull || 0;
+  const agi = char.agi || 0;
+  const sys = char.sys || 0;
+  const eng = char.eng || 0;
+
+  const hp = 10 + (hull * 2) + (loadout.systems.includes('pers') ? 2 : 0);
+  const eva = 8 + agi;
+  const spd = 4 + Math.floor(agi / 2);
+  const heat = 6 + eng;
+  const rep = 5 + hull;
+  const edef = 8 + sys;
+  const spMax = 6 + sys;
+
+  const activeSystems = (loadout.systems || []).map(sid => SYSTEM_CATALOG.find(s => s.id === sid)).filter(Boolean);
+
+  const container = document.getElementById('ps');
+  container.innerHTML = `
+    <div id="mechsheet-template" style="display:block">
+      <div class="ms-header">
+        <div>
+          <div class="ms-title">${escHtml(char.mech_frame || 'Cadet Mark I')}</div>
+          <div class="ms-subtitle">GMS STANDARD FRAME // PILOT: ${escHtml(char.name)}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:var(--fd);font-size:12pt;font-weight:900">TYPE: EVEREST</div>
+          <div style="font-family:var(--fm);font-size:8pt;color:#888">LICENSE LEVEL 0</div>
+        </div>
+      </div>
+
+      <div class="ms-grid">
+        <!-- LEFT COLUMN: STATS & MOUNTS -->
+        <div>
+          <div class="ms-section">
+            <div class="ms-sec-title">MECHANICAL SPECIFICATIONS</div>
+            <div class="ms-stat-grid">
+              <div class="ms-stat-box"><div class="ms-stat-val">${hp}</div><div class="ms-stat-label">HP</div></div>
+              <div class="ms-stat-box"><div class="ms-stat-val">0</div><div class="ms-stat-label">Armor</div></div>
+              <div class="ms-stat-box"><div class="ms-stat-val">${eva}</div><div class="ms-stat-label">Evasion</div></div>
+              <div class="ms-stat-box"><div class="ms-stat-val">${spd}</div><div class="ms-stat-label">Speed</div></div>
+              <div class="ms-stat-box"><div class="ms-stat-val">${heat}</div><div class="ms-stat-label">Heat Cap</div></div>
+              <div class="ms-stat-box"><div class="ms-stat-val">${rep}</div><div class="ms-stat-label">Rep Cap</div></div>
+              <div class="ms-stat-box"><div class="ms-stat-val">${edef}</div><div class="ms-stat-label">E-Def</div></div>
+              <div class="ms-stat-box"><div class="ms-stat-val">10</div><div class="ms-stat-label">Sensors</div></div>
+            </div>
+          </div>
+
+          <div class="ms-section">
+            <div class="ms-sec-title">WEAPON MOUNTS</div>
+            <div class="ms-mount">
+              <div class="ms-mount-label">Main Mount</div>
+              <div class="ms-mount-name">${escHtml(loadout.main || 'UNARMED')}</div>
+            </div>
+            <div class="ms-mount">
+              <div class="ms-mount-label">Flex Mount</div>
+              <div class="ms-mount-name">${escHtml(loadout.flex || 'UNARMED')}</div>
+            </div>
+            <div class="ms-mount">
+              <div class="ms-mount-label">Heavy Mount</div>
+              <div class="ms-mount-name">${escHtml(loadout.heavy || 'UNARMED')}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: SYSTEMS -->
+        <div>
+          <div class="ms-section">
+            <div class="ms-sec-title">INTEGRATED SYSTEMS <span style="margin-left:auto;font-family:var(--fm);font-size:8pt">${loadout.systems.length ? loadout.systems.reduce((acc, sid) => acc + (SYSTEM_CATALOG.find(s => s.id === sid)?.cost || 0), 0) : 0} / ${spMax} SP</span></div>
+            ${activeSystems.length 
+              ? activeSystems.map(s => `
+                <div class="ms-system">
+                  <div class="ms-system-name">${escHtml(s.name)}</div>
+                  <div class="ms-system-cost">${s.cost} SP</div>
+                </div>`).join('')
+              : '<div style="font-family:var(--fm);font-size:9pt;color:#888;padding-top:4mm">NO SYSTEMS INSTALLED</div>'
+            }
+          </div>
+
+          <div class="ms-section">
+            <div class="ms-sec-title">CORE SYSTEM: INITIATIVE</div>
+            <div style="font-size:9pt;line-height:1.5">
+              Once per scene, you can take an extra Quick Action as a Free Action.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ms-footer">
+        <div>UNION PILOT ACADEMY // MECHA BAY // REF: ${escHtml(char.student_id)}</div>
+        <div>AEGIS PRIME STATION - SEC: PUBLIC</div>
+      </div>
     </div>
   `;
 

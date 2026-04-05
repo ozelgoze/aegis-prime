@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mecha Hangar — Aegis Prime</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #04090f; --panel: #0d1f3c; --border: rgba(79,195,247,0.2);
+  --cyan: #4fc3f7; --gold: #f5c842; --red: #ff4757; --green: #2ecc71;
+  --text: #e8f0fe; --dim: #8aaad4;
+  --fd: 'Orbitron', sans-serif; --fb: 'Rajdhani', sans-serif; --fm: 'Share Tech Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: var(--fb); min-height: 100vh; overflow-x: hidden; }
+
+/* Grid Background */
+body::before{content:'';position:fixed;inset:0;background:linear-gradient(rgba(79,195,247,0.03) 1px, transparent 1px),linear-gradient(90deg, rgba(79,195,247,0.03) 1px, transparent 1px);background-size:40px 40px;z-index:-1;}
+
+.topbar { border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; background: rgba(4,9,15,0.8); backdrop-filter: blur(4px); position: sticky; top: 0; z-index: 100; }
+.tb-title { font-family: var(--fd); font-weight: 700; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; }
+.tb-title span { color: var(--cyan); }
+.tb-user { font-family: var(--fm); font-size: 11px; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; }
+
+.main { max-width: 1200px; margin: 40px auto; padding: 0 24px; display: grid; grid-template-columns: 320px 1fr; gap: 32px; }
+
+.stat-panel { background: rgba(13,31,60,0.6); border: 1px solid var(--border); padding: 24px; }
+.mech-name { font-family: var(--fd); font-size: 24px; font-weight: 900; color: var(--white); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 2px; }
+.mech-sub { font-family: var(--fm); font-size: 11px; color: var(--dim); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+.stat-box { background: rgba(4,9,15,0.5); border: 1px solid rgba(79,195,247,0.1); padding: 12px; text-align: center; }
+.stat-box.highlight { border-color: rgba(245,200,66,0.3); background: rgba(245,200,66,0.05); }
+.sb-val { font-family: var(--fd); font-size: 24px; font-weight: 700; color: var(--cyan); line-height: 1; margin-bottom: 4px; }
+.sb-lbl { font-family: var(--fm); font-size: 9px; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; }
+
+.loadout-panel { display: flex; flex-direction: column; gap: 24px; }
+.section-title { font-family: var(--fd); font-size: 14px; font-weight: 700; color: var(--white); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+.section-title::after { content:''; flex:1; height:1px; background:linear-gradient(90deg, var(--border), transparent); }
+
+.mount-card { background: rgba(13,31,60,0.4); border: 1px solid var(--border); padding: 20px; position: relative; }
+.mount-card::before { content:''; position:absolute; top:0; left:0; width:4px; height:100%; background:var(--cyan); }
+.mount-lbl { font-family: var(--fm); font-size: 10px; color: var(--cyan); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+.mount-select { width: 100%; background: rgba(4,9,15,0.8); border: 1px solid var(--border); color: var(--white); padding: 12px; font-family: var(--fb); font-size: 16px; font-weight: 500; outline: none; cursor: pointer; appearance: none; }
+.mount-select:focus { border-color: var(--cyan); box-shadow: 0 0 10px rgba(79,195,247,0.1); }
+
+.sys-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.sys-card { background: rgba(13,31,60,0.4); border: 1px solid var(--border); padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; }
+.sys-card:hover { border-color: var(--cyan); background: rgba(79,195,247,0.05); }
+.sys-card.active { border-color: var(--gold); background: rgba(245,200,66,0.1); }
+.sys-name { font-size: 15px; font-weight: 600; }
+.sys-cost { font-family: var(--fm); font-size: 11px; color: var(--gold); padding: 2px 6px; border: 1px solid var(--gold); background: rgba(245,200,66,0.1); }
+
+.sp-tracker { font-family: var(--fd); font-size: 16px; color: var(--gold); background: rgba(245,200,66,0.05); border: 1px solid rgba(245,200,66,0.2); padding: 12px 20px; display: inline-flex; align-items: center; gap: 12px; }
+
+.save-btn { width: 100%; padding: 16px; background: var(--cyan); color: var(--bg); border: none; font-family: var(--fd); font-size: 14px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; margin-top: 32px; }
+.save-btn:hover { background: #fff; box-shadow: 0 0 20px rgba(79,195,247,0.4); }
+.save-btn:disabled { background: var(--border); color: var(--dim); cursor: not-allowed; box-shadow: none; }
+
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--panel); border: 1px solid; padding: 12px 20px; font-family: var(--fm); font-size: 11px; letter-spacing: 1px; z-index: 1000; transition: transform 0.3s, opacity 0.3s; transform: translateY(100px); opacity: 0; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: var(--green); color: var(--green); }
+.toast.error { border-color: var(--red); color: var(--red); }
+
+@media (max-width: 900px) {
+  .main { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="tb-title">MECHA <span>HANGAR</span></div>
+  <div class="tb-user" id="tb-user">AUTHORIZING...</div>
+</header>
+
+<div class="main">
+  <!-- STATS PANEL -->
+  <div class="stat-panel">
+    <div class="mech-name" id="mech-name">Everest</div>
+    <div class="mech-sub">GMS Standard Frame // <span id="pilot-name">...</span></div>
+
+    <div class="stat-grid">
+      <div class="stat-box highlight"><div class="sb-val" id="st-hp">-</div><div class="sb-lbl">HP</div></div>
+      <div class="stat-box"><div class="sb-val" id="st-eva">-</div><div class="sb-lbl">Evasion</div></div>
+      <div class="stat-box"><div class="sb-val" id="st-spd">-</div><div class="sb-lbl">Speed</div></div>
+      <div class="stat-box"><div class="sb-val" id="st-heat">-</div><div class="sb-lbl">Heat Cap</div></div>
+      <div class="stat-box"><div class="sb-val" id="st-rep">-</div><div class="sb-lbl">Repair Cap</div></div>
+      <div class="stat-box"><div class="sb-val" id="st-edef">-</div><div class="sb-lbl">E-Defense</div></div>
+      <div class="stat-box"><div class="sb-val" id="st-sens">10</div><div class="sb-lbl">Sensors</div></div>
+      <div class="stat-box"><div class="sb-val" id="st-arm">0</div><div class="sb-lbl">Armor</div></div>
+    </div>
+    
+    <div style="font-family:var(--fm);font-size:10px;line-height:1.6;color:var(--dim)">
+      * Stats dynamically boosted by pilot's Hull / Agility / Systems / Engineering capacities.
+    </div>
+  </div>
+
+  <!-- LOADOUT PANEL -->
+  <div class="loadout-panel">
+    
+    <div class="section-title">WEAPON MOUNTS <span>// GMS STANDARD</span></div>
+    
+    <div class="mount-card">
+      <div class="mount-lbl">MAIN MOUNT</div>
+      <select class="mount-select" id="mount-main">
+        <option value="">-- UNARMED --</option>
+        <option value="Assault Rifle">Assault Rifle (Reliable Kinetic)</option>
+        <option value="Thermal Rifle">Thermal Rifle (Energy Damage)</option>
+        <option value="Charged Blade">Charged Blade (Energy Melee)</option>
+        <option value="Tactical Melee">Tactical Melee Weapon (Kinetic Melee)</option>
+        <option value="Missile Rack">Missile Rack (Explosive blast)</option>
+      </select>
+    </div>
+
+    <div class="mount-card">
+      <div class="mount-lbl">FLEX MOUNT</div>
+      <select class="mount-select" id="mount-flex">
+        <option value="">-- UNARMED --</option>
+        <option value="Assault Rifle">Assault Rifle (Reliable Kinetic)</option>
+        <option value="Thermal Rifle">Thermal Rifle (Energy Damage)</option>
+        <option value="Charged Blade">Charged Blade (Energy Melee)</option>
+        <option value="Dual Pistols">Dual Pistols (Aux/Aux Ranged)</option>
+        <option value="Dual Whips">Dual Whips (Aux/Aux Melee)</option>
+      </select>
+    </div>
+
+    <div class="mount-card">
+      <div class="mount-lbl">HEAVY MOUNT</div>
+      <select class="mount-select" id="mount-heavy">
+        <option value="">-- UNARMED --</option>
+        <option value="Heavy Machine Gun">Heavy Machine Gun (Devastating Kinetic)</option>
+        <option value="Anti-Materiel Rifle">Anti-Materiel Rifle (Accurate Kinetic)</option>
+        <option value="Howitzer">Howitzer (Massive Arcing Explosive)</option>
+        <option value="Kinetic Hammer">Kinetic Hammer (Heavy Melee)</option>
+        <option value="Superheavy Laser">Superheavy Laser (Requires Flex Mount)</option> <!-- Just for flavor, no complex logic for now -->
+      </select>
+    </div>
+
+    <div class="section-title" style="margin-top:20px;">SYSTEM SELECTION <span style="margin-left:auto"><div class="sp-tracker">SP LIMIT: <span id="sp-count">0</span> / <span id="sp-max">6</span></div></span></div>
+    
+    <div class="sys-grid" id="sys-grid">
+      <!-- Generated via JS -->
+    </div>
+
+    <button class="save-btn" id="save-btn">SAVE LOADOUT TO MAINFRAME</button>
+
+  </div>
+</div>
+
+<div class="toast" id="toast">LOADOUT SAVED SUCCESSFULLY</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase.js"></script>
+<script>
+const SYSTEM_CATALOG = [
+  { id: 'pers', name: 'Personalizations (+2 HP)', cost: 1 },
+  { id: 'paint', name: 'Custom Paint Job', cost: 1 },
+  { id: 'comp', name: 'Expanded Compartment', cost: 1 },
+  { id: 'manip', name: 'Manipulators', cost: 1 },
+  { id: 'smoke', name: 'Pattern-A Smoke Charges', cost: 1 },
+  { id: 'shield1', name: 'GMS Shield Type-I', cost: 2 },
+  { id: 'hex', name: 'Hex Charges', cost: 2 },
+  { id: 'turret', name: 'Turret Drones', cost: 2 },
+  { id: 'flight', name: 'Type-I Flight System', cost: 3 }
+];
+
+let currentUser = null;
+let maxSP = 6;
+let currentSP = 0;
+let activeSystems = new Set();
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(window.location.search);
+  const studentId = params.get('student_id');
+  if (!studentId) { alert('Unauthorized access'); window.location.href='/'; return; }
+
+  // Load character
+  try {
+    const { data, error } = await _supabase.from('characters').select('*').eq('student_id', studentId).single();
+    if (error || !data) throw new Error('Operator not found');
+    currentUser = data;
+    initializeHangar();
+  } catch (e) {
+    alert('Database sync failed');
+    window.location.href='/';
+  }
+});
+
+function initializeHangar() {
+  document.getElementById('tb-user').textContent = `OPERATOR: ${currentUser.callsign || currentUser.name}`;
+  document.getElementById('pilot-name').textContent = currentUser.name;
+  document.getElementById('mech-name').textContent = currentUser.mech_frame || 'Cadet Mark I';
+
+  // Calculate Stats based on Pilot
+  const hull = currentUser.hull || 0;
+  const agi = currentUser.agi || 0;
+  const sys = currentUser.sys || 0;
+  const eng = currentUser.eng || 0;
+
+  document.getElementById('st-hp').textContent = 10 + (hull * 2);
+  document.getElementById('st-rep').textContent = 5 + hull;
+  document.getElementById('st-eva').textContent = 8 + agi;
+  document.getElementById('st-spd').textContent = 4 + Math.floor(agi / 2); // 1 speed per 2 agi roughly, wait Lancer gives 1:0? No, Lancer gives 0 speed for Agi in normal. Oh wait, wait. Actually let's just make it +1 speed for fun if we want, or leave 4 if strictly Lancer. In Lancer Agility gives Evasion and Speed. Let's do 4 + Math.floor(agi/2). 
+  document.getElementById('st-heat').textContent = 6 + eng;
+  document.getElementById('st-edef').textContent = 8 + sys;
+  
+  maxSP = 6 + sys;
+  document.getElementById('sp-max').textContent = maxSP;
+
+  // Build Systems UI
+  const sysGrid = document.getElementById('sys-grid');
+  SYSTEM_CATALOG.forEach(sysData => {
+    const card = document.createElement('div');
+    card.className = 'sys-card';
+    card.dataset.id = sysData.id;
+    card.dataset.cost = sysData.cost;
+    card.innerHTML = `<span class="sys-name">${sysData.name}</span><span class="sys-cost">${sysData.cost} SP</span>`;
+    card.onclick = () => toggleSystem(card, sysData.id, sysData.cost);
+    sysGrid.appendChild(card);
+  });
+
+  // Load existing loadout if exists
+  if (currentUser.mech_loadout) {
+    const loadout = typeof currentUser.mech_loadout === 'string' ? JSON.parse(currentUser.mech_loadout) : currentUser.mech_loadout;
+    document.getElementById('mount-main').value = loadout.main || '';
+    document.getElementById('mount-flex').value = loadout.flex || '';
+    document.getElementById('mount-heavy').value = loadout.heavy || '';
+    
+    if (loadout.systems) {
+      loadout.systems.forEach(sid => {
+        const card = document.querySelector(`.sys-card[data-id="${sid}"]`);
+        if (card) {
+          activeSystems.add(sid);
+          card.classList.add('active');
+          currentSP += parseInt(card.dataset.cost);
+        }
+      });
+    }
+    updateSP();
+  }
+
+  // Save binding
+  document.getElementById('save-btn').onclick = saveLoadout;
+}
+
+function toggleSystem(card, id, cost) {
+  if (activeSystems.has(id)) {
+    activeSystems.delete(id);
+    card.classList.remove('active');
+    currentSP -= cost;
+  } else {
+    // Check budget
+    if (currentSP + cost > maxSP) {
+      showToast('SYSTEM POINT BUDGET EXCEEDED', 'error');
+      return;
+    }
+    activeSystems.add(id);
+    card.classList.add('active');
+    currentSP += cost;
+  }
+  updateSP();
+}
+
+function updateSP() {
+  document.getElementById('sp-count').textContent = currentSP;
+  if (currentSP > maxSP) {
+    document.getElementById('save-btn').disabled = true;
+    document.getElementById('save-btn').textContent = 'SP LIMIT EXCEEDED';
+  } else {
+    document.getElementById('save-btn').disabled = false;
+    document.getElementById('save-btn').textContent = 'SAVE LOADOUT TO MAINFRAME';
+  }
+}
+
+async function saveLoadout() {
+  const loadout = {
+    main: document.getElementById('mount-main').value,
+    flex: document.getElementById('mount-flex').value,
+    heavy: document.getElementById('mount-heavy').value,
+    systems: Array.from(activeSystems)
+  };
+
+  document.getElementById('save-btn').disabled = true;
+  document.getElementById('save-btn').textContent = 'SYNCING...';
+
+  try {
+    const { error } = await _supabase.from('characters').update({ mech_loadout: loadout }).eq('student_id', currentUser.student_id);
+    if (error) throw error;
+    showToast('LOADOUT SAVED. RETURN TO TERMINAL.', 'success');
+  } catch(e) {
+    showToast('DATABASE SYNC FAILED', 'error');
+  } finally {
+    document.getElementById('save-btn').disabled = false;
+    document.getElementById('save-btn').textContent = 'SAVE LOADOUT TO MAINFRAME';
+  }
+}
+
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast show ' + type;
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>

@@ -1008,7 +1008,9 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
       addLine('> INPUT: ' + cmd, '');
       if (cmd === '10') {
         runHackingAccessSequence(loginState.id);
-      } else if (['1','2','3','4','5','6','7','8','9'].includes(cmd)) {
+      } else if (cmd === '4') {
+        runHangarAccessSequence(loginState.id);
+      } else if (['1','2','3','5','6','7','8','9'].includes(cmd)) {
         addLine('> MODULE OFFLINE / ACCESS RESTRICTED', 'red');
         setTimeout(() => showPrompt('select option [1-10]...'), 600);
       } else {
@@ -1122,6 +1124,19 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
       document.body.appendChild(flash);
       setTimeout(() => {
         window.location.href = '/terminal?cadet_id=' + encodeURIComponent(studentId);
+      }, 700);
+    }, 600);
+  }
+
+  function runHangarAccessSequence(studentId) {
+    addLine('> CONNECTING TO MECHA BAY...', 'gold');
+    setTimeout(() => {
+      const flash = document.createElement('div');
+      flash.className = 'glitch-flash';
+      flash.style.background = 'var(--gold)';
+      document.body.appendChild(flash);
+      setTimeout(() => {
+        window.location.href = '/hangar.html?student_id=' + encodeURIComponent(studentId);
       }, 700);
     }, 600);
   }

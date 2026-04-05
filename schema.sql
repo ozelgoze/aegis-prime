@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS characters (
   -- Mech (placeholder)
   mech_frame TEXT DEFAULT 'Cadet Mark I',
   mech_manufacturer TEXT DEFAULT 'GMS',
+  mech_loadout JSONB DEFAULT '{}',
 
   -- Notes
   notes TEXT
