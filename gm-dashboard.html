@@ -1150,7 +1150,7 @@ async function executeDelete() {
     const { error } = await deleteCharacter(pendingDeleteId);
     if (error) throw error;
     showToast('RECORD DELETED SUCCESSFULLY');
-    fetchCharacters();
+    loadCharacters();
   } catch (err) {
     showToast('DELETE FAILED: ' + (err.message || 'Unknown error'), true);
   }
@@ -1242,7 +1242,7 @@ async function startImport() {
     statusEl.textContent = `SUCCESS: ${data ? data.length : records.length} records synced!`;
     
     // Refresh dashboard
-    fetchCharacters();
+    loadCharacters();
     
     setTimeout(closeImportModal, 1500);
 
