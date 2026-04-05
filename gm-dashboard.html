@@ -614,6 +614,17 @@ body::after {
 .btn-detail.delete { border-color: var(--red); color: var(--red); }
 .btn-detail.delete:hover { background: rgba(255,71,87,0.12); }
 
+/* ══════════════════════════════════════════════
+   PRINT — SHARED
+══════════════════════════════════════════════ */
+#ps { display: none; }
+@media print {
+  body > *:not(#ps) { display: none !important; }
+  #ps { display: flex !important; justify-content: center; align-items: flex-start; margin: 0; padding: 0; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  @page { margin: 0; }
+}
+
 /* ── PDF DOSSIER PRINT STYLES ── */
 #dossier-template {
   display: none;
@@ -1570,8 +1581,9 @@ async function generatePdf(studentId) {
   if(char.motivations) fullNotes += 'MOTIVATIONS: ' + char.motivations;
 
   // Populate hidden DOM container
-  const container = document.getElementById('dossier-template');
+  const container = document.getElementById('ps');
   container.innerHTML = `
+    <div class="cs-page">
     <!-- TOP STRIPE -->
     <div class="cs-stripe ${themeClass}">
       <div class="cs-stripe-logo">AP</div>
@@ -1680,26 +1692,10 @@ async function generatePdf(studentId) {
     <div class="cs-bottom-accent ${themeClass}"></div>
   `;
 
-  // Make visible very briefly inside a zero-height container to render accurately
-  container.style.display = 'block';
-  
-  // PDF Configuration
-  const opt = {
-    margin:       0,
-    filename:     `${char.name || char.student_id}_Dossier.pdf`,
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true, logging: false },
-    jsPDF:        { unit: 'px', format: [794, 1123], orientation: 'portrait' }
-  };
-
-  // Generate and save
-  html2pdf().set(opt).from(container).save().then(() => {
-    container.style.display = 'none';
-  }).catch(err => {
-    console.error(err);
-    showToast('FAILED TO GENERATE PDF', true);
-    container.style.display = 'none';
-  });
+  // Fire native print dialog
+  setTimeout(() => {
+    window.print();
+  }, 300);
 }
 
 // ── ID CARD PDF EXPORT ──
@@ -1710,8 +1706,9 @@ async function generateIdPdf(studentId) {
   showToast('GENERATING ID CARD...', false);
   const portraitUrl = char.portrait_url ? convertDriveUrl(char.portrait_url) : '';
 
-  const container = document.getElementById('idcard-template');
+  const container = document.getElementById('ps');
   container.innerHTML = `
+    <div id="idcard-template" style="display:flex; flex-direction:column; background:white">
     <div class="id-watermark">UPA</div>
     <div class="id-accent"></div>
     <div class="id-header">
@@ -1755,36 +1752,20 @@ async function generateIdPdf(studentId) {
             </div>
           </div>
         </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:1mm">
           <span style="font-family:var(--fm);font-size:4pt;color:#1a3a6e">LIC. LEVEL 0 // YEAR 1</span>
           <span style="font-family:var(--fd);font-size:4pt;color:#1a3a6e;font-weight:700">⬡ UPA</span>
         </div>
       </div>
     </div>
+    </div>
   `;
 
-  container.style.display = 'block';
-  
-  const opt = {
-    margin:       0,
-    filename:     `${char.name || char.student_id}_ID_Card.pdf`,
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 4, useCORS: true, logging: false }, // Higher scale for tiny details
-    jsPDF:        { unit: 'mm', format: [53.98, 85.6], orientation: 'landscape' }
-  };
-
-  html2pdf().set(opt).from(container).save().then(() => {
-    container.style.display = 'none';
-  }).catch(err => {
-    console.error(err);
-    showToast('FAILED TO GENERATE PDF', true);
-    container.style.display = 'none';
-  });
+  setTimeout(() => {
+    window.print();
+  }, 300);
 }
 </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<div id="dossier-template"></div>
-<div id="idcard-template"></div>
+<div id="ps"></div>
 </body>
 </html>
