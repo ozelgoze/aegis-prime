@@ -1018,18 +1018,18 @@ body::after {
 <script>
 // ── Talent & Trigger data (mirrored from enroll.html for display) ──
 const TRIGGERS_DATA = [
-  {id:"atf",n:"Applying Fists to Faces",stat:"HULL"},
-  {id:"asl",n:"Assault",stat:"HULL"},
-  {id:"sc",n:"Stay Cool",stat:"HULL"},
-  {id:"tc",n:"Take Control",stat:"HULL"},
-  {id:"mao",n:"Move As One",stat:"AGILITY"},
-  {id:"thr",n:"Threaten",stat:"AGILITY"},
-  {id:"spt",n:"Spot",stat:"AGILITY"},
-  {id:"aus",n:"Act Unseen",stat:"AGILITY"},
-  {id:"hck",n:"Hack",stat:"SYSTEMS"},
-  {id:"pat",n:"Patch",stat:"SYSTEMS"},
-  {id:"scn",n:"Scan",stat:"SYSTEMS"},
-  {id:"gf",n:"Get Focused",stat:"ENGINEERING"}
+  {id:"atf",n:"Applying Fists to Faces",stat:"HULL",d:"Brawling, improvised weapons, overpowering physically."},
+  {id:"asl",n:"Assault",stat:"HULL",d:"Charging enemies, breaching fortifications, overwhelming resistance."},
+  {id:"sc",n:"Stay Cool",stat:"HULL",d:"Endure pain, avoid panic, resist torture, survive extremes."},
+  {id:"tc",n:"Take Control",stat:"HULL",d:"Seize the moment, impose your will through dominance."},
+  {id:"mao",n:"Move As One",stat:"AGILITY",d:"Coordinated movement, rapid retreat, flanking maneuvers."},
+  {id:"thr",n:"Threaten",stat:"AGILITY",d:"Intimidate or coerce through presence or force."},
+  {id:"spt",n:"Spot",stat:"AGILITY",d:"Notice hidden threats, detect traps, read situations."},
+  {id:"aus",n:"Act Unseen",stat:"AGILITY",d:"Move stealthily, slip past security unnoticed."},
+  {id:"hck",n:"Hack",stat:"SYSTEMS",d:"Infiltrate electronic systems, override security."},
+  {id:"pat",n:"Patch",stat:"SYSTEMS",d:"Jury-rig repairs, emergency medical care."},
+  {id:"scn",n:"Scan",stat:"SYSTEMS",d:"Analyze targets, identify weaknesses, process sensor data."},
+  {id:"gf",n:"Get Focused",stat:"ENGINEERING",d:"Hyper-concentration, technical mastery under pressure."}
 ];
 
 const TALENTS_DATA = [
@@ -1566,7 +1566,7 @@ async function generatePdf(studentId) {
     `<div class="cs-trigger">
        <div>
          <span class="cs-trigger-name">${t.n}</span>
-         <span class="cs-trigger-stat">${t.stat}</span>
+         <span class="cs-trigger-stat">${t.d}</span>
        </div>
        <span class="cs-trigger-val">+${triggers[t.id]}</span>
      </div>`
