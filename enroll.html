@@ -1199,16 +1199,16 @@ function setThreat(level){
   sync();
 }
 
-function previewDrivePortrait(){
+function previewDrivePortrait(skipSync = false){
   const url=document.getElementById('i-portrait').value.trim();
   S.portraitUrl=url;
   const preview=document.getElementById('drive-preview');
   const ph=document.getElementById('drive-ph');
-  if(!url){preview.innerHTML='<div class="drive-preview-ph" id="drive-ph">◎<br>PASTE DRIVE<br>LINK BELOW</div>';S.portrait=null;sync();return;}
+  if(!url){preview.innerHTML='<div class="drive-preview-ph" id="drive-ph">◎<br>PASTE DRIVE<br>LINK BELOW</div>';S.portrait=null; if(!skipSync) sync();return;}
   const converted=convertDriveUrl(url);
   S.portrait=converted;
   preview.innerHTML=`<img src="${converted}" onerror="this.outerHTML='<div class=drive-preview-ph>⚠ INVALID<br>URL</div>'">`;
-  sync();
+  if(!skipSync) sync();
 }
 
 function handlePort(e){
@@ -1411,7 +1411,7 @@ async function loadEditData(id){
     document.getElementById('i-age').value = S.age;
     document.getElementById('i-ori').value = S.origin;
     document.getElementById('i-portrait').value = S.portraitUrl;
-    if(S.portraitUrl) previewDrivePortrait();
+    if(S.portraitUrl) previewDrivePortrait(true);
     document.getElementById('i-rel').value = S.relationship;
     document.getElementById('i-motiv').value = S.motivations;
     document.getElementById('i-secrets').value = S.secrets;
