@@ -323,6 +323,14 @@ cmdInput.addEventListener('keydown', async (e) => {
   if (cmd === 'extract') {
     await execRemote('extract'); processing = false; return;
   }
+  if (cmd === 'intel') {
+    if (parts[1]) {
+      await execRemote('intel', parts[1].toUpperCase());
+    } else {
+      await execRemote('intel');
+    }
+    processing = false; return;
+  }
 
   addLine('UNKNOWN COMMAND: ' + cmd, 'red');
   addLine('Type "help" for available commands.', 'dim');
@@ -383,6 +391,21 @@ async function execRemote(command, arg) {
       displayData(data.data, data.layer);
     }
 
+    // Display targets from intel
+    if (data.targets && Array.isArray(data.targets)) {
+      addBlank();
+      for (const t of data.targets) {
+        addLine('  [+] ' + t, 'cyan');
+      }
+    }
+
+    // Display intel data array
+    if (data.intel_data && Array.isArray(data.intel_data)) {
+      for (const layerObj of data.intel_data) {
+        displayData(layerObj.data, layerObj.layer);
+      }
+    }
+
     // Handle extraction complete
     if (command === 'extract' && data.status === 'SUCCESS') {
       sessionId = null; targetId = null; currentLayer = 0; localBuffer = {};
@@ -406,6 +429,7 @@ function showHelp() {
   addLine('│            AVAILABLE COMMANDS                    │', 'dim');
   addLine('├─────────────────────────────────────────────────┤', 'dim');
   addLine('│  scan local       Scan for target nodes         │', 'cyan');
+  addLine('│  intel            View extracted intel database │', 'cyan');
   addLine('│  crack <ID>       Breach target (Layer 1)       │', 'cyan');
   addLine('│  crack --level 2  Breach Layer 2 (1 Difficulty) │', 'cyan');
   addLine('│  crack --level 3  Breach Layer 3 (2 Difficulty) │', 'cyan');

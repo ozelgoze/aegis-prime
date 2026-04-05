@@ -78,6 +78,24 @@ BEGIN
   END IF;
   v_base_stat := COALESCE(v_hacker.sys, 0) + COALESCE(v_hacker.tech_bonus, 0);
 
+  -- ─── CHECK DAILY HACK LIMIT ───
+  IF p_command IN ('scan_local', 'crack') THEN
+    -- If there's an older session in the last 24h that is NOT active, block it
+    IF EXISTS (
+      SELECT 1 FROM hacking_sessions
+      WHERE hacker_id = p_hacker_id
+      AND created_at > now() - interval '1 day'
+      AND status != 'active'
+    ) THEN
+      -- Allow them to crack if they already have an active session
+      IF p_command = 'crack' AND EXISTS (SELECT 1 FROM hacking_sessions WHERE hacker_id = p_hacker_id AND target_id = UPPER(COALESCE(p_arg,'')) AND status = 'active') THEN
+        -- Continue
+      ELSE
+        RETURN jsonb_build_object('status','ERROR','output',jsonb_build_array('SYSTEM LOCKED: DAILY INTRUSION LIMIT REACHED','Your terminal fingerprint is currently cooling down.','Try again in 24 hours. Use "intel" to review data.'),'trace_level',0);
+      END IF;
+    END IF;
+  END IF;
+
   -- ═══ SCAN LOCAL ═══
   IF p_command = 'scan_local' THEN
     SELECT jsonb_agg(jsonb_build_object(
@@ -252,6 +270,24 @@ BEGIN
 
     UPDATE hacking_sessions SET status='extracted' WHERE id=v_session.id;
     RETURN jsonb_build_object('status','SUCCESS','output',jsonb_build_array('EXTRACTING TO SECURE STORAGE...','> '||v_session.current_layer||' LAYER(S) SAVED.','> TARGET: '||v_session.target_id,'> SESSION CLOSED.','','Intel now available in your knowledge base.'),'trace_level',v_session.trace_level,'layers_saved',v_session.current_layer);
+
+  -- ═══ INTEL ═══
+  ELSIF p_command = 'intel' THEN
+    IF p_arg IS NULL OR p_arg = '' THEN
+      -- List known targets
+      SELECT jsonb_agg(DISTINCT target_id) INTO v_data FROM player_knowledge WHERE owner_id = p_hacker_id;
+      IF v_data IS NULL THEN
+        RETURN jsonb_build_object('status','SUCCESS','output',jsonb_build_array('SECURE INTEL DATABASE','No extracted intel found. Hack a target and extract data first.'),'trace_level',0);
+      END IF;
+      RETURN jsonb_build_object('status','SUCCESS','output',jsonb_build_array('SECURE INTEL DATABASE','> KNOWN TARGETS:','Type "intel <TARGET_ID>" to view profiles.'),'trace_level',0,'targets',v_data);
+    ELSE
+      -- View specific target
+      SELECT jsonb_agg(jsonb_build_object('layer', layer, 'data', data)) INTO v_data FROM player_knowledge WHERE owner_id = p_hacker_id AND target_id = UPPER(p_arg);
+      IF v_data IS NULL THEN
+        RETURN jsonb_build_object('status','ERROR','output',jsonb_build_array('ERROR: NO INTEL FOUND FOR ['||UPPER(p_arg)||'].'),'trace_level',0);
+      END IF;
+      RETURN jsonb_build_object('status','SUCCESS','output',jsonb_build_array('DECRYPTING INTEL: '||UPPER(p_arg),'=================================='),'trace_level',0,'intel_data',v_data);
+    END IF;
 
   ELSE
     RETURN jsonb_build_object('status','ERROR','output',jsonb_build_array('UNKNOWN COMMAND: '||p_command),'trace_level',0);

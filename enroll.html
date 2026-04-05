@@ -57,8 +57,9 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:3px;background
 /* Type Toggle */
 .type-toggle{display:flex;gap:0;margin-bottom:16px}
 .type-btn{flex:1;padding:10px;text-align:center;border:1px solid var(--bo);cursor:pointer;transition:all .2s;font-family:var(--fd);font-size:8px;letter-spacing:2px;color:var(--wd);text-transform:uppercase;background:rgba(13,32,68,.3)}
-.type-btn:first-child{border-right:none}
+.type-btn+.type-btn{border-left:none}
 .type-btn.active-cadet{border-color:var(--cy);color:var(--cy);background:rgba(79,195,247,.1)}
+.type-btn.active-player{border-color:var(--go);color:var(--go);background:rgba(46,204,113,.1)}
 .type-btn.active-npc{border-color:var(--re);color:var(--re);background:rgba(255,71,87,.1)}
 .npc-only{display:none}
 .cadet-only{display:block}
@@ -698,6 +699,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:3px;background
   <!-- Type Toggle -->
   <div class="type-toggle">
     <div class="type-btn active-cadet" id="type-cadet" onclick="setType('cadet')">⬡ CADET</div>
+    <div class="type-btn" id="type-player" onclick="setType('player')">★ PLAYER</div>
     <div class="type-btn" id="type-npc" onclick="setType('npc')">◉ NPC</div>
   </div>
 
@@ -1008,8 +1010,16 @@ TRIGGERS.forEach(t=>S.triggers[t.id]=0);
 (function(){
   const p=new URLSearchParams(window.location.search);
   if(p.get('type')==='npc') setType('npc');
+  if(p.get('type')==='player') setType('player');
   const editId=p.get('edit');
-  if(editId) setTimeout(()=>loadEditData(editId),100);
+  if(editId) {
+    // Wait for Supabase to load, then fetch data
+    function tryLoad(){
+      if(typeof getCharacter==='function') loadEditData(editId);
+      else setTimeout(tryLoad,200);
+    }
+    setTimeout(tryLoad,200);
+  }
 })();
 
 let exportMode='cs'; // 'id' or 'cs'
@@ -1176,6 +1186,7 @@ function selClass(c){['s','a','b'].forEach(x=>document.getElementById('cc-'+x).c
 function setType(t){
   S.type=t;
   document.getElementById('type-cadet').className='type-btn'+(t==='cadet'?' active-cadet':'');
+  document.getElementById('type-player').className='type-btn'+(t==='player'?' active-player':'');
   document.getElementById('type-npc').className='type-btn'+(t==='npc'?' active-npc':'');
   document.querySelector('.ca').classList.toggle('is-npc',t==='npc');
   sync();
@@ -1361,7 +1372,7 @@ async function loadEditData(id){
     // Fill S object
     S.studentId = data.student_id;
     S.type = data.type || 'cadet';
-    if(S.type === 'npc') setType('npc');
+    setType(S.type);
     
     S.name = data.name || '';
     S.callsign = data.callsign || '';
