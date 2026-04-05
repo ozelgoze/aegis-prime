@@ -632,6 +632,7 @@ body::after {
   background: #f5f8ff;
   font-family: var(--fb);
   position: relative;
+  display: flex; flex-direction: column;
   page-break-after: always;
   box-sizing: border-box;
 }
@@ -735,12 +736,12 @@ body::after {
 
 .cs-notes-box { background: white; border: 0.3mm solid #ccd8f0; min-height: 16mm; padding: 2mm; font-size: 6pt; color: #2a3a5e; white-space: pre-wrap; line-height: 1.5; }
 
-.cs-footer { position: absolute; bottom: 5mm; left: 10mm; right: 10mm; display: flex; justify-content: space-between; align-items: center; border-top: 0.3mm solid #1a3a6e; padding-top: 1.5mm; }
+.cs-footer { margin-top: auto; display: flex; justify-content: space-between; align-items: center; border-top: 0.3mm solid #1a3a6e; padding-top: 1.5mm; margin-left: 10mm; margin-right: 10mm; margin-bottom: 5mm; }
 .cs-footer-text { font-family: var(--fm); font-size: 4.5pt; color: #8aaad4; letter-spacing: 0.5px; }
 .cs-footer-dots { display: flex; gap: 1mm; }
 .cs-footer-dot { width: 1.5mm; height: 1.5mm; border-radius: 50%; }
 
-.cs-bottom-accent { position: absolute; bottom: 0; left: 0; right: 0; height: 2mm; }
+.cs-bottom-accent { height: 2mm; width: 100%; }
 .cs-bottom-accent.sc{background:linear-gradient(90deg,#0a1628,#f5c842,#0a1628)}
 .cs-bottom-accent.ac{background:linear-gradient(90deg,#0a1628,#4fc3f7,#0a1628)}
 .cs-bottom-accent.bc{background:linear-gradient(90deg,#0a1628,#8aaad4,#0a1628)}
@@ -1480,7 +1481,8 @@ function parseCSV(csv) {
 
   if (lines.length < 2) return [];
 
-  const headers = lines[0].map(h => h.trim().toLowerCase());
+  // Normalize headers (e.g. "Class Rank" -> "class_rank")
+  const headers = lines[0].map(h => h.trim().toLowerCase().replace(/\s+/g, '_'));
   const results = [];
 
   for(let i = 1; i < lines.length; i++) {
@@ -1571,13 +1573,13 @@ async function generatePdf(studentId) {
   ).join('') : '<div style="font-size:6pt;color:#8aaad4">NO SKILL TRIGGERS</div>';
 
   let themeClass = 'b';
-  if(char.class_rank === 'S') themeClass = 'sc';
-  if(char.class_rank === 'A') themeClass = 'ac';
-  if(char.class_rank === 'B') themeClass = 'bc';
+  if(char.class_rank === 'S' || char.class_rank === 's') themeClass = 'sc';
+  if(char.class_rank === 'A' || char.class_rank === 'a') themeClass = 'ac';
+  if(char.class_rank === 'B' || char.class_rank === 'b') themeClass = 'bc';
 
   // Combine Narrative Notes (EXCLUDING Secrets) into Notes Box
-  let fullNotes = char.notes ? char.notes + '\\n\\n' : '';
-  if(char.relationship) fullNotes += 'RELATIONSHIP: ' + char.relationship + '\\n';
+  let fullNotes = char.notes ? char.notes + '\n\n' : '';
+  if(char.relationship) fullNotes += 'RELATIONSHIP: ' + char.relationship + '\n';
   if(char.motivations) fullNotes += 'MOTIVATIONS: ' + char.motivations;
 
   // Populate hidden DOM container
