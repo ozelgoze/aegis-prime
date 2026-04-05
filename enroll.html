@@ -222,6 +222,8 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:3px;background
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 
+.is-player .not-player { display: none !important; }
+
 /* ══════════════════════════════════════════════
    ID CARD  (85.6mm × 53.98mm — CR80 standard)
 ══════════════════════════════════════════════ */
@@ -736,7 +738,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:3px;background
           <option>Dissident Underground</option><option>PMC Clan</option><option>Independent / No Affiliation</option>
         </select>
       </div>
-      <div class="grp" style="margin-bottom:12px"><label class="lbl">Relationship to Players</label><input class="inp" id="i-rel" placeholder="Ally, Rival, Mentor..." oninput="sync()"></div>
+      <div class="grp not-player" style="margin-bottom:12px"><label class="lbl">Relationship to Players</label><input class="inp" id="i-rel" placeholder="Ally, Rival, Mentor..." oninput="sync()"></div>
       <div class="grp"><label class="lbl">Bio / Notes</label><textarea class="inp" id="i-notes" rows="2" placeholder="Background, personality..." style="resize:vertical" oninput="sync()"></textarea></div>
     </div>
   </div>
@@ -1189,6 +1191,7 @@ function setType(t, skipSync = false){
   document.getElementById('type-player').className='type-btn'+(t==='player'?' active-player':'');
   document.getElementById('type-npc').className='type-btn'+(t==='npc'?' active-npc':'');
   document.querySelector('.ca').classList.toggle('is-npc',t==='npc');
+  document.querySelector('.ca').classList.toggle('is-player',t==='player');
   if(!skipSync) sync();
 }
 
@@ -1323,9 +1326,9 @@ async function saveToDatabase(){
       age:S.age,
       origin:S.origin,
       portrait_url:S.portraitUrl,
-      class_rank:S.type==='cadet'?S.classRank:null,
-      threat_level:S.type==='npc'?S.threatLevel:null,
-      relationship:S.relationship,
+      class_rank: (S.type==='cadet' || S.type==='player') ? S.classRank : null,
+      threat_level: S.type==='npc' ? S.threatLevel : null,
+      relationship: S.type==='player' ? null : S.relationship,
       background:S.bg,
       innate_talent:S.talent,
       discipline:S.disc,
