@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS hacking_sessions (
 );
 
 ALTER TABLE hacking_sessions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all hacking_sessions" ON hacking_sessions;
 CREATE POLICY "Allow all hacking_sessions" ON hacking_sessions FOR ALL USING (true) WITH CHECK (true);
 
 -- Player knowledge (permanent intel)
@@ -34,6 +35,7 @@ CREATE TABLE IF NOT EXISTS player_knowledge (
 );
 
 ALTER TABLE player_knowledge ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all player_knowledge" ON player_knowledge;
 CREATE POLICY "Allow all player_knowledge" ON player_knowledge FOR ALL USING (true) WITH CHECK (true);
 
 -- ═══════════════════════════════════════════════════════════════
