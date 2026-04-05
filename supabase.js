@@ -83,6 +83,7 @@ async function saveCharacter(data) {
     student_id: data.student_id,
     type: data.type || 'cadet',
     name: data.name,
+    password: data.password || null,
     callsign: data.callsign || null,
     role_title: data.role_title || null,
     faction: data.faction || null,
