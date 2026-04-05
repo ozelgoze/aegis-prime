@@ -752,7 +752,7 @@ body::before {
   </p>
 
   <div class="cta-group">
-    <button onclick="document.getElementById('t-input').focus()" class="cta-primary">
+    <button onclick="let inp = document.querySelector('.term-input:not([disabled])'); if(inp) inp.focus();" class="cta-primary">
       <span class="cta-icon">⬢</span>
       ACCESS SYSTEM TERMINAL
     </button>
@@ -1000,18 +1000,18 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
     const line = document.createElement('div');
     line.className = 'term-input-line';
     const isPassword = loginState !== null;
-    line.innerHTML = '<span class="term-prompt">></span><input class="term-input" id="term-cmd" type="' + (isPassword ? 'password' : 'text') + '" placeholder="' + (placeholder || 'enter command...') + '" autocomplete="off" spellcheck="false" autofocus><span class="term-cursor"></span>';
+    line.innerHTML = '<span class="term-prompt">></span><input class="term-input" type="' + (isPassword ? 'password' : 'text') + '" placeholder="' + (placeholder || 'enter command...') + '" autocomplete="off" spellcheck="false" autofocus><span class="term-cursor"></span>';
     body.appendChild(line);
     body.scrollTop = body.scrollHeight;
 
-    const input = document.getElementById('term-cmd');
+    const input = line.querySelector('.term-input');
     input.focus();
     input.addEventListener('keydown', handleCmd);
   }
 
   function handleCmd(e) {
     if (e.key !== 'Enter') return;
-    const input = document.getElementById('term-cmd');
+    const input = e.target;
     const raw = input.value.trim();
     const cmd = raw.toUpperCase();
     input.removeEventListener('keydown', handleCmd);
@@ -1140,8 +1140,8 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
 
   // Allow clicking terminal to focus input
   document.getElementById('gm-terminal').addEventListener('click', () => {
-    const inp = document.getElementById('term-cmd');
-    if (inp && !inp.disabled) inp.focus();
+    const inp = document.querySelector('.term-input:not([disabled])');
+    if (inp) inp.focus();
   });
 })();
 </script>
