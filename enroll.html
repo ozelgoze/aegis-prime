@@ -704,6 +704,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:3px;background
   <!-- Student ID -->
   <div class="fg" style="margin-bottom:16px">
     <div class="grp"><label class="lbl">Student ID *</label><input class="inp" id="i-sid" placeholder="AP-001-S" oninput="sync()" style="text-transform:uppercase;letter-spacing:2px;font-family:var(--fm)"></div>
+    <div class="grp"><label class="lbl">Password *</label><input class="inp" id="i-pass" type="password" placeholder="Terminal access code" oninput="sync()" style="letter-spacing:2px;font-family:var(--fm)"></div>
     <div class="grp"><label class="lbl">Role / Title</label><input class="inp" id="i-role" placeholder="Cadet, Instructor..." oninput="sync()"></div>
   </div>
 
@@ -1220,6 +1221,7 @@ function sync(){
   S.age=document.getElementById('i-age').value;S.origin=document.getElementById('i-ori').value;
   S.faction=document.getElementById('i-fac').value;S.notes=document.getElementById('i-notes').value;
   S.studentId=document.getElementById('i-sid').value;
+  S.password=document.getElementById('i-pass').value;
   S.roleTitle=document.getElementById('i-role').value;
   S.relationship=document.getElementById('i-rel').value;
   S.motivations=document.getElementById('i-motiv').value;
@@ -1321,7 +1323,8 @@ async function saveToDatabase(){
       secrets:S.secrets,
       mech_frame:S.mechFrame,
       mech_manufacturer:S.mechManufacturer,
-      notes:S.notes
+      notes:S.notes,
+      password:S.password||null
     };
     const{data,error}=await saveCharacter(record);
     if(error)throw error;

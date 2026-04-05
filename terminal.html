@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aegis Prime — Hacking Terminal</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--g:#00ff41;--gd:#00aa2a;--a:#ffb000;--r:#ff0033;--c:#4fc3f7;--bg:#000;--dim:#005510}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Share Tech Mono',monospace}
+
+/* CRT Container */
+#crt{position:fixed;inset:0;display:flex;flex-direction:column;padding:12px 16px;z-index:1}
+
+/* Scanlines */
+.scanlines{position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.15) 2px,rgba(0,0,0,0.15) 4px);pointer-events:none;z-index:100}
+
+/* Vignette */
+.vignette{position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,0.7) 100%);pointer-events:none;z-index:99}
+
+/* Flicker */
+.scanlines::after{content:'';position:fixed;inset:0;background:rgba(0,255,65,0.015);animation:flicker 0.1s infinite alternate;pointer-events:none}
+@keyframes flicker{0%{opacity:1}100%{opacity:0.96}}
+
+/* Trace Widget */
+#trace-widget{position:fixed;top:12px;right:16px;z-index:50;text-align:right;font-size:11px;letter-spacing:1px}
+.trace-label{color:var(--dim);margin-bottom:2px}
+.trace-bar{color:var(--g);font-size:13px;letter-spacing:0}
+.trace-pct{font-size:14px;font-weight:bold;margin-top:2px}
+.trace-pct.warn{color:var(--a)}
+.trace-pct.danger{color:#ff6600}
+.trace-pct.critical{color:var(--r);animation:pulse 0.5s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* Session Info */
+#session-info{position:fixed;top:12px;left:16px;z-index:50;font-size:10px;color:var(--dim);letter-spacing:1px;line-height:1.8}
+#session-info span{color:var(--gd)}
+
+/* Output Area */
+#output{flex:1;overflow-y:auto;padding:40px 0 8px;color:var(--g);font-size:13px;line-height:1.7;letter-spacing:0.5px;word-wrap:break-word}
+#output::-webkit-scrollbar{width:4px}
+#output::-webkit-scrollbar-track{background:transparent}
+#output::-webkit-scrollbar-thumb{background:var(--dim)}
+
+.line{opacity:0;animation:fadeIn 0.08s ease forwards}
+@keyframes fadeIn{to{opacity:1}}
+.line.green{color:var(--g)}
+.line.amber{color:var(--a)}
+.line.red{color:var(--r)}
+.line.cyan{color:var(--c)}
+.line.dim{color:#336633;opacity:0.7}
+.line.white{color:#e0e0e0}
+.line.bold{font-weight:bold;text-shadow:0 0 8px currentColor}
+.line.data-line{color:var(--c);padding-left:20px}
+.line.success{color:var(--g);text-shadow:0 0 10px rgba(0,255,65,0.5)}
+.line.fail{color:var(--r);text-shadow:0 0 10px rgba(255,0,51,0.3)}
+
+/* Input Area */
+#input-area{display:flex;align-items:center;padding:8px 0;border-top:1px solid #0a2a0a;gap:0}
+.prompt{color:var(--g);font-size:14px;margin-right:6px;text-shadow:0 0 6px rgba(0,255,65,0.4)}
+#cmd{flex:1;background:transparent;border:none;color:var(--g);font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;outline:none;caret-color:var(--g);text-shadow:0 0 4px rgba(0,255,65,0.3)}
+#cmd::placeholder{color:var(--dim)}
+#cmd:disabled{opacity:0.3;caret-color:transparent}
+
+/* Glitch Overlay */
+#glitch-overlay{position:fixed;inset:0;z-index:200;pointer-events:none;display:none}
+#glitch-overlay.active{display:block}
+.glitch-red{position:fixed;inset:0;background:rgba(255,0,51,0.3);animation:glitchFlash 0.4s ease forwards}
+@keyframes glitchFlash{0%{opacity:0}10%{opacity:0.8}20%{opacity:0}30%{opacity:0.6}50%{opacity:0}70%{opacity:0.3}100%{opacity:0}}
+
+/* Screen Shake */
+.shake{animation:screenShake 0.5s ease}
+@keyframes screenShake{0%,100%{transform:translate(0)}10%{transform:translate(-8px,4px)}20%{transform:translate(6px,-6px)}30%{transform:translate(-4px,8px)}40%{transform:translate(8px,-2px)}50%{transform:translate(-6px,6px)}60%{transform:translate(4px,-4px)}70%{transform:translate(-2px,2px)}80%{transform:translate(6px,-6px)}90%{transform:translate(-4px,4px)}}
+
+/* Node list table */
+.node-entry{display:flex;gap:16px;padding:2px 0;padding-left:12px;color:var(--c)}
+.node-id{color:var(--a);min-width:100px}
+.node-sig{color:var(--g)}
+.node-type{color:var(--dim);min-width:60px}
+
+/* Data display */
+.data-block{border-left:2px solid var(--c);padding:4px 0 4px 12px;margin:4px 0}
+.data-key{color:var(--a);display:inline}
+.data-val{color:var(--c);display:inline}
+
+/* Boot animation */
+.boot-bar{color:var(--g)}
+
+@media(max-width:600px){
+  #crt{padding:8px}
+  #output{font-size:11px}
+  #cmd{font-size:11px}
+  #trace-widget{font-size:9px}
+}
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="vignette"></div>
+
+<div id="crt">
+  <div id="session-info">
+    OPERATOR: <span id="si-hacker">—</span><br>
+    TARGET: <span id="si-target">—</span><br>
+    LAYER: <span id="si-layer">0</span>/3
+  </div>
+
+  <div id="trace-widget">
+    <div class="trace-label">◈ TRACE LEVEL</div>
+    <div class="trace-bar" id="trace-bar">[░░░░░░░░░░] </div>
+    <div class="trace-pct" id="trace-pct">0%</div>
+  </div>
+
+  <div id="output"></div>
+
+  <div id="input-area">
+    <span class="prompt">&gt;</span>
+    <input type="text" id="cmd" placeholder="enter command..." autocomplete="off" spellcheck="false" autofocus>
+  </div>
+</div>
+
+<div id="glitch-overlay"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  AEGIS PRIME — HACKING TERMINAL
+// ═══════════════════════════════════════════════════════════════
+
+const output = document.getElementById('output');
+const cmdInput = document.getElementById('cmd');
+const traceBar = document.getElementById('trace-bar');
+const tracePct = document.getElementById('trace-pct');
+const overlay = document.getElementById('glitch-overlay');
+
+// ── STATE ──
+const params = new URLSearchParams(window.location.search);
+let cadetId = (params.get('cadet_id') || 'UNKNOWN').toUpperCase();
+let traceLevel = 0;
+let sessionId = null;
+let targetId = null;
+let currentLayer = 0;
+let localBuffer = {};
+let inputLocked = false;
+let processing = false;
+
+document.getElementById('si-hacker').textContent = cadetId;
+
+// ── OUTPUT HELPERS ──
+function addLine(text, cls) {
+  const div = document.createElement('div');
+  div.className = 'line' + (cls ? ' ' + cls : '');
+  div.textContent = text;
+  output.appendChild(div);
+  output.scrollTop = output.scrollHeight;
+}
+
+function addHtml(html, cls) {
+  const div = document.createElement('div');
+  div.className = 'line' + (cls ? ' ' + cls : '');
+  div.innerHTML = html;
+  output.appendChild(div);
+  output.scrollTop = output.scrollHeight;
+}
+
+function addBlank() { addLine(''); }
+
+async function addLines(lines, cls, delay) {
+  for (const line of lines) {
+    addLine(line, cls);
+    if (delay) await sleep(delay);
+  }
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ── TRACE BAR ──
+function updateTrace(level) {
+  traceLevel = Math.min(level, 100);
+  const filled = Math.round(traceLevel / 10);
+  const bar = '█'.repeat(filled) + '░'.repeat(10 - filled);
+  traceBar.textContent = '[' + bar + ']';
+  tracePct.textContent = traceLevel + '%';
+
+  const el = tracePct;
+  el.className = 'trace-pct';
+  if (traceLevel >= 80) { el.classList.add('critical'); traceBar.style.color = '#ff0033'; }
+  else if (traceLevel >= 50) { el.classList.add('danger'); traceBar.style.color = '#ff6600'; }
+  else if (traceLevel >= 25) { el.classList.add('warn'); traceBar.style.color = '#ffb000'; }
+  else { traceBar.style.color = '#00ff41'; }
+}
+
+function updateSessionInfo() {
+  document.getElementById('si-target').textContent = targetId || '—';
+  document.getElementById('si-layer').textContent = currentLayer;
+}
+
+// ── GLITCH EFFECT ──
+async function triggerGlitch() {
+  // 1. Screen shake
+  document.getElementById('crt').classList.add('shake');
+
+  // 2. Red flash
+  overlay.innerHTML = '<div class="glitch-red"></div>';
+  overlay.classList.add('active');
+
+  // 3. Scramble last 5 lines
+  const lines = output.querySelectorAll('.line');
+  const scrambleChars = '█▓▒░╬╠╣╦╩┼┤├┬┴─│┌┐└┘▄▀■□◄►▲▼◘◙';
+  const toScramble = Array.from(lines).slice(-5);
+  for (const line of toScramble) {
+    const len = line.textContent.length;
+    let s = '';
+    for (let i = 0; i < len; i++) s += scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+    line.textContent = s;
+    line.style.color = '#ff0033';
+  }
+
+  await sleep(600);
+  document.getElementById('crt').classList.remove('shake');
+
+  await sleep(400);
+  overlay.classList.remove('active');
+
+  // 4. Terminal killed
+  addBlank();
+  addLine('█ CONNECTION TERMINATED █', 'red bold');
+  addLine('Session burned. Target ICE has locked you out.', 'red');
+  addBlank();
+  inputLocked = true;
+  cmdInput.disabled = true;
+  cmdInput.placeholder = 'TERMINAL LOCKED';
+  localBuffer = {};
+  sessionId = null;
+}
+
+// ── DISPLAY DATA ──
+function displayData(data, layer) {
+  if (!data) return;
+  addBlank();
+  const labels = { 1: '◈ LAYER 1 — SOFT DATA', 2: '◈ LAYER 2 — CRUNCH DATA', 3: '◈ LAYER 3 — CLASSIFIED' };
+  addLine(labels[layer] || '◈ DATA', 'amber bold');
+
+  const block = document.createElement('div');
+  block.className = 'data-block';
+  for (const [k, v] of Object.entries(data)) {
+    if (v === null || v === undefined || v === '') continue;
+    const row = document.createElement('div');
+    row.className = 'line data-line';
+    const valStr = typeof v === 'object' ? JSON.stringify(v) : String(v);
+    row.innerHTML = '<span class="data-key">' + k.toUpperCase().replace(/_/g, ' ') + ':</span> <span class="data-val">' + escHtml(valStr) + '</span>';
+    block.appendChild(row);
+  }
+  output.appendChild(block);
+  output.scrollTop = output.scrollHeight;
+}
+
+function displayNodes(nodes) {
+  addBlank();
+  addLine('┌──────────────────────────────────────────────┐', 'dim');
+  addLine('│  ID            TYPE     SIGNAL   PARTIAL     │', 'dim');
+  addLine('├──────────────────────────────────────────────┤', 'dim');
+  for (const n of nodes) {
+    addHtml(`<span class="node-id">${n.id}</span> <span class="node-type">${n.type}</span>  <span class="node-sig">${n.signal}%</span>   ${n.partial}`, 'cyan');
+  }
+  addLine('└──────────────────────────────────────────────┘', 'dim');
+}
+
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── COMMAND HANDLER ──
+cmdInput.addEventListener('keydown', async (e) => {
+  if (e.key !== 'Enter' || processing || inputLocked) return;
+  const raw = cmdInput.value.trim();
+  cmdInput.value = '';
+  if (!raw) return;
+
+  addLine('> ' + raw, 'white');
+  processing = true;
+
+  const parts = raw.split(/\s+/);
+  const cmd = parts[0].toLowerCase();
+
+  // Local commands
+  if (cmd === 'clear') {
+    output.innerHTML = '';
+    processing = false; return;
+  }
+  if (cmd === 'help') {
+    showHelp(); processing = false; return;
+  }
+  if (cmd === 'status') {
+    showStatus(); processing = false; return;
+  }
+  if (cmd === 'exit') {
+    addLine('Disconnecting...', 'amber');
+    await sleep(500);
+    window.location.href = '/';
+    processing = false; return;
+  }
+
+  // Remote commands
+  if (cmd === 'scan' && parts[1]?.toLowerCase() === 'local') {
+    await execRemote('scan_local'); processing = false; return;
+  }
+  if (cmd === 'crack') {
+    if (parts[1] === '--level' && parts[2] === '2') {
+      await execRemote('crack_l2');
+    } else if (parts[1] === '--level' && parts[2] === '3') {
+      await execRemote('crack_l3');
+    } else if (parts[1]) {
+      await execRemote('crack', parts[1].toUpperCase());
+    } else {
+      addLine('USAGE: crack <TARGET_ID> | crack --level 2|3', 'amber');
+    }
+    processing = false; return;
+  }
+  if (cmd === 'force') {
+    await execRemote('force'); processing = false; return;
+  }
+  if (cmd === 'extract') {
+    await execRemote('extract'); processing = false; return;
+  }
+
+  addLine('UNKNOWN COMMAND: ' + cmd, 'red');
+  addLine('Type "help" for available commands.', 'dim');
+  processing = false;
+});
+
+// ── REMOTE EXECUTION ──
+async function execRemote(command, arg) {
+  if (!_supabase) {
+    addLine('ERROR: Database not connected. Check supabase.js', 'red');
+    return;
+  }
+
+  addLine('...', 'dim');
+  await sleep(300 + Math.random() * 400);
+
+  try {
+    const { data, error } = await _supabase.rpc('execute_hack_command', {
+      p_hacker_id: cadetId,
+      p_command: command,
+      p_arg: arg || null
+    });
+
+    if (error) throw error;
+    if (!data) { addLine('ERROR: No response from server.', 'red'); return; }
+
+    // Print output lines
+    const lines = data.output || [];
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      let cls = '';
+      if (data.status === 'SUCCESS') cls = line.includes('██') ? 'success' : 'green';
+      else if (data.status === 'FAIL') cls = line.includes('██') ? 'fail' : 'amber';
+      else if (data.status === 'CRITICAL_FAIL') cls = 'red bold';
+      else if (data.status === 'INFO') cls = 'cyan';
+      else if (data.status === 'ERROR') cls = 'red';
+      addLine(line, cls);
+      await sleep(150);
+    }
+
+    // Update trace
+    if (data.trace_level !== undefined) updateTrace(data.trace_level);
+
+    // Update session state
+    if (data.session_id) sessionId = data.session_id;
+    if (data.layer) { currentLayer = data.layer; }
+    if (command === 'crack' && arg) targetId = arg.toUpperCase();
+    updateSessionInfo();
+
+    // Display nodes from scan
+    if (data.nodes && Array.isArray(data.nodes)) {
+      displayNodes(data.nodes);
+    }
+
+    // Display extracted data
+    if (data.data && data.layer) {
+      localBuffer['layer_' + data.layer] = data.data;
+      displayData(data.data, data.layer);
+    }
+
+    // Handle extraction complete
+    if (command === 'extract' && data.status === 'SUCCESS') {
+      sessionId = null; targetId = null; currentLayer = 0; localBuffer = {};
+      updateSessionInfo();
+    }
+
+    // Handle CRITICAL_FAIL
+    if (data.status === 'CRITICAL_FAIL') {
+      await triggerGlitch();
+    }
+
+  } catch (err) {
+    addLine('SYSTEM ERROR: ' + (err.message || 'Unknown'), 'red');
+  }
+}
+
+// ── HELP ──
+function showHelp() {
+  addBlank();
+  addLine('┌─────────────────────────────────────────────────┐', 'dim');
+  addLine('│            AVAILABLE COMMANDS                    │', 'dim');
+  addLine('├─────────────────────────────────────────────────┤', 'dim');
+  addLine('│  scan local       Scan for target nodes         │', 'cyan');
+  addLine('│  crack <ID>       Breach target (Layer 1)       │', 'cyan');
+  addLine('│  crack --level 2  Breach Layer 2 (1 Difficulty) │', 'cyan');
+  addLine('│  crack --level 3  Breach Layer 3 (2 Difficulty) │', 'cyan');
+  addLine('│  force            Force retry — RISKY           │', 'amber');
+  addLine('│  extract          Save data & disconnect        │', 'green');
+  addLine('│  status           Show session info             │', 'cyan');
+  addLine('│  clear            Clear terminal                │', 'cyan');
+  addLine('│  help             Show this menu                │', 'cyan');
+  addLine('│  exit             Disconnect                    │', 'cyan');
+  addLine('└─────────────────────────────────────────────────┘', 'dim');
+  addBlank();
+}
+
+// ── STATUS ──
+function showStatus() {
+  addBlank();
+  addLine('◈ SESSION STATUS', 'amber bold');
+  addLine('  OPERATOR:  ' + cadetId, 'green');
+  addLine('  TARGET:    ' + (targetId || 'NONE'), 'green');
+  addLine('  LAYER:     ' + currentLayer + '/3', 'green');
+  addLine('  TRACE:     ' + traceLevel + '%', traceLevel >= 50 ? 'red' : 'green');
+  addLine('  BUFFER:    ' + Object.keys(localBuffer).length + ' fragment(s)', 'green');
+  addLine('  SESSION:   ' + (sessionId ? 'ACTIVE' : 'NONE'), sessionId ? 'green' : 'dim');
+  addBlank();
+}
+
+// ── BOOT SEQUENCE ──
+async function boot() {
+  cmdInput.disabled = true;
+  const bootLines = [
+    { t: '', c: '' },
+    { t: '═══════════════════════════════════════════════════', c: 'dim' },
+    { t: '  AEGIS PRIME — NETWORK INTRUSION FRAMEWORK v3.1', c: 'green bold' },
+    { t: '═══════════════════════════════════════════════════', c: 'dim' },
+    { t: '', c: '' },
+    { t: 'INITIALIZING NEURAL INTERFACE...', c: 'dim', d: 300 },
+    { t: 'LOADING EXPLOIT MODULES...', c: 'dim', d: 200 },
+    { t: 'CONNECTING TO ACADEMY NETWORK...', c: 'dim', d: 400 },
+  ];
+
+  for (const l of bootLines) {
+    addLine(l.t, l.c);
+    await sleep(l.d || 100);
+  }
+
+  // Progress bar
+  const barEl = document.createElement('div');
+  barEl.className = 'line boot-bar';
+  output.appendChild(barEl);
+  for (let i = 0; i <= 20; i++) {
+    barEl.textContent = '[' + '█'.repeat(i) + '░'.repeat(20 - i) + '] ' + (i * 5) + '%';
+    await sleep(40);
+  }
+
+  await sleep(200);
+  addLine('', '');
+  addLine('CONNECTION ESTABLISHED', 'green bold');
+  addLine('OPERATOR: ' + cadetId, 'amber');
+  addLine('', '');
+  addLine('⚠ WARNING: UNAUTHORIZED ACCESS PUNISHABLE UNDER UNION CODE §7.4', 'red');
+  addLine('All activity is monitored. Trace detection active.', 'dim');
+  addLine('', '');
+  addLine('Type "help" for available commands.', 'green');
+  addLine('Type "scan local" to find targets.', 'green');
+  addLine('', '');
+
+  cmdInput.disabled = false;
+  cmdInput.focus();
+}
+
+// Click anywhere to focus input
+document.getElementById('crt').addEventListener('click', () => {
+  if (!cmdInput.disabled) cmdInput.focus();
+});
+
+// Start boot
+boot();
+</script>
+</body>
+</html>

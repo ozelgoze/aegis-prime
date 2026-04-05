@@ -902,6 +902,8 @@ body::before {
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase.js"></script>
 <script>
 // ── STARS ──
 (function(){
@@ -974,6 +976,7 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
 
   let lineIndex = 0;
   let inputActive = false;
+  let loginState = null; // null = normal, {id:'...'} = waiting for password
 
   function addLine(text, cls) {
     const div = document.createElement('div');
@@ -995,11 +998,12 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
     setTimeout(showBoot, line.delay);
   }
 
-  function showPrompt() {
+  function showPrompt(placeholder) {
     inputActive = true;
     const line = document.createElement('div');
     line.className = 'term-input-line';
-    line.innerHTML = '<span class="term-prompt">></span><input class="term-input" id="term-cmd" type="text" placeholder="enter command..." autocomplete="off" spellcheck="false" autofocus><span class="term-cursor"></span>';
+    const isPassword = loginState !== null;
+    line.innerHTML = '<span class="term-prompt">></span><input class="term-input" id="term-cmd" type="' + (isPassword ? 'password' : 'text') + '" placeholder="' + (placeholder || 'enter command...') + '" autocomplete="off" spellcheck="false" autofocus><span class="term-cursor"></span>';
     body.appendChild(line);
     body.scrollTop = body.scrollHeight;
 
@@ -1011,22 +1015,99 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
   function handleCmd(e) {
     if (e.key !== 'Enter') return;
     const input = document.getElementById('term-cmd');
-    const cmd = input.value.trim().toUpperCase();
+    const raw = input.value.trim();
+    const cmd = raw.toUpperCase();
     input.removeEventListener('keydown', handleCmd);
     input.disabled = true;
     input.parentElement.querySelector('.term-cursor').style.display = 'none';
     inputActive = false;
 
+    // PASSWORD PHASE — verify against database
+    if (loginState) {
+      addLine('> ••••••••', 'dim');
+      verifyLogin(loginState.id, raw);
+      return;
+    }
+
+    // NORMAL COMMAND PHASE
     if (cmd === 'GM') {
       runAccessSequence();
     } else if (cmd === '') {
       addLine('> NO INPUT DETECTED', 'dim');
       setTimeout(showPrompt, 400);
+    } else if (/^[A-Z0-9\-]+$/.test(cmd) && cmd.length >= 3) {
+      // Looks like a student ID — start login flow
+      addLine('> OPERATOR ID: ' + cmd, '');
+      addLine('> ENTER ACCESS CODE:', 'gold');
+      loginState = { id: cmd };
+      setTimeout(() => showPrompt('password...'), 300);
     } else {
       addLine('> UNKNOWN COMMAND: ' + cmd, 'red');
       addLine('> ACCESS DENIED — TRY AGAIN', 'red');
       setTimeout(showPrompt, 600);
     }
+  }
+
+  async function verifyLogin(studentId, password) {
+    addLine('> AUTHENTICATING...', 'gold');
+    try {
+      if (!_supabase) throw new Error('Database offline');
+      const { data, error } = await _supabase
+        .from('characters')
+        .select('student_id, password, name, type')
+        .eq('student_id', studentId)
+        .single();
+
+      if (error || !data) {
+        addLine('> OPERATOR NOT FOUND IN REGISTRY', 'red');
+        addLine('> ACCESS DENIED', 'red');
+        loginState = null;
+        setTimeout(showPrompt, 600);
+        return;
+      }
+      if (!data.password || data.password !== password) {
+        addLine('> INVALID ACCESS CODE', 'red');
+        addLine('> ACCESS DENIED', 'red');
+        loginState = null;
+        setTimeout(showPrompt, 600);
+        return;
+      }
+
+      // SUCCESS — run hacking access sequence
+      runCadetAccessSequence(data);
+    } catch (err) {
+      addLine('> SYSTEM ERROR: ' + (err.message || 'Unknown'), 'red');
+      loginState = null;
+      setTimeout(showPrompt, 600);
+    }
+  }
+
+  function runCadetAccessSequence(cadet) {
+    const steps = [
+      { text: '> VERIFYING CREDENTIALS...', cls: '', delay: 600 },
+      { text: '> ██████████████████████ 100%', cls: 'green', delay: 500 },
+      { text: '> OPERATOR: ' + cadet.name, cls: '', delay: 400 },
+      { text: '> CLEARANCE: ████ CADET TERMINAL ████', cls: 'gold', delay: 600 },
+      { text: '> ACCESS GRANTED', cls: 'green', delay: 400 },
+      { text: '> LAUNCHING HACKING INTERFACE...', cls: 'green', delay: 800 },
+    ];
+
+    let i = 0;
+    function nextStep() {
+      if (i >= steps.length) {
+        const flash = document.createElement('div');
+        flash.className = 'glitch-flash';
+        document.body.appendChild(flash);
+        setTimeout(() => {
+          window.location.href = '/terminal?cadet_id=' + encodeURIComponent(cadet.student_id);
+        }, 700);
+        return;
+      }
+      addLine(steps[i].text, steps[i].cls);
+      i++;
+      setTimeout(nextStep, steps[i-1].delay);
+    }
+    nextStep();
   }
 
   function runAccessSequence() {
@@ -1042,7 +1123,6 @@ document.querySelectorAll('.module-card,.faction-pill,.lore-strip').forEach(el=>
     let i = 0;
     function nextStep() {
       if (i >= steps.length) {
-        // Glitch flash then redirect
         const flash = document.createElement('div');
         flash.className = 'glitch-flash';
         document.body.appendChild(flash);
