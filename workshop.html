@@ -247,9 +247,11 @@
                 <p>> STATUS: <span id="sys-status" style="color:var(--green)">SYSTEM OK</span></p>
                 <div style="margin-top:20px; border:1px solid var(--border); padding:10px; background:rgba(0,0,0,0.2)">
                     <strong style="color:var(--blue)">MAINTENANCE PROTOCOL:</strong><br><br>
-                    Repairing a component costs 1 Repair Capacity. Success requires a Check (1D20 + ACC - DIFF) score of 10+.
-                    <br><br>
-                    <span style="color:var(--gold)">EARN +1 GRADUATION CREDIT UPON FULL COMPLETION.</span>
+                    Repairing a component costs 1 Repair Capacity. Success requires a Check (1D20 + ACC - DIFF) score of 10+.<br><br>
+                    <strong style="color:var(--gold)">GRADUATION CREDITS:</strong><br>
+                    • 1 Credit: Session Finalized<br>
+                    • 2 Credits: All Repairs Complete<br>
+                    • 3 Credits: Flawless Completion
                 </div>
             </div>
         </div>
@@ -262,6 +264,9 @@
             </div>
             <div class="manifest-list" id="manifest">
                 <!-- Dynamic Content -->
+            </div>
+            <div id="manifest-footer" style="padding:15px; border-top:1px solid var(--border); background:rgba(0,0,0,0.3)">
+                <!-- Finalize button will live here -->
             </div>
         </div>
 
@@ -314,6 +319,8 @@
         let repairs = { cur: 0, max: 0 };
         let stress = 0;
         let isRolling = false;
+        let sessionFailures = 0;
+        let sessionAttempts = 0;
 
         async function init() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -376,6 +383,23 @@
             components.forEach(c => c.damaged = Math.random() < 0.4);
             renderManifest();
             addLog('DIAGNOSTICS COMPLETE. SELECT COMPONENT TO PATCH.');
+            
+            // Show Finalize button by default now
+            renderFinalizeButton();
+        }
+
+        function renderFinalizeButton() {
+            const footer = document.getElementById('manifest-footer');
+            let btn = document.getElementById('btn-submit-finalize');
+            if (!btn) {
+                btn = document.createElement('button');
+                btn.id = 'btn-submit-finalize';
+                btn.className = 'btn-repair';
+                btn.style.cssText = 'width:100%; padding:15px; visibility:visible; background:rgba(79,195,247,0.2); color:var(--blue); border:1px solid var(--blue); margin-left:0;';
+                btn.textContent = 'FINALIZE MAINTENANCE REPORT';
+                btn.onclick = submitReport;
+                footer.appendChild(btn);
+            }
         }
 
         function renderManifest() {
@@ -418,6 +442,7 @@
             const comp = components[idx];
             addLog(`PATCHING: ${comp.n.toUpperCase()}...`, 'var(--blue)');
             isRolling = true;
+            sessionAttempts++;
             
             const trigs = typeof pilot.triggers === 'string' ? JSON.parse(pilot.triggers) : (pilot.triggers || {});
             const acc = (trigs.pat || 0) > 0 ? 1 : 0;
@@ -448,37 +473,61 @@
                 repairs.cur--;
                 updateRepairs();
                 renderManifest();
-                checkAllRepaired();
+                
+                // Update button if all done
+                const remaining = components.filter(c => c.damaged).length;
+                if (remaining === 0) {
+                    const btn = document.getElementById('btn-submit-finalize');
+                    if (btn) {
+                        btn.style.background = 'var(--gold)';
+                        btn.style.color = 'black';
+                        btn.textContent = 'COMPLETE & SUBMIT REPORT (FULL REWARD)';
+                    }
+                }
             } else {
                 addLog('REPAIR FAILED. RESOURCE LOSS.', 'var(--dim)');
+                sessionFailures++;
                 repairs.cur--;
                 updateRepairs();
+            }
+
+            // Check if out of capacity
+            if (repairs.cur <= 0) {
+                const remaining = components.filter(c => c.damaged).length;
+                if (remaining > 0) {
+                    const btn = document.getElementById('btn-submit-finalize');
+                    if (btn) {
+                        btn.style.background = 'var(--red)';
+                        btn.style.color = 'white';
+                        btn.textContent = 'SUBMIT INCOMPLETE REPORT (1 CREDIT)';
+                    }
+                    addLog('CAPACITY DEPLETED. FINALIZE MAINTENANCE TO CONTINUE.', 'var(--gold)');
+                }
             }
             isRolling = false;
         }
 
-        function checkAllRepaired() {
-            const rem = components.filter(c => c.damaged).length;
-            if (rem === 0 && stress < 4) {
-                addLog('ALL SYSTEMS NOMINAL. SUBMITTING MAINTENANCE RECORD...', 'var(--green)');
-                const list = document.getElementById('manifest');
-                const btn = document.createElement('button');
-                btn.className = 'btn-repair';
-                btn.style.cssText = 'width:100%; margin-top:20px; padding:15px; visibility:visible; background:var(--gold); color:black;';
-                btn.textContent = 'SUBMIT REPORT (+1 GRADUATION ELIGIBILITY)';
-                btn.onclick = submitReport;
-                list.appendChild(btn);
-            }
-        }
-
         async function submitReport() {
             if (isRolling) return;
+            
+            const remaining = components.filter(c => c.damaged).length;
+            let earned = 1; // Base credit for trying
+            
+            if (remaining === 0) {
+                earned = 2; // Completion bonus
+                if (sessionFailures === 0 && sessionAttempts > 0) {
+                    earned = 3; // Flawless bonus
+                }
+            }
+
+            addLog(`PREPARING REPORT: ${earned} CREDIT(S) CALCULATED...`, 'var(--gold)');
             addLog('TRANSMITTING DATA...', 'var(--gold)');
+            
             try {
-                const newCredits = (pilot.credits || 0) + 1;
+                const newCredits = (pilot.credits || 0) + earned;
                 const { error } = await _supabase.from('characters').update({ credits: newCredits }).eq('student_id', pilot.student_id);
                 if (error) throw error;
-                addLog('CERTIFICATION COMPLETE. +1 CREDIT EARNED.', 'var(--green)');
+                addLog(`CERTIFICATION COMPLETE. +${earned} CREDIT(S) EARNED.`, 'var(--green)');
                 setTimeout(() => window.location.href = `index.html?student_id=${pilot.student_id}`, 1500);
             } catch (err) {
                 addLog('UPLINK ERROR: ' + err.message, 'var(--red)');
