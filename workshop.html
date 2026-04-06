@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPA — Terminal: Workshop // Repair Bay 7</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a1628;
+            --panel: rgba(16, 32, 54, 0.8);
+            --border: rgba(79, 195, 247, 0.3);
+            --blue: #4fc3f7;
+            --gold: #ffd700;
+            --red: #ff5252;
+            --green: #69f0ae;
+            --dim: rgba(255, 255, 255, 0.5);
+            --fo: 'Outfit', sans-serif;
+            --fm: 'JetBrains Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+        body {
+            background: var(--bg);
+            color: white;
+            font-family: var(--fo);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* CRT SCANLINES */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 100;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        /* HEADER */
+        header {
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.3);
+        }
+        .logo { font-size: 20px; font-weight: 700; letter-spacing: 2px; color: var(--blue); }
+        .logo span { font-weight: 300; color: white; }
+        .pilot-info { text-align: right; font-family: var(--fm); font-size: 12px; }
+
+        /* MAIN LAYOUT */
+        main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 300px 1fr 350px;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        .panel-header {
+            padding: 10px 15px;
+            background: rgba(79, 195, 247, 0.1);
+            border-bottom: 1px solid var(--border);
+            font-family: var(--fm);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--blue);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* LEFT: REPAIR STATS */
+        .stat-group { padding: 20px; border-bottom: 1px solid var(--border); }
+        .stat-label { font-family: var(--fm); font-size: 10px; color: var(--dim); margin-bottom: 5px; }
+        .stat-value { font-size: 24px; font-weight: 600; }
+        .repair-bar {
+            height: 12px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 6px;
+            margin-top: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .repair-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1a6e9e, var(--blue));
+            width: 100%;
+            transition: width 0.5s ease;
+        }
+
+        /* CENTER: MANIFEST */
+        .manifest-list { flex: 1; overflow-y: auto; padding: 15px; }
+        .component-card {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border);
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
+        }
+        .component-card:hover { background: rgba(79, 195, 247, 0.05); }
+        .component-card.damaged { border-color: var(--red); box-shadow: inset 0 0 10px rgba(255, 82, 82, 0.1); }
+        .comp-info { flex: 1; }
+        .comp-name { font-weight: 600; font-size: 16px; margin-bottom: 2px; }
+        .comp-type { font-family: var(--fm); font-size: 10px; color: var(--dim); }
+        .comp-status { padding: 4px 8px; border-radius: 2px; font-family: var(--fm); font-size: 10px; font-weight: 700; }
+        .status-ok { color: var(--green); background: rgba(105, 240, 174, 0.1); }
+        .status-dm { color: var(--red); background: rgba(255, 82, 82, 0.1); animation: blink 1s infinite; }
+        
+        @keyframes blink { 50% { opacity: 0.4; } }
+
+        .btn-repair {
+            background: var(--blue);
+            color: var(--bg);
+            border: none;
+            padding: 8px 16px;
+            font-family: var(--fo);
+            font-weight: 700;
+            border-radius: 2px;
+            margin-left: 15px;
+            cursor: pointer;
+            visibility: hidden;
+        }
+        .damaged .btn-repair { visibility: visible; }
+        .btn-repair:hover { background: white; transform: translateY(-1px); }
+
+        /* RIGHT: ROLLING AREA */
+        .log {
+            flex: 1;
+            padding: 15px;
+            font-family: var(--fm);
+            font-size: 11px;
+            line-height: 1.6;
+            color: var(--dim);
+            overflow-y: auto;
+            border-bottom: 1px solid var(--border);
+        }
+        .log-entry { margin-bottom: 4px; }
+        .log-entry .time { color: var(--blue); margin-right: 8px; }
+        .log-entry.event { color: white; padding: 2px 0; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; }
+
+        .dice-tray {
+            height: 200px;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+        .die {
+            width: 60px; height: 60px;
+            background: var(--panel);
+            border: 2px solid var(--blue);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+            font-family: var(--fm);
+            position: relative;
+        }
+        .die.d20 { border-radius: 5px; transform: rotate(15deg); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .die.d6 { width: 40px; height: 40px; border-color: var(--gold); border-radius: 4px; font-size: 16px; }
+        .die-label { position: absolute; top: -18px; left: 0; font-size: 9px; color: var(--dim); width: 100%; text-align: center; }
+
+        .roll-stats {
+            padding: 15px;
+            background: rgba(79,195,247,0.05);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-family: var(--fm);
+        }
+        .roll-stat-box { text-align: center; }
+        .rs-val { font-size: 18px; font-weight: 700; color: white; }
+        .rs-lbl { font-size: 9px; text-transform: uppercase; color: var(--dim); }
+
+        /* FOOTER / BACK */
+        .footer { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-back { color: var(--dim); text-decoration: none; font-family: var(--fm); font-size: 11px; }
+        .btn-back:hover { color: white; }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        /* ANIMATIONS */
+        @keyframes roll {
+            0% { transform: rotate(0deg) scale(0.8); opacity: 0.5; }
+            100% { transform: rotate(360deg) scale(1); opacity: 1; }
+        }
+        .rolling { animation: roll 0.4s ease-out; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">UNION<span>PILOT</span> PILOT ACADEMY</div>
+        <div class="pilot-info" id="pilot-header">LOADING CADET DATA...</div>
+    </header>
+
+    <main>
+        <!-- LEFT panel -->
+        <div class="panel">
+            <div class="panel-header">DIAGNOSTIC STATUS</div>
+            <div class="stat-group">
+                <div class="stat-label">Repair Capacity</div>
+                <div class="stat-value"><span id="rep-cur">0</span> / <span id="rep-max">0</span></div>
+                <div class="repair-bar"><div class="repair-fill" id="rep-fill"></div></div>
+            </div>
+            <div class="stat-group">
+                <div class="stat-label">Graduation Credits</div>
+                <div class="stat-value" id="credits-val" style="color:var(--gold)">0</div>
+            </div>
+            <div class="stat-group">
+                <div class="stat-label">Reactor Stress</div>
+                <div class="stat-value" id="reactor-stress" style="color:var(--red)">0 / 4</div>
+            </div>
+            <div style="flex:1; padding:20px; font-family:var(--fm); font-size:10px; color:var(--dim);">
+                <p>> GRIT: <span id="grit-val">0</span></p>
+                <p>> TECH BONUS: <span id="tech-val">+0</span></p>
+                <p>> STATUS: <span id="sys-status" style="color:var(--green)">SYSTEM OK</span></p>
+                <div style="margin-top:20px; border:1px solid var(--border); padding:10px; background:rgba(0,0,0,0.2)">
+                    <strong style="color:var(--blue)">MAINTENANCE PROTOCOL:</strong><br><br>
+                    Repairing a component costs 1 Repair Capacity. Success requires a Check (1D20 + ACC - DIFF) score of 10+.
+                    <br><br>
+                    <span style="color:var(--gold)">EARN +1 GRADUATION CREDIT UPON FULL COMPLETION.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER panel -->
+        <div class="panel">
+            <div class="panel-header">
+                MECHA COMPONENT MANIFEST
+                <span id="mech-frame-name" style="color:white">CADET MARK I</span>
+            </div>
+            <div class="manifest-list" id="manifest">
+                <!-- Dynamic Content -->
+            </div>
+        </div>
+
+        <!-- RIGHT panel -->
+        <div class="panel">
+            <div class="panel-header">MAINTENANCE LOG</div>
+            <div class="log" id="log">
+                <div class="log-entry"><span class="time">[00:00:00]</span>INITIALIZING DIAGNOSTIC SYSTEM...</div>
+            </div>
+            
+            <div class="dice-tray">
+                <div class="die d20" id="die-20">?</div>
+                <div class="die d6" id="die-acc">?</div>
+                <div class="die d6" id="die-diff" style="border-color:var(--red)">?</div>
+            </div>
+
+            <div class="roll-stats">
+                <div class="roll-stat-box"><div class="rs-val" id="rs-d20">-</div><div class="rs-lbl">Check</div></div>
+                <div class="roll-stat-box" style="color:var(--blue); font-size:20px;">+</div>
+                <div class="roll-stat-box"><div class="rs-val" id="rs-acc">-</div><div class="rs-lbl">Acc</div></div>
+                <div class="roll-stat-box" style="color:var(--red); font-size:20px;">-</div>
+                <div class="roll-stat-box"><div class="rs-val" id="rs-diff">-</div><div class="rs-lbl">Diff</div></div>
+                <div class="roll-stat-box" style="margin-left:10px; border-left:1px solid var(--border); padding-left:15px"><div class="rs-val" id="rs-total" style="color:var(--gold)">-</div><div class="rs-lbl">Total</div></div>
+            </div>
+        </div>
+    </main>
+
+    <div class="footer">
+        <a href="index.html" class="btn-back" id="back-link">← RETURN TO TERMINAL</a>
+        <div style="font-family:var(--fm); font-size:10px; opacity:0.3">AEGIS PRIME // WORKSHOP_MOD_V.2.5.0</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script>
+        const SYSTEM_CATALOG = [
+            { id: 'pers', name: 'Personalizations (+2 HP)', cost: 1 },
+            { id: 'paint', name: 'Custom Paint Job', cost: 1 },
+            { id: 'comp', name: 'Expanded Compartment', cost: 1 },
+            { id: 'manip', name: 'Manipulators', cost: 1 },
+            { id: 'smoke', name: 'Pattern-A Smoke Charges', cost: 1 },
+            { id: 'shield1', name: 'GMS Shield Type-I', cost: 2 },
+            { id: 'hex', name: 'Hex Charges', cost: 2 },
+            { id: 'turret', name: 'Turret Drones', cost: 2 },
+            { id: 'flight', name: 'Type-I Flight System', cost: 3 }
+        ];
+
+        let pilot = null;
+        let components = [];
+        let repairs = { cur: 0, max: 0 };
+        let stress = 0;
+        let isRolling = false;
+
+        async function init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const studentId = urlParams.get('student_id');
+            if (!studentId) {
+                addLog('ERROR: NO STUDENT ID DETECTED.', 'var(--red)');
+                return;
+            }
+
+            try {
+                const { data, error } = await _supabase
+                    .from('characters')
+                    .select('*')
+                    .eq('student_id', studentId)
+                    .single();
+
+                if (error || !data) throw new Error('CADET NOT FOUND');
+                pilot = data;
+                renderPilotHeader();
+                setupWorkshop();
+            } catch (err) {
+                addLog('LINK FAILURE: ' + err.message, 'var(--red)');
+            }
+        }
+
+        function renderPilotHeader() {
+            document.getElementById('pilot-header').textContent = `PILOT: ${pilot.name} // ID: ${pilot.student_id}`;
+            document.getElementById('credits-val').textContent = pilot.credits || 0;
+            
+            repairs.max = 5 + (pilot.hull || 0);
+            repairs.cur = repairs.max;
+            updateRepairs();
+
+            document.getElementById('grit-val').textContent = '0 (LL0)';
+            document.getElementById('tech-val').textContent = `+${pilot.sys || 0}`;
+            document.getElementById('mech-frame-name').textContent = pilot.mech_frame || 'CADET MARK I';
+        }
+
+        function updateRepairs() {
+            document.getElementById('rep-cur').textContent = repairs.cur;
+            document.getElementById('rep-max').textContent = repairs.max;
+            const pct = (repairs.cur / repairs.max) * 100;
+            document.getElementById('rep-fill').style.width = pct + '%';
+        }
+
+        function setupWorkshop() {
+            const loadout = typeof pilot.mech_loadout === 'string' ? JSON.parse(pilot.mech_loadout) : (pilot.mech_loadout || {});
+            components = [];
+            if (loadout.main) components.push({ id: 'main', n: loadout.main, t: 'Weapon Mount' });
+            if (loadout.flex) components.push({ id: 'flex', n: loadout.flex, t: 'Weapon Mount' });
+            if (loadout.heavy) components.push({ id: 'heavy', n: loadout.heavy, t: 'Weapon Mount' });
+            
+            if (Array.isArray(loadout.systems)) {
+                loadout.systems.forEach(sid => {
+                    const s = SYSTEM_CATALOG.find(x => x.id === sid);
+                    if (s) components.push({ id: sid, n: s.name, t: 'System Module' });
+                });
+            }
+
+            components.forEach(c => c.damaged = Math.random() < 0.4);
+            renderManifest();
+            addLog('DIAGNOSTICS COMPLETE. SELECT COMPONENT TO PATCH.');
+        }
+
+        function renderManifest() {
+            const list = document.getElementById('manifest');
+            list.innerHTML = '';
+            components.forEach((c, idx) => {
+                const card = document.createElement('div');
+                card.className = 'component-card' + (c.damaged ? ' damaged' : '');
+                card.innerHTML = `
+                    <div class="comp-info">
+                        <div class="comp-name">${c.n}</div>
+                        <div class="comp-type">${c.t}</div>
+                    </div>
+                    <div class="comp-status ${c.damaged ? 'status-dm' : 'status-ok'}">
+                        ${c.damaged ? 'DAMAGED' : 'NOMINAL'}
+                    </div>
+                    <button class="btn-repair" onclick="repairComponent(${idx})">PATCH</button>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function addLog(msg, color) {
+            const log = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const time = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            entry.innerHTML = `<span class="time">[${time}]</span><span style="${color ? 'color:' + color : ''}">${msg}</span>`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        async function repairComponent(idx) {
+            if (isRolling) return;
+            if (repairs.cur <= 0) {
+                addLog('INSUFFICIENT REPAIR CAPACITY.', 'var(--red)');
+                return;
+            }
+
+            const comp = components[idx];
+            addLog(`PATCHING: ${comp.n.toUpperCase()}...`, 'var(--blue)');
+            isRolling = true;
+            
+            const trigs = typeof pilot.triggers === 'string' ? JSON.parse(pilot.triggers) : (pilot.triggers || {});
+            const acc = (trigs.pat || 0) > 0 ? 1 : 0;
+            const diff = 1; 
+
+            await animateRoll(acc, diff);
+            const roll = lancerRoll(acc, diff);
+            
+            document.getElementById('rs-d20').textContent = roll.d20;
+            document.getElementById('rs-acc').textContent = roll.accMax;
+            document.getElementById('rs-diff').textContent = roll.diffMax;
+            document.getElementById('rs-total').textContent = roll.total;
+
+            if (roll.d20 === 1) {
+                addLog('CRITICAL FAILURE: REACTOR SPIKE!', 'var(--red)');
+                stress++;
+                document.getElementById('reactor-stress').textContent = `${stress} / 4`;
+                if (stress >= 4) {
+                    addLog('REACTOR SHUTDOWN. EMERGENCY VENTING REQUIRED.', 'var(--red)');
+                    document.getElementById('sys-status').textContent = 'CRITICAL ERROR';
+                    document.getElementById('sys-status').style.color = 'var(--red)';
+                }
+            }
+
+            if (roll.total >= 10) {
+                addLog('SUCCESS. COMPONENT RESTORED.', 'var(--green)');
+                comp.damaged = false;
+                repairs.cur--;
+                updateRepairs();
+                renderManifest();
+                checkAllRepaired();
+            } else {
+                addLog('REPAIR FAILED. RESOURCE LOSS.', 'var(--dim)');
+                repairs.cur--;
+                updateRepairs();
+            }
+            isRolling = false;
+        }
+
+        function checkAllRepaired() {
+            const rem = components.filter(c => c.damaged).length;
+            if (rem === 0 && stress < 4) {
+                addLog('ALL SYSTEMS NOMINAL. SUBMITTING MAINTENANCE RECORD...', 'var(--green)');
+                const list = document.getElementById('manifest');
+                const btn = document.createElement('button');
+                btn.className = 'btn-repair';
+                btn.style.cssText = 'width:100%; margin-top:20px; padding:15px; visibility:visible; background:var(--gold); color:black;';
+                btn.textContent = 'SUBMIT REPORT (+1 GRADUATION ELIGIBILITY)';
+                btn.onclick = submitReport;
+                list.appendChild(btn);
+            }
+        }
+
+        async function submitReport() {
+            if (isRolling) return;
+            addLog('TRANSMITTING DATA...', 'var(--gold)');
+            try {
+                const newCredits = (pilot.credits || 0) + 1;
+                const { error } = await _supabase.from('characters').update({ credits: newCredits }).eq('student_id', pilot.student_id);
+                if (error) throw error;
+                addLog('CERTIFICATION COMPLETE. +1 CREDIT EARNED.', 'var(--green)');
+                setTimeout(() => window.location.href = `index.html?student_id=${pilot.student_id}`, 1500);
+            } catch (err) {
+                addLog('UPLINK ERROR: ' + err.message, 'var(--red)');
+            }
+        }
+
+        function lancerRoll(acc, diff) {
+            const d20 = Math.floor(Math.random() * 20) + 1;
+            const a = Array.from({length: acc}, () => Math.floor(Math.random() * 6) + 1);
+            const d = Array.from({length: diff}, () => Math.floor(Math.random() * 6) + 1);
+            const aM = a.length ? Math.max(...a) : 0;
+            const dM = d.length ? Math.max(...d) : 0;
+            return { d20, accMax: aM, diffMax: dM, total: d20 + aM - dM };
+        }
+
+        function animateRoll(acc, diff) {
+            const d20E = document.getElementById('die-20'), accE = document.getElementById('die-acc'), diffE = document.getElementById('die-diff');
+            d20E.classList.add('rolling'); if(acc) accE.classList.add('rolling'); diffE.classList.add('rolling');
+            let t = 0;
+            const i = setInterval(() => {
+                d20E.textContent = Math.floor(Math.random() * 20) + 1;
+                accE.textContent = acc ? Math.floor(Math.random() * 6) + 1 : '0';
+                diffE.textContent = Math.floor(Math.random() * 6) + 1;
+                if ((t += 100) > 600) {
+                    clearInterval(i);
+                    d20E.classList.remove('rolling'); accE.classList.remove('rolling'); diffE.classList.remove('rolling');
+                }
+            }, 100);
+            return new Promise(r => setTimeout(r, 800));
+        }
+
+        init();
+    </script>
+</body>
+</html>

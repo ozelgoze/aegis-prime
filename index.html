@@ -1670,7 +1670,9 @@ async function generateIdPdf(char) {
         addLine('> GENERATING STUDENT ID CARD...', 'gold');
         generateIdPdf(loginState.cadet);
         setTimeout(() => showPrompt('select option [1-13]...'), 1000);
-      } else if (['1','2','3','5','6','7','8','9'].includes(cmd)) {
+      } else if (cmd === '5') {
+        runWorkshopAccessSequence(loginState.id);
+      } else if (['1','2','3','6','7','8','9'].includes(cmd)) {
         addLine('> MODULE OFFLINE / ACCESS RESTRICTED', 'red');
         setTimeout(() => showPrompt('select option [1-13]...'), 600);
       } else {
@@ -1758,12 +1760,15 @@ async function generateIdPdf(char) {
 
   function showMenu(cadet) {
     addLine('————————————————————————————', 'dim');
+    addLine('PILOT: ' + cadet.name.toUpperCase() + ' // ID: ' + cadet.student_id, 'gold');
+    addLine('GRADUATION CREDITS: ' + (cadet.credits || 0), 'gold');
+    addLine('————————————————————————————', 'dim');
     addLine('MAIN MENU:', 'gold');
     addLine('[1] Academy Events', 'dim');
     addLine('[2] Courses', 'dim');
     addLine('[3] Academy Chat', 'dim');
     addLine('[4] Mecha Hangar', 'green');
-    addLine('[5] Workshop', 'dim');
+    addLine('[5] Workshop', 'green');
     addLine('[6] Discipline Community', 'dim');
     addLine('[7] Weapon & Armor Shop', 'dim');
     addLine('[8] Tech Shop', 'dim');
@@ -1805,7 +1810,20 @@ async function generateIdPdf(char) {
       flash.style.background = 'var(--gold)';
       document.body.appendChild(flash);
       setTimeout(() => {
-        window.location.href = '/hangar.html?student_id=' + encodeURIComponent(studentId);
+        window.location.href = 'hangar.html?student_id=' + encodeURIComponent(studentId);
+      }, 700);
+    }, 600);
+  }
+
+  function runWorkshopAccessSequence(studentId) {
+    addLine('> INITIALIZING REPAIR DIAGNOSTICS...', 'var(--blue)');
+    setTimeout(() => {
+      const flash = document.createElement('div');
+      flash.className = 'glitch-flash';
+      flash.style.background = '#1a6e9e';
+      document.body.appendChild(flash);
+      setTimeout(() => {
+        window.location.href = 'workshop.html?student_id=' + encodeURIComponent(studentId);
       }, 700);
     }, 600);
   }
